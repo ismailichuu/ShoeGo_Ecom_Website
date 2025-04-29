@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ShoeGo | Verify</title>
+    <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/output.css">
+</head>
+
+<body class="min-h-screen bg-gradient-to-r from-purple-100 to-purple-200 flex items-center justify-center">
+    <div class="min-h-screen flex items-center justify-center px-4">
+        <div class="bg-white bg-opacity-20 p-8 rounded-xl shadow-xl max-w-sm w-full text-center backdrop-blur-md">
+            <h2 class="text-2xl font-bold text-gray-700 drop-shadow mb-4">Account Verification</h2>
+            <p class="text-md text-gray-600 mb-6">
+                Please enter the OTP sent to<br><span class="font-medium text-purple-700"><%= email %></span>
+            </p>
+            <form action="/verify" method="post">
+                <div class="flex justify-center space-x-3 mb-4">
+                    <input type="text" maxlength="1" name="num1"
+                        class="otp w-12 h-12 text-center border border-purple-300 rounded-md text-xl text-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <input type="text" maxlength="1" name="num2"
+                        class="otp w-12 h-12 text-center border border-purple-300 rounded-md text-xl text-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <input type="text" maxlength="1" name="num3"
+                        class="otp w-12 h-12 text-center border border-purple-300 rounded-md text-xl text-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <input type="text" maxlength="1" name="num4"
+                        class="otp w-12 h-12 text-center border border-purple-300 rounded-md text-xl text-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <p id="timer" class="text-sm text-red-500 mb-2">2:00 left</p>
+                <a href="#" id="resend-btn" class="text-sm text-red-500 hover:underline hidden">Resend OTP</a>
+                <button 
+                    class="w-full mt-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg transition ">Confirm
+                </button>
+
+            </form>
+            <% if(signup){ %>
+            <p class="text-xs text-gray-600 mt-4">
+                By continuing, you agree to ShoeGo’s
+                <a href="#" class="underline text-purple-700">Terms of Use</a> and
+                <a href="#" class="underline text-purple-700">Privacy Policy</a>.
+            </p>
+            <% } %>
+            <a href="/signup" class="text-sm text-purple-700 mt-4 inline-block hover:underline">
+                ← Back to Signup
+            </a>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

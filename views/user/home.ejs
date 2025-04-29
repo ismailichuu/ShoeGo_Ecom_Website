@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShoeGo</title>
+    <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="css/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gray-100">
+    <header class="bg-white py-4 shadow-md">
+        <div class="container mx-auto flex items-center justify-between px-4">
+
+            <!-- Left side: Logo + Nav -->
+            <div class="flex items-center space-x-10">
+                <img src="images/logo.png" alt="Shoego logo" class="w-44">
+
+                <nav>
+                    <ul class="space-x-6 hidden md:flex">
+                        <li><a href="#" class="text-gray-600 hover:text-blue-500 transition-colors">Men</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-500 transition-colors">Women</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-500 transition-colors">Sneakers</a></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Right side: Search bar + Icons -->
+            <div class="flex items-center space-x-6">
+
+                <!-- Search input -->
+                <div class="relative">
+                    <input type="text" placeholder="Search Shoes..."
+                        class="bg-gray-100 text-gray-800 py-2 px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 w-64" />
+                    <i class="fas fa-search absolute right-3 top-3 text-gray-600"></i>
+                </div>
+
+                <!-- Icons -->
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-user text-gray-700 h-6 w-6 hover:text-blue-500 cursor-pointer"></i>
+                    <i class="fas fa-shopping-cart text-gray-700 h-6 w-6 hover:text-blue-500 cursor-pointer"></i>
+                    <i class="fas fa-heart text-gray-700 h-6 w-6 hover:text-blue-500 cursor-pointer"></i>
+                </div>
+
+            </div>
+
+        </div>
+    </header>
+
+    <section
+        style="background: url('images/banner_home.jpg'); background-repeat: no-repeat; background-position: center; background-size: cover;">
+        <div class="container mx-auto flex flex-col-reverse md:flex-row items-center gap-8">
+            <div class="hidden md:block md:w-1/2 text-center">
+                <p class="text-gray-600 text-lg mb-4">"I firmly believe that with the right footwear one can rule the
+                    world.”</p>
+                <p class="text-gray-700 text-lg text-end pe-10 font-italic">— Bette Midler</p>
+                <a href="#"
+                    class="bg-purple-600 text-white py-3 px-8 rounded-full font-semibold hover:bg-purple-700 transition-colors mt-10 inline-block">Explore</a>
+            </div>
+            <div class="md:w-1/2">
+                <img src="images/download.jpg" alt="Person with shoes" class="rounded-lg shadow-lg w-full" />
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center">Latest Collections</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <img src="https://placehold.co/300x200/EEE/31343C?text=Shoe1" alt="Shoe 1"
+                        class="w-full rounded-lg mb-4" />
+                    <p class="text-gray-700">Shoe Name 1</p>
+                    <p class="text-gray-600 text-sm">Price: $99</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <img src="https://placehold.co/300x200/EEE/31343C?text=Shoe2" alt="Shoe 2"
+                        class="w-full rounded-lg mb-4" />
+                    <p class="text-gray-700">Shoe Name 2</p>
+                    <p class="text-gray-600 text-sm">Price: $99</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <img src="https://placehold.co/300x200/EEE/31343C?text=Shoe3" alt="Shoe 3"
+                        class="w-full rounded-lg mb-4" />
+                    <p class="text-gray-700">Shoe Name 3</p>
+                    <p class="text-gray-600 text-sm">Price: $99</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <img src="https://placehold.co/300x200/EEE/31343C?text=Shoe4" alt="Shoe 4"
+                        class="w-full rounded-lg mb-4" />
+                    <p class="text-gray-700">Shoe Name 4</p>
+                    <p class="text-gray-600 text-sm">Price: $99</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-yellow-400 py-12">
+        <div class="container mx-auto flex flex-col md:flex-row items-center justify-between px-4">
+            <div class="md:w-1/2">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">USE CODE</h2>
+                <p class="text-gray-700 text-lg">FLAT499</p>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <img src="https://placehold.co/200x150/EEE/31343C?text=Coupon" alt="Coupon" class="rounded-md" />
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <img src="https://placehold.co/300x200/EEE/31343C?text=Shoe5" alt="Shoe 5"
+                        class="w-full rounded-lg mb-4" />
+                    <p class="text-gray-700">Shoe Name 5</p>
+                    <p class="text-gray-600 text-sm">Price: $79</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <img src="https://placehold.co/300x200/EEE/31343C?text=Shoe6" alt="Shoe 6"
+                        class="w-full rounded-lg mb-4" />
+                    <p class="text-gray-700">Shoe Name 6</p>
+                    <p class="text-gray-600 text-sm">Price: $79</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <img src="https://placehold.co/300x200/EEE/31343C?text=Shoe7" alt="Shoe 7"
+                        class="w-full rounded-lg mb-4" />
+                    <p class="text-gray-700">Shoe Name 7</p>
+                    <p class="text-gray-600 text-sm">Price: $79</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <img src="https://placehold.co/300x200/EEE/31343C?text=Shoe8" alt="Shoe 8"
+                        class="w-full rounded-lg mb-4" />
+                    <p class="text-gray-700">Shoe Name 8</p>
+                    <p class="text-gray-600 text-sm">Price: $79</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <img src="https://placehold.co/300x200/EEE/31343C?text=Shoe9" alt="Shoe 9"
+                        class="w-full rounded-lg mb-4" />
+                    <p class="text-gray-700">Shoe Name 9</p>
+                    <p class="text-gray-600 text-sm">Price: $79</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <img src="https://placehold.co/300x200/EEE/31343C?text=Shoe10" alt="Shoe 10"
+                        class="w-full rounded-lg mb-4" />
+                    <p class="text-gray-700">Shoe Name 10</p>
+                    <p class="text-gray-600 text-sm">Price: $79</p>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <a href="#"
+                    class="bg-purple-600 text-white py-3 px-8 rounded-full font-semibold hover:bg-purple-700 transition-colors">Load
+                    More</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center">Reviews</h2>
+            <div class="flex items-center justify-center mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-6 h-6 text-gray-600 cursor-pointer">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+                <div class="flex space-x-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                        class="w-6 h-6 text-yellow-400">
+                        <path
+                            d="M10.824 2.464a.75.75 0 0 0-1.448 0l-2.65 8.025-8.522 2.31a.75.75 0 0 0-.413 1.245h8.712l-2.65 8.025a.75.75 0 0 0 1.448 0l2.65-8.025 8.522-2.31a.75.75 0 0 0 .413-1.245h-8.712l2.65-8.025z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                        class="w-6 h-6 text-yellow-400">
+                        <path
+                            d="M10.824 2.464a.75.75 0 0 0-1.448 0l-2.65 8.025-8.522 2.31a.75.75 0 0 0-.413 1.245h8.712l-2.65 8.025a.75.75 0 0 0 1.448 0l2.65-8.025 8.522-2.31a.75.75 0 0 0 .413-1.245h-8.712l2.65-8.025z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                        class="w-6 h-6 text-yellow-400">
+                        <path
+                            d="M10.824 2.464a.75.75 0 0 0-1.448 0l-2.65 8.025-8.522 2.31a.75.75 0 0 0-.413 1.245h8.712l-2.65 8.025a.75.75 0 0 0 1.448 0l2.65-8.025 8.522-2.31a.75.75 0 0 0 .413-1.245h-8.712l2.65-8.025z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                        class="w-6 h-6 text-yellow-400">
+                        <path
+                            d="M10.824 2.464a.75.75 0 0 0-1.448 0l-2.65 8.025-8.522 2.31a.75.75 0 0 0-.413 1.245h8.712l-2.65 8.025a.75.75 0 0 0 1.448 0l2.65-8.025 8.522-2.31a.75.75 0 0 0 .413-1.245h-8.712l2.65-8.025z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                        class="w-6 h-6 text-gray-600">
+                        <path
+                            d="M10.824 2.464a.75.75 0 0 0-1.448 0l-2.65 8.025-8.522 2.31a.75.75 0 0 0-.413 1.245h8.712l-2.65 8.025a.75.75 0 0 0 1.448 0l2.65-8.025 8.522-2.31a.75.75 0 0 0 .413-1.245h-8.712l2.65-8.025z" />
+                    </svg>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-6 h-6 text-gray-600 cursor-pointer">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <p class="text-gray-700 mb-4">"Great shoes and amazing quality for the price. Will definitely
+                        purchase again!"</p>
+                    <p class="text-gray-600 text-sm font-italic">- someone@email.com</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <p class="text-gray-700 mb-4">"My favorite pair of shoes yet! They are both stylish and comfortable.
+                        Highly recommend!"</p>
+                    <p class="text-gray-600 text-sm font-italic">- another@email.com</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto text-center">
+            <p class="text-gray-300 text-sm">&copy; 2025 Shoebedo, All Rights Reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+{
+  "name": "shoego",
+  "version": "1.0.0",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node app",
+    "dev": "node --watch --env-file=.env app",
+    "build:css": "npx @tailwindcss/cli -i ./src/css/input.css -o ./public/css/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ismailichuu/ShoeGo_Ecom_Website.git"
+  },
+  "keywords": [],
+  "author": "Mohammed Ismail C N",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ismailichuu/ShoeGo_Ecom_Website/issues"
+  },
+  "homepage": "https://github.com/ismailichuu/ShoeGo_Ecom_Website#readme",
+  "description": "",
+  "dependencies": {
+    "arctic": "^3.6.0",
+    "bcrypt": "^5.1.1",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.14.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.4",
+    "tailwindcss": "^4.1.4"
+  }
+}
