@@ -10,41 +10,51 @@
     <link rel="stylesheet" href="css/output.css">
 </head>
 
-<body class="min-h-screen bg-gradient-to-r from-purple-100 to-purple-200 flex items-center justify-center">
+<body class="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-black flex items-center justify-center">
     <div class="min-h-screen flex items-center justify-center px-4">
-        <div class="bg-white bg-opacity-20 p-8 rounded-xl shadow-xl max-w-sm w-full text-center backdrop-blur-md">
-            <h2 class="text-2xl font-bold text-gray-700 drop-shadow mb-4">Account Verification</h2>
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Account Verification</h2>
             <p class="text-md text-gray-600 mb-6">
-                Please enter the OTP sent to<br><span class="font-medium text-purple-700"><%= email %></span>
+                Please enter the OTP sent to<br><span id="email" class="font-medium text-gray-900"><%= email %></span>
             </p>
             <form action="/verify" method="post">
                 <div class="flex justify-center space-x-3 mb-4">
                     <input type="text" maxlength="1" name="num1"
-                        class="otp w-12 h-12 text-center border border-purple-300 rounded-md text-xl text-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        class="otp w-12 h-12 text-center border border-gray-300 rounded-md text-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-700 bg-gray-100">
                     <input type="text" maxlength="1" name="num2"
-                        class="otp w-12 h-12 text-center border border-purple-300 rounded-md text-xl text-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        class="otp w-12 h-12 text-center border border-gray-300 rounded-md text-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-700 bg-gray-100">
                     <input type="text" maxlength="1" name="num3"
-                        class="otp w-12 h-12 text-center border border-purple-300 rounded-md text-xl text-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        class="otp w-12 h-12 text-center border border-gray-300 rounded-md text-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-700 bg-gray-100">
                     <input type="text" maxlength="1" name="num4"
-                        class="otp w-12 h-12 text-center border border-purple-300 rounded-md text-xl text-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        class="otp w-12 h-12 text-center border border-gray-300 rounded-md text-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-700 bg-gray-100">
                 </div>
-                <p id="timer" class="text-sm text-red-500 mb-2">2:00 left</p>
-                <a href="#" id="resend-btn" class="text-sm text-red-500 hover:underline hidden">Resend OTP</a>
+                <!-- <p id="timer" class="text-sm text-red-500 mb-2">2:00 left</p>
+                <a id="resend-btn" class="text-sm text-red-500 hover:underline hidden">
+                    Resend OTP
+                </a> -->
+                <!-- <p id="resend-message" class="text-xs text-green-600 mt-2 hidden">OTP sent successfully!</p> -->
+                <% if(msg) { %>
+                    <p class="text-red-600 text-center" id="error"><%= msg %></p>
+                    <script>
+                        setTimeout(()=>{
+                            document.getElementById('error').style.display = 'none';
+                        },8000);
+                    </script>
+                <% } %>
                 <button 
-                    class="w-full mt-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg transition ">Confirm
+                    class="w-full mt-3 bg-black hover:bg-gray-800 text-white font-semibold py-2 rounded-lg transition shadow">Confirm
                 </button>
-
             </form>
             <% if(signup){ %>
             <p class="text-xs text-gray-600 mt-4">
-                By continuing, you agree to ShoeGo’s
-                <a href="#" class="underline text-purple-700">Terms of Use</a> and
-                <a href="#" class="underline text-purple-700">Privacy Policy</a>.
+                By continuing, you agree to ShoeGo's
+                <a href="#" class="underline text-gray-900">Terms of Use</a> and
+                <a href="#" class="underline text-gray-900">Privacy Policy</a>.
             </p>
-            <% } %>
-            <a href="/signup" class="text-sm text-purple-700 mt-4 inline-block hover:underline">
+            <a href="/signup" class="text-sm text-gray-900 mt-4 inline-block hover:underline">
                 ← Back to Signup
             </a>
+            <% } %>
         </div>
     </div>
 

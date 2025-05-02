@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,85 +9,79 @@
   <link rel="stylesheet" href="css/output.css">
 </head>
 
-<body class="min-h-screen bg-gradient-to-r from-purple-100 to-purple-200 flex items-center justify-center">
-
+<body class="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-black flex items-center justify-center">
   <div class="text-center space-y-8">
-    
-    <div class="typewriter">    
-        <h2 class="text-3xl text-violet-400">Welcome to ShoeGo...</h2>
+    <div class="typewriter">
+      <h2 class="text-3xl text-white">Welcome to ShoeGo...</h2>
     </div>
-    <!-- Sign In Card -->
-    <div class="bg-white/30 backdrop-blur-md p-8 rounded-2xl shadow-lg max-w-md w-full mx-auto space-y-6">
-
+    <!-- Sign Up Card -->
+    <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full mx-auto space-y-6 border border-gray-200">
       <!-- Google Login Button -->
       <a href="/auth/google"
-        class="flex items-center justify-center w-full gap-3 bg-white text-gray-700 py-2 px-10 rounded-full hover:bg-gray-100 shadow">
+        class="flex items-center justify-center w-full gap-3 bg-white text-gray-800 font-semibold py-2 px-8 rounded-full hover:bg-gray-400 transition shadow">
         <img src="images/glogo.png" alt="Google" class="w-5 h-5">
         Continue with Google
       </a>
 
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-4 text-gray-400 text-sm font-medium">
         <hr class="flex-grow border-gray-300">
-        <span class="text-gray-500 text-sm">or</span>
+        <span>or</span>
         <hr class="flex-grow border-gray-300">
       </div>
 
       <form action="/signup" method="post" class="space-y-4">
         <!-- Name Field -->
         <div>
-            <input type="text" placeholder="Name" name="name"
-              class="w-full px-5 py-2 rounded-md bg-white/50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-              required>
-          </div>
+          <input type="text" placeholder="Name" name="name"
+            class="w-full px-4 py-2 rounded-lg bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-700"
+            required>
+        </div>
 
         <!-- Email Field -->
         <div>
           <input type="email" placeholder="Email" name="email"
-            class="w-full px-5 py-2 rounded-md bg-white/50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+            class="w-full px-4 py-2 rounded-lg bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-700"
             required>
         </div>
 
         <!-- Password Field -->
         <div class="relative">
           <input type="password" placeholder="Password" name="password1"
-            class="w-full px-5 py-2 rounded-md bg-white/50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+            class="w-full px-4 py-2 rounded-lg bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-700"
             required>
         </div>
 
         <!-- Confirm Password Field -->
         <div class="relative">
-            <input type="password" placeholder="Confirm Password" name="password2"
-              class="w-full px-5 py-2 rounded-md bg-white/50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-              required>
-          </div>
-          <% if(msg) { %>
-            <p class="text-red-600 text-center" id="error"><%= msg %></p>
-            <script>
-                setTimeout(()=>{
-                    document.getElementById('error').style.display = 'none';
-                },8000);
-            </script>
-            <% } %>
+          <input type="password" placeholder="Confirm Password" name="password2"
+            class="w-full px-4 py-2 rounded-lg bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-700"
+            required>
+        </div>
 
-        <!-- Login Button -->
+        <% if(msg) { %>
+        <p class="text-red-600 text-center" id="error"><%= msg %></p>
+        <script>
+          setTimeout(() => {
+            document.getElementById('error').style.display = 'none';
+          }, 8000);
+        </script>
+        <% } %>
+
+        <!-- Sign Up Button -->
         <div>
           <button type="submit"
-            class="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition-colors">
-            Login
+            class="w-full bg-black hover:bg-gray-800 text-white font-semibold py-2 rounded-lg transition shadow">
+            Sign Up
           </button>
         </div>
       </form>
 
-      <!-- Sign Up Link (outside the form) -->
-      <p class="text-sm text-gray-600 mt-6 text-center">
+      <!-- Sign In Link (outside the form) -->
+      <p class="text-sm text-gray-700 mt-4">
         Already have an account?
-        <a href="/login" class="text-purple-600 hover:underline">Back to Login</a>
+        <a href="/login" class="text-gray-900 hover:underline font-medium">Back to Login</a>
       </p>
-
-
     </div>
   </div>
-
 </body>
-
 </html>

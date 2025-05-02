@@ -24,7 +24,7 @@ app.use(session({
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-//json
+//json and url data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -34,9 +34,9 @@ app.set('view engine', 'ejs');
 //Static folder setting
 app.use(express.static(path.join(__dirname, 'public')));
 
-//routes
+//routers
 app.use('/', userRouter);
 app.use('/admin', adminRouter);
-console.log(Math.round(100 + Math.random() * 9000))
+
 //listen
 mongoConnect().then(() => app.listen(port, () => console.log('server is running at PORT ' + port)));

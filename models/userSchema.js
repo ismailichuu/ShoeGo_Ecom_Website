@@ -47,6 +47,16 @@ const signUpSchema = new mongoose.Schema({
         type: Date,
         required: false,
     },
+
+    createdAt:{
+        type: Date,
+        required: true,
+    },
+
+    modifiedAt:{
+        type: Date,
+        required: false,
+    }
 });
 
 //create model
