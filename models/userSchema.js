@@ -48,15 +48,17 @@ const signUpSchema = new mongoose.Schema({
         required: false,
     },
 
-    createdAt:{
-        type: Date,
-        required: true,
+    admin: {
+        type: Boolean,
+        required: false,
     },
 
-    modifiedAt:{
-        type: Date,
+    profile: {
+        type: String,
         required: false,
     }
+}, {
+    timestamps: true,
 });
 
 //create model

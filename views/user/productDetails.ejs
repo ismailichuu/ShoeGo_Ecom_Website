@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShoeGo - <%= product.name %>
+    </title>
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="bg-gray-300">
+    <header class="bg-gray-700 py-4 shadow-sm">
+        <div class="container mx-auto flex items-center justify-between px-4">
+
+            <!-- Left side: Logo + Nav -->
+            <div class="flex items-center space-x-10">
+                <img src="/images/logo.png" alt="Shoego logo" class="w-40 opacity-90">
+
+                <nav>
+                    <ul class="space-x-6 hidden md:flex">
+                        <li><a href="#" class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Men</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Women</a></li>
+                        <li><a href="#"
+                                class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Sneakers</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Right side: Search bar + Icons -->
+            <div class="flex items-center space-x-6">
+
+                <!-- Search input -->
+                <div class="relative">
+                    <input type="text" placeholder="Search Shoes..."
+                        class="bg-gray-300 text-gray-700 py-2 px-4 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-300 w-64 placeholder-gray-400 border border-gray-200" />
+                    <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                </div>
+
+                <!-- Icons -->
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-user text-gray-300 h-5 w-5 hover:text-gray-700 cursor-pointer"></i>
+                    <i class="fas fa-shopping-cart text-gray-300 h-5 w-5 hover:text-gray-700 cursor-pointer"></i>
+                    <i class="fas fa-heart text-gray-300 h-5 w-5 hover:text-gray-700 cursor-pointer"></i>
+                </div>
+
+            </div>
+
+        </div>
+    </header>
+    <!-- Breadcrumb Section -->
+    <div class="breadcrumb bg-gray-200 py-3 px-4 rounded-lg mb-6">
+        <nav aria-label="Breadcrumb">
+            <ol class="list-reset flex text-sm text-gray-700">
+                <li>
+                    <a href="/" class="text-gray-700 hover:text-gray-900">Home</a>
+                </li>
+                <li>
+                    <span class="mx-2">/</span>
+                </li>
+                 <li>
+                    <a href="/allProducts" class="text-gray-700 hover:text-gray-900">All Products</a>
+                </li>
+                <li>
+                    <span class="mx-2">/</span>
+                </li>
+                <li>
+                    <a href="/category/<%= product.categorId?.slug %>" class="text-gray-700 hover:text-gray-900">
+                        <%= product.category?.name %>
+                    </a>
+                </li>
+                <li>
+                    <span class="mx-2">/</span>
+                </li>
+                <li class="text-gray-500">
+                    <%= product.name %>
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Product Section -->
+        <div class="flex flex-col md:flex-row md:space-x-8">
+            <!-- Product Images -->
+            <div class="md:w-7/12">
+                <!-- Main Product Image -->
+                <div class="bg-gray-light rounded-lg overflow-hidden mb-4 cursor-zoom-in">
+                    <img id="mainImage" src="/uploads/products/<%= product.images[0] %>" alt="Nike Air Max DN"
+                        class="w-full h-auto object-cover" onclick="openZoomModal(this.src)" />
+                </div>
+
+                <!-- Thumbnail Images -->
+                <div class="grid grid-cols-4 gap-2">
+                    <% product.images.forEach(image=> { %>
+                        <div class="bg-gray-light rounded-lg overflow-hidden border-2 border-primary thumbnail-wrapper">
+                            <img src="/uploads/products/<%= image %>" alt="Nike Air Max DN - View"
+                                class="w-full h-auto cursor-pointer thumbnail-image"
+                                data-src="/uploads/products/<%= image %>">
+                        </div>
+                        <% }) %>
+                </div>
+
+            </div>
+
+            <!-- Product Details -->
+            <div class="md:w-5/12 mt-6 md:mt-0">
+                <h1 class="text-2xl font-semibold text-gray-800">
+                    <%= product.name %>
+                </h1>
+                <p class="text-gray-500 mb-2">
+                    <%= product.categoryId[0]?.name %>
+                </p>
+
+                <div class="flex items-center mb-4">
+                    <div class="flex text-amber-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <span class="text-sm text-gray-500 ml-2">(126 Reviews)</span>
+                </div>
+
+                <div class="text-xl line-through font-semibold text-red-500 mb-2">₹ <%= product.basePrice %>
+                </div>
+
+                <div class="text-2xl font-bold text-black mb-6">₹ <%= product.discountPrice %>
+                </div>
+
+                <div class="text-lg font-semibold text-gray-800 mb-2">Stock: <%= product.stock %>
+                </div>
+                <% if(product.stock < 7 && product.stock > 0) { %>
+                    <p class="text-sm font-semibold text-red-500 mb-6">hurry up only <%= product.stock %> left</p>
+                    <% }else if(product.stock === 0) {%>
+                        <p class="text-sm font-semibold text-red-500 mb-6">Out of Stock!</p>
+                        <% } %>
+                        <!-- Size Selection -->
+                        <div class="mb-6">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-700 font-medium">Size: </span>
+                                <a href="#" class="text-gray-500 text-sm underline">Size Guide</a>
+                            </div>
+
+                            <div class="grid grid-cols-5 gap-2">
+                                <% product.availableSizes.forEach(size=> { %>
+                                    <button class="py-2 border border-gray-400 rounded-md text-sm hover:bg-gray-200">
+                                        <%= size %>
+                                    </button>
+                                    <% }) %>
+                            </div>
+                        </div>
+
+                        <!-- Color Selection -->
+                        <!-- <div class="mb-6">
+                    <div class="mb-2">
+                        <span class="text-gray-700 font-medium">Color: Black/Neon Purple</span>
+                    </div> -->
+
+                        <!-- <div class="flex space-x-2">
+                        <button class="w-8 h-8 rounded-full bg-black border-2 border-primary"></button>
+                        <button class="w-8 h-8 rounded-full bg-gray-600"></button>
+                        <button class="w-8 h-8 rounded-full bg-blue-500"></button>
+                        <button class="w-8 h-8 rounded-full bg-red-500"></button>
+                    </div> -->
+                        <!-- </div> -->
+
+                        <!-- Add to Cart -->
+                        <div class="mb-6">
+                            <button
+                                class="w-full py-3 border border-black hover:bg-gray-400 text-gray-800 font-medium rounded-full transition-colors mb-3 <%= product.stock === 0 ? 'opacity-50 border-0 cursor-not-allowed hover:bg-transparent' : '' %>" <%= product.stock === 0 ? 'disabled' : ''%>>
+                                ADD TO CART
+                            </button>
+                            <button
+                                class="w-full py-3 border border-black text-gray-800 font-medium rounded-full hover:bg-gray-400 transition-colors <%= product.stock === 0 ? 'opacity-50 cursor-not-allowed border-0 hover:bg-transparent' : '' %>" <%= product.stock === 0 ? 'disabled' : ''%>>
+                                BUY IT NOW
+                            </button>
+                            <!-- Wishlist Button -->
+                            <button
+                                class="w-full mt-4 py-3 border border-red-500 text-red-500 font-medium rounded-full hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center gap-2"
+                                onclick="addToWishlist('<%= product._id %>')">
+                                <i class="fas fa-heart"></i> Add to Wishlist
+                            </button>
+                        </div>
+
+                        <!-- Shipping Info -->
+                        <div class="text-sm text-gray-600 mb-6">
+                            <p>Calculating shipping rates...</p>
+                        </div>
+
+                        <!-- Product Description -->
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="font-medium text-gray-800 mb-2">Description</h3>
+                            <ul class="text-sm text-gray-600 space-y-2 list-disc pl-5">
+                                <li>Composition: Premium engineered mesh upper with synthetic overlays</li>
+                                <li>All-day cushioning with heel Air unit and responsive forefoot cushioning</li>
+                                <li>Country of Origin: Vietnam (shipping notes by hand)</li>
+                                <li>Fit: True to size, slightly snug fit</li>
+                                <li>Rubber outsole with reflective accents for traction and visibility</li>
+                            </ul>
+
+                            <div class="mt-4 text-sm">
+                                <h4 class="font-medium text-gray-800">Care Instructions:</h4>
+                                <ul class="text-gray-600 list-disc pl-5">
+                                    <li>Avoid excessive heat or submersion in water</li>
+                                    <li>Clean with a damp cloth as needed</li>
+                                </ul>
+                            </div>
+
+                            <div class="mt-4 py-3 px-4 bg-gray-100 rounded-md text-sm text-gray-700">
+                                <p class="font-medium">All Pre-orders ship January 5th</p>
+                                <p class="mt-1 text-red-500">Thank you for your patience and continued support</p>
+                            </div>
+                        </div>
+            </div>
+        </div>
+
+        <!-- Similar Products -->
+        <div class="mt-16">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">You Might Also Like</h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+        <% if(related.length > 0) { %>
+        <% related.forEach(product => { %>
+          <a href="/product/<%=product._id %>">
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden relative w-full h-[350px] flex flex-col">
+              <button class="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10">
+                <i class="fas fa-heart"></i>
+              </button>
+
+              <img src="/uploads/products/<%= product.images[0] %>" alt="Shoe" class="w-full h-48 object-cover">
+
+              <div class="p-4 flex-1 flex flex-col justify-between">
+                <h3 class="text-md font-semibold truncate" title="<%= product.name %>">
+                  <%= product.name %>
+                </h3>
+                <p class="text-xs text-gray-500 mt-1">
+                  <%= product.categoryId[0].name %>
+                </p>
+                <div class="mt-2">
+                  <p class="text-sm line-through text-black">₹<%= product.basePrice %></p>
+                  <p class="text-indigo-600 font-bold text-base mt-1">₹ <%= product.discountPrice %></p>
+                </div>
+              </div>
+            </div>
+          </a>
+        <% }) %>
+        <% } %>
+      </div>
+        </div>
+    </main>
+    <!-- User Reviews -->
+    <div class="flex flex-col justify-center m-4">
+        <div class="mt-12">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Customer Reviews</h2>
+
+            <% if ( reviews ) { %>
+                <div class="space-y-6">
+                    <% for(let i=0; i < 4; i++) { %>
+                        <div class="bg-white p-4 rounded-lg shadow-md">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-semibold text-gray-800">
+                                    <%= reviews.username %>
+                                </h4>
+                                <span class="text-sm text-gray-500">
+                                    <%= new Date(reviews.date).toLocaleDateString() %>
+                                </span>
+                            </div>
+                            <div class="flex items-center text-amber-400 text-sm mb-1">
+                                <% for (let i=1; i <=5; i++) { %>
+                                    <% if (i <=reviews.rating) { %>
+                                        <i class="fas fa-star"></i>
+                                        <% } else { %>
+                                            <i class="far fa-star"></i>
+                                            <% } %>
+                                                <% } %>
+                            </div>
+                            <p class="text-gray-700 text-sm">
+                                <%= reviews.comment %>
+                            </p>
+                        </div>
+                        <% }%>
+                </div>
+                <% } else { %>
+                    <p class="text-gray-600 text-sm">No reviews yet. Be the first to review this product!</p>
+                    <% } %>
+        </div>
+        <!-- Add Review Form -->
+        <div class="mt-10 flex flex-col ">
+            <h3 class="text-lg font-medium text-gray-800 mb-2">Write a Review</h3>
+            <form action="/products/<%= product._id %>/review" method="POST" class="space-y-3">
+                <input type="text" name="username" placeholder="Your Name"
+                    class="w-6/12 border border-gray-500 rounded-md p-2 text-sm" required />
+
+                <select name="rating" required class="w-2/12 border border-gray-500 rounded-md p-2 text-sm">
+                    <option value="">Rating</option>
+                    <% for(let i=5; i>=1; i--) { %>
+                        <option value="<%= i %>">
+                            <%= i %> Star
+                        </option>
+                        <% } %>
+                </select>
+
+                <textarea name="comment" placeholder="Your review..." rows="4"
+                    class="w-6/12 border border-gray-500 rounded-md p-2 text-sm" required></textarea>
+
+                <button type="submit"
+                    class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 text-sm font-medium">
+                    Submit Review
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Column 1 -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">SHOEGO</h3>
+                    <ul class="space-y-2 text-gray-300 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Sustainability</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">News</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 2 -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">GET HELP</h3>
+                    <ul class="space-y-2 text-gray-300 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Order Status</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Shipping & Delivery</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Returns</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3 -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">SHOP</h3>
+                    <ul class="space-y-2 text-gray-300 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Men</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Women</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Kids</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Sale</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4 -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">FOLLOW US</h3>
+                    <div class="flex space-x-4 text-gray-300">
+                        <a href="#" class="hover:text-white transition-colors"><i
+                                class="fab fa-facebook-f text-xl"></i></a>
+                        <a href="#" class="hover:text-white transition-colors"><i
+                                class="fab fa-twitter text-xl"></i></a>
+                        <a href="#" class="hover:text-white transition-colors"><i
+                                class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="hover:text-white transition-colors"><i
+                                class="fab fa-youtube text-xl"></i></a>
+                    </div>
+
+                    <div class="mt-6">
+                        <h4 class="text-sm font-medium mb-2">SIGN UP FOR UPDATES</h4>
+                        <div class="flex">
+                            <input type="email" placeholder="Your email address"
+                                class="bg-gray-700 text-white px-4 py-2 rounded-l-md w-full focus:outline-none focus:ring-1 focus:ring-primary">
+                            <button class="bg-primary hover:bg-primary-light px-4 py-2 rounded-r-md transition-colors">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm text-gray-400">&copy; 2025 ShoeGo, All Rights Reserved.</p>
+                <div class="flex space-x-4 mt-4 md:mt-0 text-sm text-gray-400">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Use</a>
+                    <a href="#" class="hover:text-white transition-colors">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Zoom Modal -->
+    <div id="zoomModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <span id="closeModal" class="absolute top-5 right-8 text-white text-3xl cursor-pointer">&times;</span>
+
+        <div class="relative">
+            <img id="zoomedImage" src="" alt="Zoomed Product"
+                class="max-w-full max-h-[80vh] object-contain transition-transform duration-300 ease-in-out" />
+
+            <!-- Zoom Controls -->
+            <div class="absolute bottom-4 right-4 flex space-x-2">
+                <button id="zoomInBtn"
+                    class="bg-white px-3 py-1 rounded shadow text-black text-sm font-semibold">+</button>
+                <button id="zoomOutBtn"
+                    class="bg-white px-3 py-1 rounded shadow text-black text-sm font-semibold">−</button>
+                <button id="resetZoomBtn"
+                    class="bg-white px-3 py-1 rounded shadow text-black text-sm font-semibold">Reset</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="/js/script.js"></script>
+</body>
+
+</html>

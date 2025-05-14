@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
@@ -12,19 +12,24 @@
         integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
+
 <body class="bg-gray-300">
     <header class="bg-gray-700 py-4 shadow-sm">
         <div class="container mx-auto flex items-center justify-between px-4">
 
             <!-- Left side: Logo + Nav -->
             <div class="flex items-center space-x-10">
-                <img src="images/logo.png" alt="Shoego logo" class="w-40 opacity-90">
+                <a href="/"><img src="images/logo.png" alt="Shoego logo" class="w-40 opacity-90"></a>
 
                 <nav>
                     <ul class="space-x-6 hidden md:flex">
-                        <li><a href="#" class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Men</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Women</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Sneakers</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Men</a>
+                        </li>
+                        <li><a href="#"
+                                class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Women</a></li>
+                        <li><a href="#"
+                                class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Sneakers</a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -34,9 +39,12 @@
 
                 <!-- Search input -->
                 <div class="relative">
-                    <input type="text" placeholder="Search Shoes..."
-                        class="bg-gray-300 text-gray-700 py-2 px-4 rounded-full focus:outline-none focus:ring-1 focus:ring-gray-300 w-64 placeholder-gray-400 border border-gray-200" />
-                    <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    <form method="GET" action="/allProducts"
+                        class="flex items-center bg-gray-300 rounded-full px-3 py-1">
+                        <input type="text" name="search" value="" placeholder="Search shoes..."
+                            class="outline-none px-2 py-1 rounded-full w-60 text-black" />
+                        <button type="submit" class="text-purple-600 font-bold px-2">🔍</button>
+                    </form>
                 </div>
 
                 <!-- Icons -->
@@ -54,10 +62,11 @@
     <section class="bg-gray-300">
         <div class="container mx-auto flex flex-col-reverse md:flex-row items-center gap-8 py-12">
             <div class="hidden md:block md:w-1/2 text-center px-6">
-                <p class="text-gray-600 text-lg mb-4 font-light">"I firmly believe that with the right footwear one can rule the
+                <p class="text-gray-600 text-lg mb-4 font-light">"I firmly believe that with the right footwear one can
+                    rule the
                     world."</p>
-                <p class="text-gray-600 text-lg text-end pe-10 font-light">— Bette Midler</p>
-                <a href="#"
+                <p class="text-gray-600 text-lg text-end pe-10 font-light ">— Bette Midler</p>
+                <a href="#explore"
                     class="bg-gray-700 text-white py-2 px-6 rounded-full font-medium hover:bg-gray-600 transition-colors mt-8 inline-block">Explore</a>
             </div>
             <div class="md:w-1/2 p-6">
@@ -66,96 +75,42 @@
         </div>
     </section>
 
-    <section class="py-12 bg-white">
+    <section class="py-12 bg-white" id="explore">
         <div class="container mx-auto px-4">
             <h2 class="text-xl font-semibold text-gray-700 mb-6 text-center">Latest Collections</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-100">
-                    <img src="https://placehold.co/300x200/F8FAFC/64748B?text=Shoe1" alt="Shoe 1"
-                        class="w-full rounded-lg mb-3" />
-                    <p class="text-gray-700 font-medium">Shoe Name 1</p>
-                    <p class="text-gray-500 text-sm">$99</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-100">
-                    <img src="https://placehold.co/300x200/F8FAFC/64748B?text=Shoe2" alt="Shoe 2"
-                        class="w-full rounded-lg mb-3" />
-                    <p class="text-gray-700 font-medium">Shoe Name 2</p>
-                    <p class="text-gray-500 text-sm">$99</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-100">
-                    <img src="https://placehold.co/300x200/F8FAFC/64748B?text=Shoe3" alt="Shoe 3"
-                        class="w-full rounded-lg mb-3" />
-                    <p class="text-gray-700 font-medium">Shoe Name 3</p>
-                    <p class="text-gray-500 text-sm">$99</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-100">
-                    <img src="https://placehold.co/300x200/F8FAFC/64748B?text=Shoe4" alt="Shoe 4"
-                        class="w-full rounded-lg mb-3" />
-                    <p class="text-gray-700 font-medium">Shoe Name 4</p>
-                    <p class="text-gray-500 text-sm">$99</p>
-                </div>
-            </div>
-        </div>
-    </section>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                <% products.forEach(product=> { %>
+                    <a href="/product/<%= product._id %>">
+                        <div
+                            class="bg-white shadow-lg rounded-lg overflow-hidden relative w-60 h-[350px] flex flex-col">
+                            <!-- Wishlist Icon -->
+                            <button class="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10">
+                                <i class="fas fa-heart"></i>
+                            </button>
 
-    <section class="bg-gray-100 py-10 text-gray-700 border-t border-gray-200">
-        <div class="container mx-auto flex flex-col md:flex-row items-center justify-between px-4">
-            <div class="md:w-1/2">
-                <h2 class="text-xl font-medium mb-2">USE CODE</h2>
-                <p class="text-lg font-light">FLAT499</p>
-            </div>
-            <div class="md:w-1/2 flex justify-center">
-                <img src="https://placehold.co/200x150/F8FAFC/64748B?text=Coupon" alt="Coupon" class="rounded-md border border-gray-200" />
-            </div>
-        </div>
-    </section>
+                            <img src="/uploads/products/<%= product.images[0] %>" alt="Shoe"
+                                class="w-full h-48 object-cover">
 
-    <section class="py-12 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-100">
-                    <img src="https://placehold.co/300x200/F8FAFC/64748B?text=Shoe5" alt="Shoe 5"
-                        class="w-full rounded-lg mb-3" />
-                    <p class="text-gray-700 font-medium">Shoe Name 5</p>
-                    <p class="text-gray-500 text-sm">$79</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-100">
-                    <img src="https://placehold.co/300x200/F8FAFC/64748B?text=Shoe6" alt="Shoe 6"
-                        class="w-full rounded-lg mb-3" />
-                    <p class="text-gray-700 font-medium">Shoe Name 6</p>
-                    <p class="text-gray-500 text-sm">$79</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-100">
-                    <img src="https://placehold.co/300x200/F8FAFC/64748B?text=Shoe7" alt="Shoe 7"
-                        class="w-full rounded-lg mb-3" />
-                    <p class="text-gray-700 font-medium">Shoe Name 7</p>
-                    <p class="text-gray-500 text-sm">$79</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-100">
-                    <img src="https://placehold.co/300x200/F8FAFC/64748B?text=Shoe8" alt="Shoe 8"
-                        class="w-full rounded-lg mb-3" />
-                    <p class="text-gray-700 font-medium">Shoe Name 8</p>
-                    <p class="text-gray-500 text-sm">$79</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-100">
-                    <img src="https://placehold.co/300x200/F8FAFC/64748B?text=Shoe9" alt="Shoe 9"
-                        class="w-full rounded-lg mb-3" />
-                    <p class="text-gray-700 font-medium">Shoe Name 9</p>
-                    <p class="text-gray-500 text-sm">$79</p>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow border border-gray-100">
-                    <img src="https://placehold.co/300x200/F8FAFC/64748B?text=Shoe10" alt="Shoe 10"
-                        class="w-full rounded-lg mb-3" />
-                    <p class="text-gray-700 font-medium">Shoe Name 10</p>
-                    <p class="text-gray-500 text-sm">$79</p>
-                </div>
+                            <div class="p-4 flex-1 flex flex-col justify-between">
+                                <h3 class="text-md font-semibold truncate" title="<%= product.name %>">
+                                    <%= product.name %>
+                                </h3>
+                                <div class="mt-2">
+                                    <p class="text-sm line-through text-black">₹<%= product.basePrice %>
+                                    </p>
+                                    <p class="text-indigo-600 font-bold text-base mt-1">₹ <%= product.discountPrice %>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <% }) %>
             </div>
             <div class="mt-8 text-center">
-                <a href="#"
+                <a href="/allProducts"
                     class="bg-gray-700 text-white py-2 px-6 rounded-full font-medium hover:bg-gray-600 transition-colors">Load
                     More</a>
             </div>
-        </div>
     </section>
 
     <section class="py-12 bg-gray-50">
@@ -200,24 +155,27 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-white rounded-lg shadow-sm p-5 border border-gray-100">
-                    <p class="text-gray-600 mb-3 font-light">"Great shoes and amazing quality for the price. Will definitely
+                    <p class="text-gray-600 mb-3 font-light">"Great shoes and amazing quality for the price. Will
+                        definitely
                         purchase again!"</p>
                     <p class="text-gray-500 text-sm">- someone@email.com</p>
                 </div>
                 <div class="bg-white rounded-lg shadow-sm p-5 border border-gray-100">
-                    <p class="text-gray-600 mb-3 font-light">"My favorite pair of shoes yet! They are both stylish and comfortable.
+                    <p class="text-gray-600 mb-3 font-light">"My favorite pair of shoes yet! They are both stylish and
+                        comfortable.
                         Highly recommend!"</p>
                     <p class="text-gray-500 text-sm">- another@email.com</p>
                 </div>
             </div>
         </div>
     </section>
-
     <footer class="bg-white text-gray-600 py-6 border-t border-gray-200">
         <div class="container mx-auto text-center">
             <p class="text-sm">&copy; 2025 ShoeGo, All Rights Reserved.</p>
         </div>
     </footer>
+    <a href="/logout"
+        class="bg-gray-700 text-white py-2 px-6 rounded-full font-medium hover:bg-gray-600 transition-colors">Logout</a>
 </body>
 
 </html>

@@ -1,0 +1,166 @@
+<div class="container mx-auto px-4 py-6 mt-4">
+  <!-- Header Section -->
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Products management</h1>
+    <div class="flex space-x-2">
+      <!-- Search Bar -->
+      <div class="relative">
+        <form action="/admin/products" method="get" class="flex items-center space-x-2">
+          <% if (from) { %>
+            <input type="hidden" name="from" value="<%= from %>">
+          <% } %>
+
+          <% if (req.query.page) { %>
+            <input type="hidden" name="page" value="<%= pagination.page %>">
+          <% } %>
+
+       
+            <input type="hidden" name="req" value="new">
+
+          <input
+            type="text"
+            name="search"
+            placeholder="Search here"
+            value="<%= search %>"
+            class="pl-10 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none"
+            id="search-input"
+          />
+
+          <svg
+            class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"
+            />
+          </svg>
+
+          <button type="submit" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+            Search
+          </button>
+        </form>
+
+        <!-- Cancel Button -->
+        <% if (search) { %>
+          <a
+            href="/admin/products?page=<%= pagination.page %>&limit=<%= pagination.limit %>&req=new"
+            class="text-gray-500 hover:text-gray-700 focus:outline-none ml-2"
+          >
+            × Cancel
+          </a>
+        <% } %>
+      </div>
+      
+      <!-- Banner and New Buttons -->
+      <button class="bg-blue-700 text-white px-4 py-2 rounded-md flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm10.5-11V9" />
+        </svg>
+        Banner
+      </button>
+      
+      <button class="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center" id="addProduct">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        New
+      </button>
+      
+    </div>
+  </div>
+  
+  <!-- Table -->
+  <div class="overflow-x-auto bg-white rounded-lg shadow">
+    <table class="min-w-full">
+      <thead>
+        <tr class="bg-purple-600 text-white text-left">
+          <th class="px-6 py-3">Product</th>
+          <th class="px-6 py-3">Product ID</th>
+          <th class="px-6 py-3">Price</th>
+          <th class="px-6 py-3">Category</th>
+          <th class="px-6 py-3">Stock</th>
+          <th class="px-6 py-3">Discount Price</th>
+          <th class="px-6 py-3">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach((product, index) => { %>
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-6 py-4"><%= product.name %></td>
+            <td class="px-6 py-4 text-gray-500"><%= product._id %></td>
+            <td class="px-6 py-4"><%= product.basePrice %></td>
+            <td class="px-6 py-4"><%= product.categoryId %></td>
+            <td class="px-6 py-4"><%= product.stock %></td>
+            <td class="px-6 py-4"><%= product.discountPrice %></td>
+            <td class="px-6 py-4">
+              <div class="flex space-x-2">
+                <button class="text-gray-500 hover:text-blue-600" onclick="editProduct('<%= product._id %>')">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+                <button class="text-gray-500 hover:text-red-600" onclick="deleteProduct('<%= product._id %>')">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Pagination Bar (fixed at bottom, not overlapping sidebar) -->
+  <% if (pagination.totalPages> 1) { %>
+    <div class="flex justify-between items-center mt-6">
+      <!-- Show N per page -->
+      <form method="get" class="flex items-center space-x-2">
+        <% if (from) { %><input type="hidden" name="from" value="<%= from %>">
+          <% } %>
+            <% if (query.page) { %>
+              <input type="hidden" name="page" value="<%= pagination.page %>">
+              <% } %>
+                <% if (query.req==='new' ) { %>
+                  <input type="hidden" name="req" value="new">
+                  <% } %>
+
+                    <label>Show:</label>
+                    <select name="limit" onchange="this.form.submit()" class="border rounded px-2 py-1">
+                      <% [5,10,20,50].forEach(n=> { %>
+                        <option value="<%= n %>" <%=n===pagination.limit ? 'selected' : '' %>><%= n %>
+                        </option>
+                        <% }) %>
+                    </select>
+      </form>
+
+
+      <!-- Page numbers -->
+      <div class="flex items-center space-x-2">
+        <% if (pagination.hasPrev) { %>
+          <a href="?page=<%= pagination.page - 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new"
+            class="px-3 py-1 bg-gray-200 rounded">Prev</a>
+          <% } %>
+
+            <% for (let p=1; p <=pagination.totalPages; p++) { %>
+              <a href="/admin/products?page=<%= p %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new"
+                class="px-2 py-1 rounded <%= p === pagination.page ? 'bg-purple-600 text-white' : 'bg-white border' %>">
+                <%= p %>
+              </a>
+              <% } %>
+
+
+
+                <% if (pagination.hasNext) { %>
+                  <a href="?page=<%= pagination.page + 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new"
+                    class="px-3 py-1 bg-gray-200 rounded">Next</a>
+                  <% } %>
+      </div>
+    </div>
+    <% } %>

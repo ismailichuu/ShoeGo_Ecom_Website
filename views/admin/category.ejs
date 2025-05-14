@@ -1,0 +1,151 @@
+<div class="p-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-semibold">Category management</h2>
+
+    <div class="flex gap-3">
+      <div class="relative">
+        <!-- Search Input Form -->
+        <form method="get" actions="/admin/categories" class="flex items-center space-x-2">
+          <% if (from) { %>
+            <input type="hidden" name="from" value="<%= from %>">
+            <% } %>
+
+              <% if (req.query.page) { %>
+                <input type="hidden" name="page" value="<%= pagination.page %>">
+                <% } %>
+                  <input type="hidden" name="req" value="new">
+
+                  <input type="text" name="search" placeholder="Search here" value="<%= search %>"
+                    class="pl-10 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none" id="search-input" />
+
+                  <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none"
+                    stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+                  </svg>
+
+                  <button type="submit" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                    Search
+                  </button>
+        </form>
+
+        <!-- Cancel Button -->
+        <% if (search) { %>
+          <a href="/admin/categories?page=<%= pagination.page %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new"
+            class="text-gray-500 hover:text-gray-700 focus:outline-none ml-2">
+            × Cancel
+          </a>
+          <% } %>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="flex gap-3">
+    <button class="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center" id="addCategory">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      New
+    </button>
+
+    <!-- <button class="bg-gray-200 px-4 py-2 rounded-md flex items-center text-sm">
+      Filters
+      <span class="ml-2 bg-gray-400 text-white text-xs rounded-full px-2 py-0.5">25</span>
+    </button> -->
+  </div>
+</div>
+
+
+<!-- Table -->
+<div class="overflow-x-auto rounded-lg border border-gray-200">
+  <table class="w-full text-left text-sm">
+    <thead class="bg-purple-700 text-white">
+      <tr>
+        <th class="py-3 px-4">Name</th>
+        <th class="py-3 px-4">Description</th>
+        <th class="py-3 px-4">Discounts/Offers</th>
+        <th class="py-3 px-4">Availablility</th>
+        <th class="py-3 px-4">Actions</th>
+      </tr>
+    </thead>
+    <% categories.forEach(category=> { %>
+      <tbody class="text-gray-700">
+        <!-- Row Example -->
+        <tr class="border-t">
+          <td class="py-3 px-4">
+            <%= category.name %>
+          </td>
+          <td class="py-3 px-4">
+            <%= category.description %>
+          </td>
+          <td class="py-3 px-4">
+            <%= category.discount %>
+          </td>
+          <td class="py-3 px-4">
+            <%= category.visibility ? 'Active' : 'Inactive' %>
+          </td>
+          <td class="py-3 px-4 flex gap-2">
+            <button class="text-gray-600 hover:text-blue-600" onclick="editCategory('<%= category._id %>')"><i
+                class="fas fa-edit"></i></button>
+            <button class="text-gray-600 hover:text-red-600" onclick="deleteCategory('<%= category._id %>')"><i
+                class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+
+        <!-- Repeat for each row -->
+        <!-- Add more <tr> rows as per your category list -->
+      </tbody>
+      <% }) %>
+  </table>
+</div>
+
+<!-- Pagination -->
+<% if (pagination.totalPages> 1) { %>
+  <div class="flex justify-between items-center mt-6">
+    <!-- Show N per page -->
+    <form method="get" class="flex items-center space-x-2">
+      <% if (from) { %><input type="hidden" name="from" value="<%= from %>">
+        <% } %>
+          <% if (query.page) { %>
+            <input type="hidden" name="page" value="<%= pagination.page %>">
+            <% } %>
+              <% if (query.req==='new' ) { %>
+                <input type="hidden" name="req" value="new">
+                <% } %>
+
+                  <label>Show:</label>
+                  <select name="limit" onchange="this.form.submit()" class="border rounded px-2 py-1">
+                    <% [5,10,20,50].forEach(n=> { %>
+                      <option value="<%= n %>" <%=n===pagination.limit ? 'selected' : '' %>><%= n %>
+                      </option>
+                      <% }) %>
+                  </select>
+
+    </form>
+    <% } %>
+
+
+      <!-- Page numbers -->
+      <!-- Page numbers -->
+      <div class="flex items-center space-x-2">
+        <% if (pagination.hasPrev) { %>
+          <a href="/admin/categories?page=<%= pagination.page - 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %><%= search ? '&search=' + search : '' %>&req=new%>"
+            class="px-3 py-1 bg-gray-200 rounded">Prev</a>
+          <% } %>
+
+            <% for (let p=1; p <=pagination.totalPages; p++) { %>
+              <a href="/admin/categories?page=<%= p %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %><%= search ? '&search=' + search : '' %>&req=new%>"
+                class="px-2 py-1 rounded <%= p === pagination.page ? 'bg-purple-600 text-white' : 'bg-white border' %>">
+                <%= p %>
+              </a>
+              <% } %>
+
+                <% if (pagination.hasNext) { %>
+                  <a href="?page=<%= pagination.page + 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %><%= search ? '&search=' + search : '' %>&req=new%>"
+                    class="px-3 py-1 bg-gray-200 rounded">Next</a>
+                  <% } %>
+      </div>

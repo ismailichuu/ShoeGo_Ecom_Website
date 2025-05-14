@@ -1,0 +1,63 @@
+<div class="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow">
+    <h2 class="text-2xl font-semibold mb-6">Edit Category</h2>
+
+    <form class="space-y-6" action="/admin/editCategory" method="post">
+        <!-- Row 1: Category Name -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block mb-2 font-medium">Category Name</label>
+                <input type="text" name="name" value="<%= category.name %>"
+                    class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    required />
+                <input type="hidden" name="_id" value="<%= category._id %>">
+            </div>
+        </div>
+
+        <!-- Row 2: Description -->
+        <div>
+            <label class="block mb-2 font-medium">Category Description</label>
+            <textarea name="description" rows="4" placeholder="Write your description here..."
+                class="w-full border border-blue-500 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                required><%= category.description %></textarea>
+        </div>
+
+
+        <!-- Row 3: Visibility & Discount -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block mb-2 font-medium">Visibility Status</label>
+                <select name="visibility" class="w-full …" required>
+                    <option value="true" <%=category.visibility ? 'selected' : '' %>>Active</option>
+                    <option value="false" <%=!category.visibility ? 'selected' : '' %>>Inactive</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block mb-2 font-medium">Discounts/Offers</label>
+                <select name="discount" class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none"
+                    required>
+                    <option value="0%" <%=category.discount==='0%' ? 'selected' : '' %>>0%</option>
+                    <option value="10%" <%=category.discount==='10%' ? 'selected' : '' %>>10%</option>
+                    <option value="20%" <%=category.discount==='20%' ? 'selected' : '' %>>20%</option>
+                </select>
+            </div>
+        </div>
+        <% if(msg) { %>
+            <p class="text-red-600 text-center" id="error">
+                <%= msg %>
+            </p>
+            <script>
+                setTimeout(() => {
+                    document.getElementById('error').style.display = 'none';
+                }, 8000);
+            </script>
+            <% } %>
+
+                <!-- Buttons -->
+                <div class="flex justify-end gap-4 mt-6">
+                    <a href="/admin/categories?req=new" class="border border-red-500 text-red-500 px-6 py-2 rounded-md hover:bg-red-100">Cancel</a>
+                    <button type="submit"
+                        class="bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700">Save</button>
+                </div>
+    </form>
+</div>
