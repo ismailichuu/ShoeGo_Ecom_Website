@@ -1,5 +1,5 @@
 import express from 'express';
-import { getLogin, handleLogin, getHome, handleGoogle, handleGoogleCallback, getSignup, handleSignup, getVerify, handleVerify, getForgotPassword, handleForgotpassword, getChangePassword, handleVerifyPassword, handleChangePassword, getProductDetails, handleLogout, getAllProducts} from '../controllers/userControllers.js';
+import { getLogin, handleLogin, getHome, handleGoogle, handleGoogleCallback, getSignup, handleSignup, getVerify, handleVerify, getForgotPassword, handleForgotpassword, getChangePassword, handleVerifyPassword, handleChangePassword, getProductDetails, handleLogout, getAllProducts, resendOtp} from '../controllers/userControllers.js';
 import {  logger, verifyUser } from '../middlewares/userMiddlware.js';
 
 const router = express.Router();
@@ -38,7 +38,6 @@ router.post('/changePassword',  handleChangePassword);
 
 router.get('/logout', handleLogout);
 
-
-// router.post('/resend-otp', resendOtp);
+router.post('/resend-otp', resendOtp);
 
 export default router;

@@ -75,3 +75,8 @@ a {
 .customerMain{
     cursor: pointer;
 }
+
+
+#resend-message {
+  transition: opacity 0.3s ease;
+}

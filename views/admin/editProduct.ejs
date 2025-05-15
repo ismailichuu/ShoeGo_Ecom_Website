@@ -8,10 +8,15 @@
   </div>
 
   <div>
-    <label class="block mb-1 font-medium">Product Description</label>
-    <textarea name="description" placeholder="Write your description here..." class="w-full p-3 border rounded"
-      required><%= product.description %></textarea>
-  </div>
+  <label class="block mb-1 font-medium">Product Description</label>
+  <textarea
+    placeholder="- Bullet point one\n- Bullet point two\n- Bullet point three"
+    name="description"
+    class="w-full p-3 border rounded"
+    rows="6"
+    required><%= product.description %></textarea>
+  <p class="text-sm text-gray-500 mt-1">Use line breaks or dashes to format the description.</p>
+</div>
 
   <div>
     <label class="block mb-1 font-medium">Available Sizes</label>

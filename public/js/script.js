@@ -40,7 +40,7 @@ const initializeImageCropping = () => {
   const cropImage = document.getElementById('cropImage');
   const confirmCrop = document.getElementById('confirmCrop');
   const cancelCrop = document.getElementById('cancelCrop');
-  
+
   let cropper;
   let activeInputIndex;
 
@@ -51,54 +51,54 @@ const initializeImageCropping = () => {
     });
   });
 
-fileInputs.forEach(input => {
-  input.addEventListener('change', e => {
-    const file = e.target.files[0];
-    const errorMessage = document.getElementById('fileError'); // Select the <p> tag for error message
+  fileInputs.forEach(input => {
+    input.addEventListener('change', e => {
+      const file = e.target.files[0];
+      const errorMessage = document.getElementById('fileError'); // Select the <p> tag for error message
 
-    // Clear any previous error message
-    errorMessage.textContent = '';
-    errorMessage.classList.add('hidden'); // Hide the error message initially
+      // Clear any previous error message
+      errorMessage.textContent = '';
+      errorMessage.classList.add('hidden'); // Hide the error message initially
 
-    if (!file) return;
+      if (!file) return;
 
-    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-    const maxSize = 2 * 1024 * 1024; // 2MB
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+      const maxSize = 2 * 1024 * 1024; // 2MB
 
-    if (!validTypes.includes(file.type)) {
-      errorMessage.textContent = 'Only image files (jpg, jpeg, png, webp) are allowed.';
-      errorMessage.classList.remove('hidden'); // Show the error message
-      e.target.value = ''; // Clear the input field
-      return;
-    }
+      if (!validTypes.includes(file.type)) {
+        errorMessage.textContent = 'Only image files (jpg, jpeg, png, webp) are allowed.';
+        errorMessage.classList.remove('hidden'); // Show the error message
+        e.target.value = ''; // Clear the input field
+        return;
+      }
 
-    if (file.size > maxSize) {
-      errorMessage.textContent = 'Image size must be under 2MB.';
-      errorMessage.classList.remove('hidden');
-      e.target.value = '';
-      return;
-    }
+      if (file.size > maxSize) {
+        errorMessage.textContent = 'Image size must be under 2MB.';
+        errorMessage.classList.remove('hidden');
+        e.target.value = '';
+        return;
+      }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      cropImage.src = reader.result;
-      cropModal.classList.remove('hidden');
+      const reader = new FileReader();
+      reader.onload = () => {
+        cropImage.src = reader.result;
+        cropModal.classList.remove('hidden');
 
-      if (cropper) cropper.destroy();
-      cropper = new Cropper(cropImage, {
-        aspectRatio: NaN,
-        viewMode: 2,
-        movable: true,
-        zoomable: true,
-        scalable: true,
-        rotatable: true,
-        guides: true,
-        center: true,
-      });
-    };
-    reader.readAsDataURL(file);
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(cropImage, {
+          aspectRatio: NaN,
+          viewMode: 2,
+          movable: true,
+          zoomable: true,
+          scalable: true,
+          rotatable: true,
+          guides: true,
+          center: true,
+        });
+      };
+      reader.readAsDataURL(file);
+    });
   });
-});
 
 
   if (cancelCrop) {
@@ -163,30 +163,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
- function initializeSizeSelection() {
-    const sizeButtons = document.querySelectorAll('.size-btn');
-    const selectedSizesInput = document.getElementById('selectedSizes');
-    const selectedSizes = new Set();
+function initializeSizeSelection() {
+  const sizeButtons = document.querySelectorAll('.size-btn');
+  const selectedSizesInput = document.getElementById('selectedSizes');
+  const selectedSizes = new Set();
 
-    sizeButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        const size = button.getAttribute('data-size');
+  sizeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const size = button.getAttribute('data-size');
 
-        if (selectedSizes.has(size)) {
-          selectedSizes.delete(size);
-          button.classList.remove('bg-purple-600', 'text-white');
-          button.classList.add('bg-gray-300', 'text-black');
-        } else {
-          selectedSizes.add(size);
-          button.classList.remove('bg-gray-300', 'text-black');
-          button.classList.add('bg-purple-600', 'text-white');
-        }
+      if (selectedSizes.has(size)) {
+        selectedSizes.delete(size);
+        button.classList.remove('bg-purple-600', 'text-white');
+        button.classList.add('bg-gray-300', 'text-black');
+      } else {
+        selectedSizes.add(size);
+        button.classList.remove('bg-gray-300', 'text-black');
+        button.classList.add('bg-purple-600', 'text-white');
+      }
 
-        // Update hidden input value
-        selectedSizesInput.value = Array.from(selectedSizes).join(',');
-      });
+      // Update hidden input value
+      selectedSizesInput.value = Array.from(selectedSizes).join(',');
     });
-  }
+  });
+}
 
 // size selection logic
 document.querySelectorAll('.size-btn').forEach(button => {
@@ -437,61 +437,73 @@ const editImageCropping = () => {
   }
 };
 
+document.addEventListener('DOMContentLoaded', () => {
 
-// const resendBtn = document.getElementById('resend-btn');
-// const timerDisplay = document.getElementById('timer');
-// const resendMessage = document.getElementById('resend-message');
-// const emailElement = document.getElementById('email');
-// const email = emailElement ? emailElement.textContent.trim() : null
+  const resendBtn = document.getElementById('resend-btn');
+  const timerDisplay = document.getElementById('timer');
+  const resendMessage = document.getElementById('resend-message');
+  const emailElement = document.getElementById('email');
+  const email = emailElement ? emailElement.textContent.trim() : null
 
-// let countdown = 10; // 2 minutes in seconds
+  let countdown = 10; // 2 minutes in seconds
+  function startTimer() {
+    resendBtn.classList.add('hidden');
+    resendMessage.classList.add('hidden');
 
-// function startTimer() {
-//   resendBtn.classList.add('hidden');
-//   resendMessage.classList.add('hidden');
+    const interval = setInterval(() => {
+      const minutes = Math.floor(countdown / 60);
+      const seconds = countdown % 60;
+      timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} left`;
 
-//   const interval = setInterval(() => {
-//     const minutes = Math.floor(countdown / 60);
-//     const seconds = countdown % 60;
-//     timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} left`;
+      if (countdown <= 0) {
+        clearInterval(interval);
+        timerDisplay.textContent = "Didn't receive the code?";
+        resendBtn.classList.remove('hidden');
+      }
 
-//     if (countdown <= 0) {
-//       clearInterval(interval);
-//       timerDisplay.textContent = "Didn't receive the code?";
-//       resendBtn.classList.remove('hidden');
-//     }
+      countdown--;
+    }, 1000);
+  }
+  if (resendBtn) {
 
-//     countdown--;
-//   }, 1000);
-// }
+    resendBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      resendBtn.classList.add('hidden');
+      resendMessage.classList.add('hidden');
 
-// resendBtn.addEventListener('click', async (e) => {
-//   e.preventDefault();
-//   resendBtn.classList.add('hidden');
-//   resendMessage.classList.add('hidden');
-//   try {
-//     const response = await fetch('/resend-otp', {
-//       method: 'POST',
-//       credentials: 'include',
-//       body: JSON.stringify({ email}),
-//       headers: {
-//         'Content-Type': 'application/json',
-//       }
-//     });
+      try {
+        const response = await fetch('/resend-otp', {
+          method: 'POST',
+          credentials: 'include',
+          body: JSON.stringify({ email }),
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
 
-//     const data = await response.json();
-//     if (data.success) {
-//       resendMessage.classList.remove('hidden');
-//       countdown = 120;
-//       startTimer();
-//     } else {
-//       alert(data.message || 'Something went wrong');
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     alert('Server error. Try again later.');
-//   }
-// });
+        const data = await response.json();
+        if (data.success) {
+          resendMessage.classList.remove('hidden');
 
-// // Start timer when page loads
-// window.onload = startTimer;
+          // Show message for 3 seconds before starting timer
+          setTimeout(() => {
+            resendMessage.classList.add('hidden');
+            countdown = 120;
+            startTimer();
+          }, 3000);
+
+        } else {
+          alert(data.message || 'Something went wrong');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Server error. Try again later.');
+      }
+    });
+
+  }
+
+  // Start timer when page loads
+  window.onload = startTimer;
+})
+

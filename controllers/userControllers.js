@@ -61,7 +61,7 @@ export const handleForgotpassword = async (req, res) => {
         const otpExpiry = Date.now() + 4 * 60 * 1000;
         user.otp = otp;
         user.otpExpiry = otpExpiry;
-        await sendOTPEmail(email, otp, 'signup', '4 minutes');
+        await sendOTPEmail(email, otp, 'Password Change', '4 minutes');
         await user.save();
         //jwt token
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '20m' });
@@ -230,10 +230,11 @@ export const handleSignup = async (req, res) => {
 //@route GET /
 export const getHome = async (req, res) => {
     try {
-        const products = await Product.find().limit(8);
+        const products = await Product.find({ isActive: true }).limit(8).populate('categoryId');
         res.render('user/home', { products });
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).send('Internal Server Error');
     }
 }
 
@@ -327,8 +328,8 @@ export const getProductDetails = async (req, res) => {
         const product = await Product.findById(id).populate('categoryId');
         const categoryId = product.categoryId;
         const related = await Product.find({
-            categoryId,
-            _id: { $ne: product._id } 
+            categoryId, isActive: true,
+            _id: { $ne: product._id }
         })
             .limit(4)
             .populate('categoryId');
@@ -388,7 +389,11 @@ export const handleGoogleCallback = async (req, res) => {
                 provider: "google",
                 profile
             });
-        }
+        }else{
+            user.name = name;
+            user.profile = profile;
+            user.save();
+        };
 
         const token = generateToken(user._id, '1d');
         res.cookie('token', token, {
@@ -447,32 +452,34 @@ export const handleLogout = (req, res) => {
     res.clearCookie('token');
     res.redirect('/login');
 }
-// export const resendOtp = async (req, res) => {
 
-//     try {
-//         const { email } = req.body;
-//         const user = await User.findOne({ email });
+//@route POST /resendOtp
+export const resendOtp = async (req, res) => {
 
-//         if (!user) {
-//             req.session.err = 'User not found Signup again';
-//             return res.redirect('/signup');
-//         }
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
 
-//         const otp = generateOtp();
-//         const otpExpiry = Date.now() + 2 * 60 * 60 * 1000;
+        if (!user) {
+            req.session.err = 'User not found Signup again';
+            return res.redirect('/signup');
+        }
 
-//         user.otp = otp;
-//         user.otpExpiry = otpExpiry;
-//         await user.save();
+        const otp = generateOtp();
+        const otpExpiry = Date.now() + 2 * 60 * 60 * 1000;
 
-//         await sendOTPEmail(email, otp);
+        user.otp = otp;
+        user.otpExpiry = otpExpiry;
+        await user.save();
 
-//         res.json({ success: true, message: "OTP sent successfully" });
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ success: false, message: "Failed to resend OTP" });
-//     }
-// }
+        await sendOTPEmail(email, otp, );
+
+        res.json({ success: true, message: "OTP sent successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Failed to resend OTP" });
+    }
+}
 
 
 

@@ -60,7 +60,7 @@ export const getProducts = async (req, res) => {
             .find(searchFilter)
             .skip((page - 1) * limit)
             .limit(limit)
-            .sort({ createdAt: -1 });
+            .sort({ updatedAt: -1 });
 
         const totalPages = Math.ceil(totalDocs / limit);
         const layout = req.query.req ? 'layout' : false;
@@ -268,7 +268,7 @@ export const getCategory = async (req, res) => {
             .find(searchFilter)
             .skip((page - 1) * limit)
             .limit(limit)
-            .sort({ createdAt: -1 });
+            .sort({ updatedAt: -1 });
 
         const totalPages = Math.ceil(totalDocs / limit);
         const layout = req.query.req ? 'layout' : false;

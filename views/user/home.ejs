@@ -23,11 +23,11 @@
 
                 <nav>
                     <ul class="space-x-6 hidden md:flex">
-                        <li><a href="#" class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Men</a>
+                        <li><a href="/allProducts?search=&category=681cde24cdabafe21e645d55&minPrice=0&maxPrice=0&sort=" class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Boots</a>
                         </li>
-                        <li><a href="#"
-                                class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Women</a></li>
-                        <li><a href="#"
+                        <li><a href="/allProducts?search=&category=681cde24cdabafe21e645d53&minPrice=0&maxPrice=0&sort="
+                                class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Formal</a></li>
+                        <li><a href="http://127.0.0.1:8080/allProducts?search=&category=681cde24cdabafe21e645d54&minPrice=0&maxPrice=0&sort="
                                 class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Sneakers</a>
                         </li>
                     </ul>
@@ -95,6 +95,9 @@
                                 <h3 class="text-md font-semibold truncate" title="<%= product.name %>">
                                     <%= product.name %>
                                 </h3>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    <%= product.categoryId[0].name %>
+                                </p>
                                 <div class="mt-2">
                                     <p class="text-sm line-through text-black">₹<%= product.basePrice %>
                                     </p>
