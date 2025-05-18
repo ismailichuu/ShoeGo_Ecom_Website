@@ -503,7 +503,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   }
 
+
   // Start timer when page loads
   window.onload = startTimer;
 })
 
+
+  document.getElementById('profile').addEventListener('change', function (event) {
+    const file = event.target.files[0];
+    if (file) {
+      const imgPreview = document.querySelector('img[alt="Profile Preview"]');
+      imgPreview.src = URL.createObjectURL(file);
+    }
+  });
+
+  function togglePasswordFields() {
+    const fields = document.getElementById('passwordFields');
+    fields.classList.toggle('hidden');
+  }

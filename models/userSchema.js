@@ -6,7 +6,7 @@ const signUpSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        trim : true,
+        trim: true,
     },
 
     provider: {
@@ -17,8 +17,8 @@ const signUpSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique : true,
-        lowercase : true,
+        unique: true,
+        lowercase: true,
     },
 
     password: {
@@ -43,7 +43,7 @@ const signUpSchema = new mongoose.Schema({
         required: false,
     },
 
-    otpExpiry:{
+    otpExpiry: {
         type: Date,
         required: false,
     },
@@ -56,7 +56,31 @@ const signUpSchema = new mongoose.Schema({
     profile: {
         type: String,
         required: false,
-    }
+    },
+
+    referral: {
+        type: String,
+        required: false,
+    },
+
+    newsLetter: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+
+    mobileNumber: {
+        type: String,
+        maxlength: 10,
+        required: false,
+    },
+
+    gender: {
+        type: String,
+        enum: ['Male', 'Female', 'Other'],
+        required: false,
+    },
+    
 }, {
     timestamps: true,
 });

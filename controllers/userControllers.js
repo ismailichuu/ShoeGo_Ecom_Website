@@ -6,8 +6,9 @@ import jwt from 'jsonwebtoken';
 import { generateOtp, hashingPassword } from "../util/functions.js";
 import sendOTPEmail from "../configuration/nodemailer.transporter.js";
 import Product from "../models/productSchema.js";
-import { generateToken } from "../util/jwt.js";
+import { decodeUserId, generateToken, verifyToken } from "../util/jwt.js";
 import Category from "../models/categorySchema.js";
+import Address from "../models/addressSchema.js";
 
 //@route GET /login
 export const getLogin = (req, res) => {
@@ -230,7 +231,10 @@ export const handleSignup = async (req, res) => {
 //@route GET /
 export const getHome = async (req, res) => {
     try {
-        const products = await Product.find({ isActive: true }).limit(8).populate('categoryId');
+        const products = await Product.find({ isActive: true })
+            .limit(8)
+            .populate('categoryId')
+            .sort({ createdAt: -1 });
         res.render('user/home', { products });
     } catch (error) {
         console.log(error);
@@ -389,12 +393,7 @@ export const handleGoogleCallback = async (req, res) => {
                 provider: "google",
                 profile
             });
-        }else{
-            user.name = name;
-            user.profile = profile;
-            user.save();
-        };
-
+        }
         const token = generateToken(user._id, '1d');
         res.cookie('token', token, {
             httpOnly: true,
@@ -445,13 +444,7 @@ export const handleChangePassword = async (req, res) => {
         req.session.err = error.toString();
         res.redirect('/changePassword');
     }
-}
-
-//@route GET /logout
-export const handleLogout = (req, res) => {
-    res.clearCookie('token');
-    res.redirect('/login');
-}
+};
 
 //@route POST /resendOtp
 export const resendOtp = async (req, res) => {
@@ -472,16 +465,350 @@ export const resendOtp = async (req, res) => {
         user.otpExpiry = otpExpiry;
         await user.save();
 
-        await sendOTPEmail(email, otp, );
+        await sendOTPEmail(email, otp,);
 
         res.json({ success: true, message: "OTP sent successfully" });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: "Failed to resend OTP" });
     }
+};
+
+//@route GET /profile
+export const getProfile = async (req, res) => {
+    try {
+        //token checking
+        const token = req.cookies?.token;
+        if (!token) res.redirect('/');
+        const decoded = verifyToken(token);
+        const userId = decoded.userId;
+        //fetching user
+        const user = await User.findById(userId);
+        const joinedDate = new Date(user.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+        const address = await Address.findOne({userId, isDefault: true});
+        res.render('user/profile', { layout: 'profile-layout', user, joinedDate, address });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+//@route GET /profile/edit
+export const getEditProfile = async (req, res) => {
+    try {
+        const token = req.cookies?.token;
+        if (!token) return redirect('/');
+        const decoded = verifyToken(token);
+        const userId = decoded.userId;
+        const user = await User.findById(userId);
+        res.render('user/editProfile', { layout: 'profile-layout', user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+//@route POST /profile/edit
+export const handleEditProfile = async (req, res) => {
+    try {
+        const { name, mobileNumber, gender, dob, newsLetter } = req.body;
+        const updateData = {
+            name,
+            mobileNumber,
+            gender,
+            newsLetter: newsLetter === 'on',
+        };
+
+        const token = req.cookies?.token;
+        if (!token) {
+            req.session.err = 'session expired';
+            return res.redirect('/login');
+        }
+        const decoded = verifyToken(token);
+        const userId = decoded.userId;
+
+        // Handle uploaded profile pic
+        if (req.file) {
+            updateData.profile = '/uploads/profiles/' + req.file.filename;
+        }
+
+        await User.updateOne({ _id: userId }, updateData);
+        res.redirect('/profile');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error updating profile.");
+    }
+};
+
+//@route POST /send-otp-email
+export const handleSendOtpEmail = async (req, res) => {
+    try {
+        //fetching user details
+        const token = req.cookies?.token;
+        if (!token) {
+            req.session.err = 'Session out!! Please login again';
+            return res.redirect('/login');
+        }
+        const { email } = req.body;
+        //checking for email
+        const decoded = verifyToken(token);
+        const userId = decoded.userId;
+        const user = await User.findById(userId);
+
+        if (user.email === email) {
+            return res.status(400).json({ message: 'This email is already verified by this account.' });
+        }
+        // Check if email is already registered
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'This email is already registered with another account.' });
+        }
+
+        // Proceed to generate and send OTP
+        const otp = generateOtp();
+        // Send the OTP to newEmail
+        await sendOTPEmail(email, otp, 'Change Email', '10 min');
+        user.otp = otp
+        user.otpExpiry = Date.now() + 10 * 60 * 1000; // 5 minutes
+        await user.save();
+
+        res.status(200).json({ message: 'OTP sent successfully to your new email.' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+//@route POST /verify-otp-email
+export const handleVerifyOtpEmail = async (req, res) => {
+    const { email, otp } = req.body;
+
+    try {
+        const token = req.cookies?.token;
+        if (!token) {
+            req.session.err = 'Session out!! Please login again';
+            return res.redirect('/login');
+        }
+        const { email } = req.body;
+        //checking for email
+        const decoded = verifyToken(token);
+        const userId = decoded.userId;
+        const user = await User.findById(userId);
+
+        if (!user || !user.otp || !user.otpExpiry) {
+            return res.status(400).json({ message: 'OTP not found. Please request again.' });
+        }
+
+        // Check if OTP is correct
+        if (user.otp !== otp) {
+            return res.status(400).json({ message: 'Invalid OTP.' });
+        }
+
+        // Check if OTP is expired
+        if (Date.now() > user.otpExpiresAt) {
+            return res.status(400).json({ message: 'OTP has expired.' });
+        }
+
+        // If valid
+        user.otp = undefined;
+        user.otpExpiresAt = undefined;
+        user.email = email;
+        await user.save();
+
+        return res.status(200).json({ message: 'OTP verified successfully!' });
+    } catch (err) {
+        return res.status(500).json({ message: 'Something went wrong.' });
+    }
+};
+
+//@router POST /profile/change-password
+export const handleProfileChangePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const token = req.cookies?.token;
+        if (!token) {
+            return res.status(401).json({ error: 'Session expired. Please log in again.' });
+        }
+
+        const decoded = verifyToken(token);
+        const userId = decoded.userId;
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        if (user.provider === 'google') return res.status(400).json({ error: 'Sorry! Your account is created by Google' })
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'Current password is incorrect' });
+        }
+
+        user.password = await hashingPassword(newPassword);
+        await user.save();
+
+        return res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error("Password change error:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+//@route GET /addresses
+export const getAddresses = async (req, res) => {
+    const userId = decodeUserId(req.cookies?.token);
+    const addresses = await Address.find({ userId });
+    res.render('user/addresses', { layout: 'profile-layout', addresses });
 }
 
+//@route GET /add-address
+export const getAddAddress = (req, res) => {
+    try {
+        const msg = req.session.err || null;
+        res.render('user/addAddress', { layout: 'profile-layout', msg });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal server error");
+    }
+}
 
+//@route POST /add-address
+export const handleAddAddress = async (req, res) => {
+    try {
+        const {
+            phone,
+            pincode,
+            locality,
+            houseNo,
+            city,
+            state,
+            landmark,
+            alternatePhone,
+            type,
+            isDefault
+        } = req.body;
+        if (!phone || !pincode || !locality || !houseNo || !city || !state || !type) {
+            req.session.err = 'Please fill all required fields.';
+            return res.redirect('/add-address');
+        }
+        const token = req.cookies?.token;
+        const userId = decodeUserId(token);
+        if (isDefault) {
+            await Address.updateMany(
+                { userId },
+                { $set: { isDefault: false } }
+            );
+        }
 
+        const newAddress = new Address({
+            userId,
+            mobileNumber: phone,
+            pincode,
+            locality,
+            houseNo,
+            city,
+            state,
+            landmark,
+            alternatePhone,
+            addressType: type,
+            isDefault: isDefault || false
+        });
 
+        await newAddress.save();
+        res.redirect('/addresses');
+    } catch (error) {
+        console.error('Error adding address:', error);
+        req.session.err = error.toString();
+        res.redirect('/add-address');
+    }
+};
 
+//@route GET /edit-address/:id
+export const getEditAddress = async (req, res) => {
+    try {
+        const msg = req.session.err || null;
+        const addressId = req.params.id;
+        const address = await Address.findById(addressId);
+        res.render('user/editAddress', { layout: 'profile-layout', msg, address })
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+//@route POST /edit-address/:id
+export const handleEditAddress = async (req, res) => {
+    const addressId = req.params.id;
+    try {
+        const {
+            phone,
+            pincode,
+            locality,
+            houseNo,
+            city,
+            state,
+            landmark,
+            alternatePhone,
+            type,
+            isDefault
+        } = req.body;
+        if (!phone || !pincode || !locality || !houseNo || !city || !state || !type) {
+            req.session.err = 'Please fill all required fields.';
+            return res.redirect(`/edit-address/${addressId}`);
+        }
+        const token = req.cookies?.token;
+        const userId = decodeUserId(token);
+        if (isDefault) {
+            await Address.updateMany(
+                { userId },
+                { $set: { isDefault: false } }
+            );
+        }
+
+        const address = await Address.findById(addressId);
+
+        address.mobileNumber = phone,
+        address.pincode = pincode;
+        address.locality = locality;
+        address.houseNo = houseNo;
+        address.city = city;
+        address.state = state;
+        address.landmark = landmark;
+        address.alternatePhone = alternatePhone;
+        address.addressType = type;
+        address.isDefault = isDefault || false;
+
+        await address.save();
+        res.redirect('/addresses');
+    } catch (error) {
+        console.error('Error adding address:', error);
+        req.session.err = error.toString();
+        res.redirect(`/edit-address/${addressId}`);
+    }
+};
+
+//@route DELETE /edit-address/:id
+export const deleteAddress = async (req, res) => {
+    try {
+        const addressId = req.params.id;
+
+        const deleted = await Address.deleteOne({ _id: addressId });
+
+        if (deleted.deletedCount === 0) {
+            return res.status(404).json({ success: false, message: 'Address not found' });
+        }
+
+        res.json({ success: true, message: 'Address deleted successfully' });
+
+    } catch (error) {
+        console.error('Error deleting address:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+//@route GET /logout
+export const handleLogout = (req, res) => {
+    res.clearCookie('token');
+    res.redirect('/login');
+};
