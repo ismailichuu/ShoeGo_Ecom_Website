@@ -447,18 +447,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let countdown = 10; // 2 minutes in seconds
   function startTimer() {
-    resendBtn.classList.add('hidden');
-    resendMessage.classList.add('hidden');
+    if(resendBtn && resendMessage){
+
+      resendBtn.classList.add('hidden');
+      resendMessage.classList.add('hidden');
+    }
 
     const interval = setInterval(() => {
       const minutes = Math.floor(countdown / 60);
       const seconds = countdown % 60;
-      timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} left`;
+      if(timerDisplay){
+
+        timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} left`;
+      }
 
       if (countdown <= 0) {
         clearInterval(interval);
-        timerDisplay.textContent = "Didn't receive the code?";
-        resendBtn.classList.remove('hidden');
+        if(timerDisplay && resendBtn){
+
+          timerDisplay.textContent = "Didn't receive the code?";
+          resendBtn.classList.remove('hidden');
+        }
       }
 
       countdown--;
@@ -509,15 +518,3 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 
-  document.getElementById('profile').addEventListener('change', function (event) {
-    const file = event.target.files[0];
-    if (file) {
-      const imgPreview = document.querySelector('img[alt="Profile Preview"]');
-      imgPreview.src = URL.createObjectURL(file);
-    }
-  });
-
-  function togglePasswordFields() {
-    const fields = document.getElementById('passwordFields');
-    fields.classList.toggle('hidden');
-  }

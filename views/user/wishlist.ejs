@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShoeGo | Wishlist</title>
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="bg-gray-300">
+    <header class="bg-gray-700 py-4 shadow-sm">
+        <div class="container mx-auto flex items-center justify-between px-4">
+
+            <!-- Left side: Logo + Nav -->
+            <div class="flex items-center space-x-10">
+                <a href="/"><img src="/images/logo.png" alt="Shoego logo" class="w-40 opacity-90"></a>
+
+                <nav>
+                    <ul class="space-x-6 hidden md:flex">
+                        <li><a href="/allProducts?search=&category=681cde24cdabafe21e645d55&minPrice=0&maxPrice=0&sort="
+                                class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Boots</a>
+                        </li>
+                        <li><a href="/allProducts?search=&category=681cde24cdabafe21e645d53&minPrice=0&maxPrice=0&sort="
+                                class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Formal</a></li>
+                        <li><a href="http://127.0.0.1:8080/allProducts?search=&category=681cde24cdabafe21e645d54&minPrice=0&maxPrice=0&sort="
+                                class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Sneakers</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Right side: Search bar + Icons -->
+            <div class="flex items-center space-x-6">
+
+                <!-- Search input -->
+                <div class="relative">
+                    <form method="GET" action="/allProducts"
+                        class="flex items-center bg-gray-300 rounded-full px-3 py-1">
+                        <input type="text" name="search" value="" placeholder="Search shoes..."
+                            class="outline-none px-2 py-1 rounded-full w-60 text-black" />
+                        <button type="submit" class="text-purple-600 font-bold px-2">🔍</button>
+                    </form>
+                </div>
+
+                <!-- Icons -->
+                <div class="flex items-center space-x-4">
+                    <a href="/profile"> <i
+                            class="fas fa-user text-gray-300 h-5 w-5 hover:text-gray-500 cursor-pointer"></i></a>
+                    <a href="/cart"><i
+                            class="fas fa-shopping-cart text-gray-300 h-5 w-5 hover:text-yellow-500 cursor-pointer"></i></a>
+                </div>
+
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Wishlist Section -->
+    <section class="px-6 py-10">
+        <h2 class="text-3xl font-semibold mb-6">My Wishlist</h2>
+        <div id="error-wishlist" class="text-red-600 font-medium mt-2 hidden"></div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+            <% if (wishlist && wishlist.items && wishlist.items.length> 0) { %>
+                <% wishlist.items.forEach(item=> { %>
+                    <div class="bg-white rounded-2xl shadow-md overflow-hidden w-[275px] border border-blue-300 p-3">
+                        <img src="/uploads/products/<%= item.productId.images[0] || 'https://via.placeholder.com/200' %>"
+                            alt="<%= item.productId.name %>" class="w-full h-[180px] object-cover rounded-lg" />
+
+                        <div class="pt-3 px-1">
+                            <h3 class="text-gray-800 font-semibold text-lg">
+                                <%= item.productId.name %>
+                            </h3>
+                            <p class="text-gray-700 font-light text-sm mt-1">Size : <%= item.size %>
+                            </p>
+                            <p class="text-gray-700 font-medium text-base mt-1 ">
+                                <span class="text-gray-700 font-medium text-base mt-1 line-through">₹<%=
+                                        item.productId.basePrice %></span>
+                                <%= item.productId.discountPrice %>
+                            </p>
+
+                            <div class="flex justify-between items-center mt-4">
+                                <button onclick="addToCart('<%= item.productId._id %>','<%= item.size %>')"
+                                    class="bg-black text-white text-sm px-4 py-1 rounded-lg flex items-center gap-1 hover:bg-gray-700">
+                                    Move <i class="fa-solid fa-cart-shopping"></i>
+                                </button>
+                                <button onclick="removeFromWishlist('<%= item.productId._id %>','<%= item.size %>')" class="bg-gray-200 text-sm px-3 py-1 rounded hover:bg-gray-300">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+                        <% } else { %>
+
+                            <p class="text-center text-gray-600">Your Wishlist is empty.</p>
+                            <% } %>
+        </div>
+    </section>
+
+    <!-- Repeat above block for other wishlist items -->
+    </div>
+    </section>
+
+    <!-- Discover More Section -->
+    <section class="p-6">
+        <div class="mt-16">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">You Might Also Like</h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                <% if(related.length> 0) { %>
+                    <% related.forEach(product=> { %>
+                        <a href="/product/<%=product._id %>">
+                            <div
+                                class="bg-white shadow-lg rounded-lg overflow-hidden relative w-full h-[350px] flex flex-col">
+                                <button class="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+
+                                <img src="/uploads/products/<%= product.images[0] %>" alt="Shoe"
+                                    class="w-full h-48 object-cover">
+
+                                <div class="p-4 flex-1 flex flex-col justify-between">
+                                    <h3 class="text-md font-semibold truncate" title="<%= product.name %>">
+                                        <%= product.name %>
+                                    </h3>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        <%= product.categoryId[0].name %>
+                                    </p>
+                                    <div class="mt-2">
+                                        <p class="text-sm line-through text-black">₹<%= product.basePrice %>
+                                        </p>
+                                        <p class="text-indigo-600 font-bold text-base mt-1">₹ <%= product.discountPrice
+                                                %>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        <% }) %>
+                            <% } %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white p-6 mt-10 text-sm text-gray-600 grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div>
+            <h4 class="font-semibold mb-2">About</h4>
+            <p>Learn about us, our journey, and vision.</p>
+        </div>
+        <div>
+            <h4 class="font-semibold mb-2">Help</h4>
+            <p>FAQs, shipping, returns & more.</p>
+        </div>
+        <div>
+            <h4 class="font-semibold mb-2">Consumer Policy</h4>
+            <p>Terms of service, privacy, and policies.</p>
+        </div>
+        <div>
+            <h4 class="font-semibold mb-2">Mail Us:</h4>
+            <p>shoego@support.in</p>
+            <p>123 Shoe St, Fashion City, India</p>
+        </div>
+    </footer>
+    <script src="/js/user.js"></script>
+</body>
+
+</html>

@@ -13,7 +13,7 @@
       <!-- Profile Info -->
       <div class="bg-white border border-dashed border-blue-400 p-4 rounded-lg shadow-sm">
         <div class="flex flex-col items-center mb-4">
-          <img src="<%= customer.profile || '/images/user-profile.png' %>" class="rounded-full border-4 border-white shadow-md" />
+          <img src="<%= customer.profile || '/images/user-profile.png' %>" class="rounded-full border-4 border-white shadow-md w-2/3" />
           <h3 class="text-xl font-semibold mt-2"><%= customer.name %></h3>
           <% if(customer.isBlocked) { %>
           <span class="bg-red-300 text-red-500 text-sm px-3 py-1 rounded-full mt-1">Blocked</span>
@@ -23,8 +23,15 @@
         </div>
         <ul class="text-sm space-y-2">
           <li><strong>Email:</strong> <a href="mailto:cpnavaneeth@gmail.com" class="text-blue-600"><%= customer.email %></a></li>
-          <li><strong>Address:</strong> Cherthala via vidakath thekkath, Aluva 682011</li>
-          <li><strong>Phone:</strong> +91 9744027175</li>
+          <li><strong>Address:</strong> <%= address.houseNo + ', ' + address.locality + ', ' + address.city + ', ' +
+                                    address.state + ' - ' + address.pincode %>
+                                    <% if (address.landmark) { %>
+                                        , Landmark: <%= address.landmark %>
+                                            <% } %>
+                                                <% if (address.alternatePhone) { %>
+                                                    , Alternate Phone: <%= address.alternatePhone %>
+                                                        <% } %></li>
+          <li><strong>Phone:</strong> <%= customer.mobileNumber %></li>
           <li><strong>Last Transaction:</strong> 12 December 2023</li>
           <li><strong>Joinded :</strong><%= joinedDate %></li>
         </ul>

@@ -7,6 +7,7 @@ import Category from '../models/categorySchema.js';
 import Product from '../models/productSchema.js';
 import path from 'path';
 import { generateToken } from '../util/jwt.js';
+import Address from '../models/addressSchema.js';
 
 //@route GET /admin/login
 export const getLogin = (req, res) => {
@@ -452,7 +453,8 @@ export const getCustomerDetails = async (req, res) => {
             month: 'long',
             day: 'numeric',
         });
-        res.render('admin/customerDetails', { customer, joinedDate, layout: layout });
+        const address = await Address.findOne({ userId, isDefault: true });
+        res.render('admin/customerDetails', { customer, joinedDate, layout: layout, address });
     } catch (error) {
         console.log(error);
         res.status(500).send('Server error');

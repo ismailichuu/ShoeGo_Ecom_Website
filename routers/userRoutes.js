@@ -7,7 +7,16 @@ import { getLogin, handleLogin, getHome, handleGoogle, handleGoogleCallback, get
      handleAddAddress,
      getEditAddress,
      handleEditAddress,
-     deleteAddress} from '../controllers/userControllers.js';
+     deleteAddress,
+     getCart,
+     handleAddToCart,
+     handleIncreaseCount,
+     handleDecreaseCount,
+     deleteCart,
+     deleteCartItem,
+     getWishlist,
+     handleAddToWishlist,
+     deleteFromWishlist} from '../controllers/userControllers.js';
 import { logger, verifyUser } from '../middlewares/userMiddlware.js';
 import upload from '../configuration/multer.js';
 
@@ -21,7 +30,7 @@ router.get('/', logger, getHome);
 
 router.get('/allProducts', getAllProducts);
 
-router.get('/product/:id', verifyUser, getProductDetails);
+router.get('/product/:id', logger, getProductDetails);
 
 router.get('/auth/google', handleGoogle);
 
@@ -70,6 +79,24 @@ router.get('/edit-address/:id', logger, getEditAddress);
 router.post('/edit-address/:id', logger, handleEditAddress);
 
 router.delete('/delete-address/:id', logger, deleteAddress);
+
+router.get('/cart', verifyUser, getCart);
+
+router.post('/add-to-cart', verifyUser, handleAddToCart);
+
+router.patch('/cart/increase', logger, handleIncreaseCount);
+
+router.patch('/cart/decrease', logger, handleDecreaseCount);
+
+router.delete('/cart/delete-item', logger, deleteCartItem);
+
+router.delete('/cart/clear', logger, deleteCart);
+
+router.get('/wishlist', logger, getWishlist);
+
+router.post('/add-to-wishlist', logger, handleAddToWishlist);
+
+router.post('/delete-from-wishlist', logger, deleteFromWishlist);
 
 router.get('/logout', handleLogout);
 
