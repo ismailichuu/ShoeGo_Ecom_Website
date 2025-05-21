@@ -14,12 +14,14 @@ const cartSchema = new mongoose.Schema(
           ref: 'product',
           required: true
         },
+
         quantity: {
           type: Number,
           required: true,
           min: 1,
           max: 5,
         },
+        
         size: {
           type: String,
           required: true,

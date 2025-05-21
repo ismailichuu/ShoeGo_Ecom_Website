@@ -13,6 +13,7 @@ import Cart from "../models/cartSchema.js";
 import { calculateCart } from "../util/priceCalc.js";
 import Wishlist from "../models/wishlistSchema.js";
 import mongoose from "mongoose";
+import Order from "../models/orderSchema.js";
 
 //@route GET /login
 export const getLogin = (req, res) => {
@@ -722,6 +723,7 @@ export const handleAddAddress = async (req, res) => {
         });
 
         await newAddress.save();
+
         res.redirect('/addresses');
     } catch (error) {
         console.error('Error adding address:', error);
@@ -852,7 +854,7 @@ export const getCart = async (req, res) => {
 
         const items = cart?.cartItems || [];
         const { cartItems, grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(items);
-        res.render('user/cart', { cart: cart || { cartItems }, related, grandTotal, deliveryCharge, total, totalTax, totalWithoutTax });
+        res.render('user/cart', { cart: cart || { cartItems }, related, grandTotal, deliveryCharge, total, totalTax, totalWithoutTax, layout: 'checkOutLayout' });
     } catch (error) {
         console.log('Get Cart Error:', error);
         res.status(500).send('Failed to load cart.');
@@ -1082,7 +1084,7 @@ export const getWishlist = async (req, res) => {
                 _id: { $ne: firstProduct._id }
             }).limit(4).populate('categoryId');
         }
-        res.render('user/wishlist', { wishlist: wishlist || { wishlist: [] }, related});
+        res.render('user/wishlist', { wishlist: wishlist || { wishlist: [] }, related });
     } catch (error) {
         console.log('getting wishlist:' + error);
     }
@@ -1165,18 +1167,320 @@ export const handleAddToWishlist = async (req, res) => {
 
 //@route POST /delete-from-wishlist
 export const deleteFromWishlist = async (req, res) => {
-    try{
-        const {productId, selectedSize} = req.body;
+    try {
+        const { productId, selectedSize } = req.body;
         const userId = decodeUserId(req.cookies?.token);
         await Wishlist.updateOne(
             { userId },
             { $pull: { items: { productId, size: selectedSize } } }
         );
-        res.status(200).json({success: true});
-    }catch(error){
+        res.status(200).json({ success: true });
+    } catch (error) {
         console.log(error);
     }
 };
+
+//@route GET /select-address/:id
+export const getSelectAddress = async (req, res) => {
+    try {
+        const userId = decodeUserId(req.cookies?.token);
+        const cartId = req.params.id;
+        const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
+
+        if (cartId === cart._id) {
+            res.redirect('/cart');
+        }
+
+        if (cart) {
+            const activeItems = cart.cartItems.filter(item => item.productId && item.productId.isActive);
+
+            if (activeItems.length !== cart.cartItems.length) {
+                await Cart.updateOne(
+                    { userId },
+                    { $set: { cartItems: activeItems } }
+                );
+                cart.cartItems = activeItems;
+            }
+        }
+
+        if (!cart && cart.cartItems.length < 1) {
+            res.redirect('/cart');
+        }
+        const addresses = await Address.find({ userId }).sort({ isDefault: -1 });
+
+
+        const items = cart?.cartItems || [];
+        const { cartItems, grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(items);
+        res.render('user/selectAddress', {
+            layout: 'checkOutLayout', grandTotal, deliveryCharge,
+            total, totalTax, totalWithoutTax, addresses, cart,
+        });
+    } catch (error) {
+        console.log(error);
+        res.redirect('/cart');
+    }
+};
+
+//@route GET /add-new-address
+export const getAddNewAddress = (req, res) => {
+    try {
+        const cartId = req.params.id;
+        const msg = req.session.err || null;
+        res.render('user/addAddressPage', { layout: 'checkOutLayout', msg, cartId });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+//@route POST /add-new-address
+export const handleAddNewAddress = async (req, res) => {
+    try {
+        const {
+            phone,
+            pincode,
+            locality,
+            houseNo,
+            city,
+            state,
+            landmark,
+            alternatePhone,
+            type,
+            isDefault
+        } = req.body;
+        if (!phone || !pincode || !locality || !houseNo || !city || !state || !type) {
+            req.session.err = 'Please fill all required fields.';
+            return res.redirect('/add-address');
+        }
+        const token = req.cookies?.token;
+        const userId = decodeUserId(token);
+        if (isDefault) {
+            await Address.updateMany(
+                { userId },
+                { $set: { isDefault: false } }
+            );
+        }
+        const cart = await Cart.findOne({ userId });
+        if (!cart || cart.cartItems.length < 1) {
+            res.redirect('/cart');
+        }
+        const newAddress = new Address({
+            userId,
+            mobileNumber: phone,
+            pincode,
+            locality,
+            houseNo,
+            city,
+            state,
+            landmark,
+            alternatePhone,
+            addressType: type,
+            isDefault: isDefault || false
+        });
+
+        await newAddress.save();
+
+        res.redirect(`/select-address/${cart._id}`);
+    } catch (error) {
+        console.error('Error adding address:', error);
+        req.session.err = error.toString();
+        res.redirect('/add-new-address');
+    }
+};
+
+//@route GET /edit-address-checkout
+export const getEditAddressCheckout = async (req, res) => {
+    try {
+        const userId = decodeUserId(req.cookies?.token);
+        const addressId = req.params.id;
+        const cart = await Cart.findOne({ userId });
+        const address = await Address.findById(addressId);
+        const msg = req.session.err || null;
+        res.render('user/editAddressPage', { layout: 'checkOutLayout', msg, cartId: cart._id, address });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+//@route POST /edit-address-checkout
+export const handleEditAddressCheckout = async (req, res) => {
+    const addressId = req.params.id;
+    try {
+        const {
+            phone,
+            pincode,
+            locality,
+            houseNo,
+            city,
+            state,
+            landmark,
+            alternatePhone,
+            type,
+            isDefault
+        } = req.body;
+        if (!phone || !pincode || !locality || !houseNo || !city || !state || !type) {
+            req.session.err = 'Please fill all required fields.';
+            return res.redirect(`/edit-address/${addressId}`);
+        }
+        const token = req.cookies?.token;
+        const userId = decodeUserId(token);
+        if (isDefault) {
+            await Address.updateMany(
+                { userId },
+                { $set: { isDefault: false } }
+            );
+        }
+
+        const address = await Address.findById(addressId);
+
+        address.mobileNumber = phone,
+            address.pincode = pincode;
+        address.locality = locality;
+        address.houseNo = houseNo;
+        address.city = city;
+        address.state = state;
+        address.landmark = landmark;
+        address.alternatePhone = alternatePhone;
+        address.addressType = type;
+        address.isDefault = isDefault || false;
+
+        const cart = await Cart.findOne({ userId });
+
+        await address.save();
+        res.redirect(`/select-address/${cart._id}`);
+    } catch (error) {
+        console.error('Error adding address:', error);
+        req.session.err = error.toString();
+        res.redirect(`/edit-address-checkout/${addressId}`);
+    }
+};
+
+//@route POST /select-address/:id
+export const handleSelectAddress = async (req, res) => {
+    try {
+        const userId = decodeUserId(req.cookies?.token);
+        const addressId = req.body.addressId;
+        const cartId = req.params.id;
+
+        const address = await Address.findOne({ _id: addressId, userId });
+        if (!address) return res.status(400).send("Invalid address");
+
+        await Order.deleteMany({ userId, orderStatus: 'failed' });
+
+        const cart = await Cart.findById(cartId).populate('cartItems.productId');
+        if (!cart || cart.cartItems.length < 1) {
+            res.redirect('/cart');
+        }
+        const cartItems = cart.cartItems;
+        const { grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(cartItems);
+
+        const shippingAddress = {
+            houseNo: address.houseNo,
+            street: address.locality,
+            city: address.city,
+            state: address.state,
+            pincode: address.pincode,
+            landmark: address.landmark,
+            mobileNumber: address.mobileNumber,
+            alternatePhone: address.alternatePhone,
+            addressType: address.addressType,
+        };
+
+        const products = cartItems.map(item => ({
+            productId: item.productId._id,
+            quantity: item.quantity,
+            priceAtPurchase: item.productId.discountPrice,
+            size: item.size,
+        }));
+
+        // Create order
+        const order = await Order.create({
+            userId,
+            products,
+            shippingAddress,
+            totalPrice: total,
+        });
+
+        // Redirect to payment page
+        res.redirect(`/payment/${order._id}`);
+    } catch (err) {
+        console.error("Order creation failed:", err);
+        res.status(500).send("Server error");
+    }
+};
+
+//@route GET /payment/:id
+export const getPayment = async (req, res) => {
+    try {
+        const userId = decodeUserId(req.cookies?.token);
+        const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
+        if(!cart) res.redirect('/cart');
+        const orderId = req.params.id;
+        const order = await Order.findById(orderId);
+        if (!order) {
+            res.redirect('/cart');
+        }
+        const orderDate = new Date();
+        const deliveryDate = new Date();
+        deliveryDate.setDate(orderDate.getDate() + 7);
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        const formattedDeliveryDate = deliveryDate.toLocaleDateString('en-US', options);
+        const { cartItems, grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(cart.cartItems);
+        res.render('user/payment', {
+            layout: 'checkOutLayout', cart, deliveryDate: formattedDeliveryDate,
+            grandTotal, deliveryCharge, total, totalWithoutTax, totalTax, orderId
+        });
+    } catch (error) {
+        console.error("Order creation failed:", error);
+        res.status(500).send("Server error");
+    }
+};
+
+//@route POST /place-order
+export const handlePlaceOrder = async (req, res) => {
+    const { orderId, paymentMethod } = req.body;
+
+    try {
+        const userId = decodeUserId(req.cookies?.token);
+        const orderDate = new Date();
+        const deliveryDate = new Date(orderDate);
+        deliveryDate.setDate(orderDate.getDate() + 7);
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        for (const item of order.products) {
+            const product = await Product.findById(item.productId);
+            if (!product) {
+                return res.status(404).json({ success: false, message: `Product not found: ${item.productId}` });
+            }
+
+            if (product.stock < item.quantity) {
+                return res.status(400).json({ success: false, message: `Insufficient stock for ${product.name}` });
+            }
+
+            product.stock -= item.quantity;
+            await product.save();
+        }
+
+
+        order.orderStatus = 'placed';
+        order.paymentStatus = 'completed';
+        order.paymentMethod = paymentMethod;
+        order.orderDate = orderDate;
+        order.deliveryDate = deliveryDate;
+        await order.save();
+
+        await Cart.deleteOne({ userId });
+
+        res.status(200).json({ success: true, deliveryDate });
+    } catch (error) {
+        console.error('Error placing order:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
 
 
 //@route GET /logout

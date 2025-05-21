@@ -463,31 +463,31 @@ const addToCart = (productId, selectedSize) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId, selectedSize })
     })
-    .then(res => res.json())
-    .then(data => {
-        const errorBox = document.getElementById('error-wishlist');
+        .then(res => res.json())
+        .then(data => {
+            const errorBox = document.getElementById('error-wishlist');
 
-        if (data.success) {
-            location.reload();
-        } else {
-            errorBox.textContent = data.message || 'Something went wrong';
+            if (data.success) {
+                location.reload();
+            } else {
+                errorBox.textContent = data.message || 'Something went wrong';
+                errorBox.classList.remove('hidden');
+
+                // Optional: Hide after 5 seconds
+                setTimeout(() => {
+                    errorBox.classList.add('hidden');
+                }, 5000);
+            }
+        })
+        .catch(err => {
+            const errorBox = document.getElementById('error-message');
+            errorBox.textContent = 'Network or server error';
             errorBox.classList.remove('hidden');
 
-            // Optional: Hide after 5 seconds
             setTimeout(() => {
                 errorBox.classList.add('hidden');
             }, 5000);
-        }
-    })
-    .catch(err => {
-        const errorBox = document.getElementById('error-message');
-        errorBox.textContent = 'Network or server error';
-        errorBox.classList.remove('hidden');
-
-        setTimeout(() => {
-            errorBox.classList.add('hidden');
-        }, 5000);
-    });
+        });
 };
 
 const removeFromWishlist = (productId, selectedSize) => {
@@ -496,11 +496,52 @@ const removeFromWishlist = (productId, selectedSize) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId, selectedSize })
     }).then(res => res.json())
-    .then(data => {
-        if(data.success){
-            location.reload();
-        }else{
-            alert('error delete-whislist');
-        }
-    })
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('error delete-whislist');
+            }
+        })
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('placeOrderForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const orderId = document.querySelector('input[name="orderId"]').value;
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+
+    const payload = {
+      orderId,
+      paymentMethod
+    };
+
+    try {
+      const response = await fetch('/place-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        showSuccessModal();
+      } else {
+        alert(result.message || "Something went wrong!");
+      }
+
+    } catch (err) {
+      console.error("Error placing order:", err);
+      alert("Failed to place order. Please try again.");
+    }
+  });
+});
+
+
+
+function showSuccessModal() {
+    document.getElementById('paymentSuccessModal').classList.remove('hidden');
 }

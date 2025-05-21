@@ -24,7 +24,7 @@ export function calculateCart(cartItems, taxPercent = 5, deliveryCharge = 0) {
         };
     });
 
-    const totalWithDelivery = +(grandTotal + deliveryCharge).toFixed(2);
+    const totalWithDelivery = Math.trunc(grandTotal + deliveryCharge);
 
     return {
         cartItems: updatedCartItems,

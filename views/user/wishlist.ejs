@@ -70,9 +70,10 @@
             <% if (wishlist && wishlist.items && wishlist.items.length> 0) { %>
                 <% wishlist.items.forEach(item=> { %>
                     <div class="bg-white rounded-2xl shadow-md overflow-hidden w-[275px] border border-blue-300 p-3">
+                        <a href="/product/<%= item.productId._id %>">
                         <img src="/uploads/products/<%= item.productId.images[0] || 'https://via.placeholder.com/200' %>"
                             alt="<%= item.productId.name %>" class="w-full h-[180px] object-cover rounded-lg" />
-
+                        </a>
                         <div class="pt-3 px-1">
                             <h3 class="text-gray-800 font-semibold text-lg">
                                 <%= item.productId.name %>

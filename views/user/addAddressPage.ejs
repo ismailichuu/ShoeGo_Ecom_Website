@@ -1,0 +1,107 @@
+<% title = 'Add Address' %>
+<div class=" mx-auto bg-gradient-to-r from-gray-100 via-white to-purple-100 p-8">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-700">Add a new address</h2>
+
+    <form action="/add-new-address" method="POST" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Mobile Number</label>
+                <input type="text" name="phone" placeholder="Enter your Mobile number"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500"
+                    required>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Pincode</label>
+                <input type="text" name="pincode" placeholder="Enter your pincode"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500"
+                    required>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Locality</label>
+                <input type="text" name="locality" placeholder="Enter your locality"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500"
+                    required>
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700">House No.</label>
+                <textarea name="houseNo" placeholder="Enter your house number"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500"
+                    rows="3" required></textarea>
+            </div>
+
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">City/District/Town</label>
+                <input type="text" name="city" placeholder="Enter your city"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500"
+                    required>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">State</label>
+                <select name="state"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500"
+                    required>
+                    <option value="">--- select-- state---</option>
+                    <option value="Karnataka">Karnataka</option>
+                    <option value="Maharashtra">Maharashtra</option>
+                    <option value="Kerala">Kerala</option>
+                    <option value="Delhi">Delhi</option>
+                    <!-- Add more states as needed -->
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Landmark</label>
+                <input type="text" name="landmark" placeholder="Enter landmark (optional)"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Alternate phone number</label>
+                <input type="text" name="altPhone" placeholder="Alternate Mobile number (optional)"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-500 focus:border-purple-500">
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-6 mt-4">
+            <div class="flex items-center">
+                <input id="home" name="type" type="radio" value="Home"
+                    class="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500" required>
+                <label for="home" class="ml-2 text-sm text-gray-700">Home</label>
+            </div>
+
+            <div class="flex items-center">
+                <input id="work" name="type" type="radio" value="Work"
+                    class="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500">
+                <label for="work" class="ml-2 text-sm text-gray-700">Work</label>
+            </div>
+        </div>
+
+        <!--Set as default checkbox -->
+        <div class="mt-4 flex items-center">
+            <input id="default" name="isDefault" type="checkbox" value="true"
+                class="h-4 w-4 text-purple-600 border-gray-300 focus:ring-purple-500">
+            <label for="default" class="ml-2 text-sm text-gray-700">Set as default address</label>
+        </div>
+        <% if(msg) { %>
+      <p class="text-red-600 text-center" id="error"><%= msg %></p>
+      <script>
+        setTimeout(() => {
+          document.getElementById('error').style.display = 'none';
+        }, 8000);
+      </script>
+      <% } %>
+
+        <div class="mt-6 flex space-x-4">
+            <button type="submit"
+                class="bg-black hover:bg-gray-700 text-white px-6 py-2 rounded-md transition">Save</button>
+            <a href="/select-address/<%= cartId %>"
+                class="bg-gray-400  text-black px-6 py-2 rounded-md transition">Cancel</a>
+        </div>
+    </form>
+</div>

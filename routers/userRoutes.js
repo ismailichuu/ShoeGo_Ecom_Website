@@ -16,7 +16,15 @@ import { getLogin, handleLogin, getHome, handleGoogle, handleGoogleCallback, get
      deleteCartItem,
      getWishlist,
      handleAddToWishlist,
-     deleteFromWishlist} from '../controllers/userControllers.js';
+     deleteFromWishlist,
+     getSelectAddress,
+     getAddNewAddress,
+     handleAddNewAddress,
+     getEditAddressCheckout,
+     handleEditAddressCheckout,
+     handleSelectAddress,
+     getPayment, 
+     handlePlaceOrder} from '../controllers/userControllers.js';
 import { logger, verifyUser } from '../middlewares/userMiddlware.js';
 import upload from '../configuration/multer.js';
 
@@ -97,6 +105,22 @@ router.get('/wishlist', logger, getWishlist);
 router.post('/add-to-wishlist', logger, handleAddToWishlist);
 
 router.post('/delete-from-wishlist', logger, deleteFromWishlist);
+
+router.get('/select-address/:id', logger, getSelectAddress);
+
+router.get('/add-new-address/:id', logger, getAddNewAddress);
+
+router.post('/add-new-address', logger, handleAddNewAddress);
+
+router.get('/edit-address-checkout/:id', logger, getEditAddressCheckout);
+
+router.post('/edit-address-checkout/:id', logger, handleEditAddressCheckout);
+
+router.post('/select-address/:id', logger, handleSelectAddress);
+
+router.get('/payment/:id', logger, getPayment);
+
+router.post('/place-order', logger, handlePlaceOrder);
 
 router.get('/logout', handleLogout);
 

@@ -1,0 +1,36 @@
+<!-- Order Summary -->
+<div class="bg-white p-6 rounded-lg shadow-sm">
+    <h3 class="text-lg font-semibold text-gray-900 pb-4 border-b border-gray-200 mb-4">Order Summary</h3>
+    <% if (cart && cart.cartItems && cart.cartItems.length > 0) { %>
+    <div class="space-y-3 max-h-64 overflow-y-auto mb-4">
+        <% cart.cartItems.forEach(item => { %>
+        <div class="flex justify-between text-sm mb-2">
+            <span class="text-gray-600"><%= item.quantity %> x <%= item.productId.name %></span>
+            <span class="font-medium">₹<%= item.productId.discountPrice * item.quantity %></span>
+        </div>
+        <% }) %>
+    </div>
+    
+    <div class="space-y-3 pt-4 border-t border-gray-200">
+        <div class="flex justify-between">
+            <span class="text-gray-600">Total Amount</span>
+            <span>₹<%= totalWithoutTax %></span>
+        </div>
+        <div class="flex justify-between">
+            <span class="text-gray-600">+5% GST</span>
+            <span>+ <%= totalTax %></span>
+        </div>
+        <div class="flex justify-between">
+            <span class="text-gray-600">Delivery Charges</span>
+            <span class="text-green-500"><%= deliveryCharge || 'Free' %></span>
+        </div>
+        <div class="flex justify-between pt-3 border-t border-gray-200 font-medium">
+            <span>Grand Total</span>
+            <span>₹<%= grandTotal %></span>
+        </div>
+        <div class="flex justify-between font-bold text-lg">
+            <span>Total</span>
+            <span>₹<%= Math.round(total) %></span>
+        </div>
+    </div>
+    <% } %>
