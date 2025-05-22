@@ -8,6 +8,7 @@ import Product from '../models/productSchema.js';
 import path from 'path';
 import { generateToken } from '../util/jwt.js';
 import Address from '../models/addressSchema.js';
+import Order from '../models/orderSchema.js';
 
 //@route GET /admin/login
 export const getLogin = (req, res) => {
@@ -459,7 +460,98 @@ export const getCustomerDetails = async (req, res) => {
         console.log(error);
         res.status(500).send('Server error');
     }
-}
+};
+
+//@router GET /orders
+export const getOrders = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const search = req.query.search || '';
+        const skip = (page - 1) * limit;
+        const layout = req.query.req ? 'layout' : false;
+
+        let query = {};
+
+        if (search) {
+            // Search by user name or order ID (assuming orderId is string)
+            const users = await User.find({
+                name: { $regex: search, $options: 'i' }
+            }).select('_id');
+
+            const userIds = users.map(user => user._id);
+
+            query = {
+                $or: [
+                    { userId: { $in: userIds } },
+                    { orderId: { $regex: search, $options: 'i' } }
+                ]
+            };
+        }
+
+        const totalOrders = await Order.countDocuments(query);
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        const orders = await Order.find(query)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .populate('userId')
+            .populate('products.productId')
+            .lean();
+
+        res.render('admin/ordersTable', {
+            orders,
+            layout: layout,
+            pagination: {
+                page,
+                limit,
+                totalPages,
+                hasPrev: page > 1,
+                hasNext: page < totalPages
+            },
+            search,
+            from: req.query.from || null,
+            req
+        });
+    } catch (error) {
+        console.error('Error loading orders:', error);
+        res.status(500).render('admin/error', { message: 'Failed to load orders' });
+    }
+};
+
+//@route GET /order-details/:id
+export const getOrderDetails = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+
+        const order = await Order.findById(orderId)
+            .populate('userId')
+            .populate('products.productId');
+
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
+        const allowedNextStatuses = {
+            pending: ['shipped', 'cancelled'],
+            shipped: ['out for delivery'],
+            'out for delivery': ['delivered'],
+            delivered: [],
+            cancelled: []
+        };
+
+        const currentStatus = order.orderStatus;
+        console.log(currentStatus)
+        const nextStatuses = allowedNextStatuses[currentStatus] || [];
+        console.log(nextStatuses)
+        res.render("admin/orderDetails", { order, nextStatuses });;
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('Internal Server Error');
+    }
+};
+
+
 
 //@route POST /signout
 export const handleSignout = (req, res) => {

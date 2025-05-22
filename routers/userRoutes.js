@@ -24,7 +24,8 @@ import { getLogin, handleLogin, getHome, handleGoogle, handleGoogleCallback, get
      handleEditAddressCheckout,
      handleSelectAddress,
      getPayment, 
-     handlePlaceOrder} from '../controllers/userControllers.js';
+     handlePlaceOrder,
+     getOrders} from '../controllers/userControllers.js';
 import { logger, verifyUser } from '../middlewares/userMiddlware.js';
 import upload from '../configuration/multer.js';
 
@@ -121,6 +122,8 @@ router.post('/select-address/:id', logger, handleSelectAddress);
 router.get('/payment/:id', logger, getPayment);
 
 router.post('/place-order', logger, handlePlaceOrder);
+
+router.get('/orders', logger, getOrders);
 
 router.get('/logout', handleLogout);
 

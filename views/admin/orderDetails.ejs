@@ -1,0 +1,115 @@
+<!-- Page Title -->
+<h2 class="text-2xl font-semibold mb-6">Order Details</h2>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <!-- Left Section: Products + Status -->
+    <div class="md:col-span-2 flex flex-col gap-6">
+
+        <!-- ✅ Product Cards -->
+        <% order.products.forEach(product=> { %>
+            <div class="bg-white p-6 rounded-lg shadow flex flex-col md:flex-row gap-4">
+                <img src="/uploads/products/<%= product.image %>" alt="Product Image"
+                    class="w-40 h-40 object-cover rounded">
+                <div class="flex flex-col justify-between flex-1">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-1">
+                            <%= product.productId.name %>
+                        </h3>
+                        <p class="text-sm text-gray-500 mb-2">
+                            <%= product.productId.description || '' %>
+                        </p>
+                        <p><span class="font-medium">Quantity</span>: <%= product.quantity %>
+                        </p>
+                        <p class="text-2xl font-bold mt-1">₹ <%= product.priceAtPurchase %>
+                        </p>
+                        <p class="mt-1">Size: <%= product.size %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h4 class="text-md font-semibold mb-4">Change Order Status:</h4>
+                    <div class="flex gap-4 flex-wrap">
+
+                        <% nextStatuses.forEach(status=> { %>
+                            <form action="/admin/updateStatus" method="POST">
+                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                <input type="hidden" name="status" value="<%= status %>">
+
+                                <% let btnClass='bg-gray-300 text-gray-700 hover:bg-gray-400' ; if (status==='shipped' )
+                                    btnClass='bg-orange-200 text-orange-700 hover:bg-orange-300' ; else if
+                                    (status==='out for delivery' )
+                                    btnClass='bg-yellow-200 text-yellow-700 hover:bg-yellow-300' ; else if
+                                    (status==='delivered' ) btnClass='bg-green-200 text-green-700 hover:bg-green-300' ;
+                                    else if (status==='cancelled' ) btnClass='bg-red-200 text-red-700 hover:bg-red-300'
+                                    ; %>
+
+                                    <button type="submit" class="px-4 py-2 rounded <%= btnClass %>">
+                                        <%= status.charAt(0).toUpperCase() + status.slice(1) %>
+                                    </button>
+                            </form>
+                            <% }) %>
+
+                    </div>
+                </div>
+
+    </div>
+
+    <!-- ✅ Right Section: Shipping, Pricing, Order Info -->
+    <div class="flex flex-col gap-4">
+
+        <!-- Shipping Details -->
+        <div class="bg-white p-4 rounded-lg shadow border">
+            <h4 class="text-sm font-medium mb-2">Shipping Details</h4>
+            <p class="font-semibold">
+                <%= order.userId.name %>
+            </p>
+            <p class="text-sm text-gray-600 leading-6">
+                <%= order.shippingAddress.houseNo %>, <%= order.shippingAddress.street %><br>
+                        <%= order.shippingAddress.city %> - <%= order.shippingAddress.pincode %><br>
+                                <%= order.shippingAddress.state %><br>
+                                    <%= order.shippingAddress.landmark || '' %><br>
+                                        Mobile: <%= order.shippingAddress.mobileNumber %><br>
+                                            Alternate: <%= order.shippingAddress.alternatePhone || 'N/A' %>
+            </p>
+        </div>
+
+        <!-- Price Details -->
+        <div class="bg-white p-4 rounded-lg shadow border border-blue-500">
+            <h4 class="text-sm font-medium mb-2">Price Details</h4>
+            <div class="text-sm text-gray-700 space-y-1">
+                <p>Price (<%= order.products.reduce((sum, p)=> sum + p.quantity, 0) %> items): ₹ <%=
+                            order.products.reduce((sum, p)=> sum + p.quantity * p.priceAtPurchase, 0) %></p>
+                <p>Discount: ₹ <%= order.discount || '0' %>
+                </p>
+                <p>Total: ₹ <%= order.totalPrice %>
+                </p>
+            </div>
+        </div>
+
+        <!-- Order Meta Info -->
+        <div class="bg-white p-4 rounded-lg shadow border">
+            <h4 class="text-sm font-medium mb-2">Order Info</h4>
+            <p><strong>Order ID:</strong>
+                <%= order.orderId %>
+            </p>
+            <p><strong>Status:</strong>
+                <%= order.orderStatus %>
+            </p>
+            <p><strong>Payment:</strong>
+                <%= order.paymentMethod %> - <%= order.paymentStatus %>
+            </p>
+            <p><strong>Order Date:</strong>
+                <%= order.orderDate.toDateString() %>
+            </p>
+            <% if (order.deliveryDate) { %>
+                <p><strong>Delivery Date:</strong>
+                    <%= order.deliveryDate.toDateString() %>
+                </p>
+                <% } %>
+        </div>
+    </div>
+</div>

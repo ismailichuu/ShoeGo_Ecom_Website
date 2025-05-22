@@ -1389,6 +1389,7 @@ export const handleSelectAddress = async (req, res) => {
             productId: item.productId._id,
             quantity: item.quantity,
             priceAtPurchase: item.productId.discountPrice,
+            image: item.productId.images[0],
             size: item.size,
         }));
 
@@ -1413,7 +1414,7 @@ export const getPayment = async (req, res) => {
     try {
         const userId = decodeUserId(req.cookies?.token);
         const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
-        if(!cart) res.redirect('/cart');
+        if (!cart) res.redirect('/cart');
         const orderId = req.params.id;
         const order = await Order.findById(orderId);
         if (!order) {
@@ -1480,6 +1481,22 @@ export const handlePlaceOrder = async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
+
+//@route GET /orders
+export const getOrders = async (req, res) => {
+    try {
+        const userId = decodeUserId(req.cookies?.token);
+        const orders = await Order.find({ userId }).sort({ orderDate: -1 });
+        res.render('user/orders', {
+            layout: 'profile-layout',
+            orders,
+            user: userId,
+        });
+    } catch (err) {
+        console.error('Failed to load orders:', err);
+        res.status(500).send('Something went wrong. Please try again later.');
+    }
+}
 
 
 

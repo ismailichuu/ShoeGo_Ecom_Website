@@ -2,7 +2,9 @@ import express from 'express';
 import { deleteCategory, deleteProduct, getAddCategory, getAddProduct, 
     getCategory, getCustomers, getDashboard, getEditCategory, getEditProduct, 
     getLogin, getProducts, handleAddCategory, handleAddProduct, handleBlockUser,
-     handleEditCategory, handleEditProduct, handleLogin, handleSignout, getCustomerDetails } from '../controllers/adminControllers.js';
+     handleEditCategory, handleEditProduct, handleLogin, handleSignout, getCustomerDetails, 
+     getOrders,
+     getOrderDetails} from '../controllers/adminControllers.js';
 import { checkAdmin, logger, validateAddProductImages, validateEditProductImages } from '../middlewares/adminMiddelware.js';
 
 const router = express.Router();
@@ -42,6 +44,10 @@ router.delete('/category', logger, deleteCategory);
 router.get('/editCategory',logger, getEditCategory);
 
 router.post('/editCategory', logger, handleEditCategory);
+
+router.get('/all-orders', logger, getOrders);
+
+router.get('/order-details/:id', logger, getOrderDetails);
 
 router.get('/signout', handleSignout);
 

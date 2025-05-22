@@ -1,18 +1,24 @@
 import mongoose from "mongoose";
 
 const orderSchema = mongoose.Schema({
-
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
-        required: true
+        required: true,
+    },
+
+    orderId: {
+        type: String,
+        unique: true,
+        required: true,
+        default: () => `ORDER-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`
     },
 
     products: [
         {
             productId: {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'Product', 
+                ref: 'product',
                 required: true
             },
             quantity: {
@@ -26,6 +32,26 @@ const orderSchema = mongoose.Schema({
             size: {
                 type: String,
                 required: true
+            },
+            image: {
+                type: String,
+                required: true,
+            },
+
+            productStatus: {
+                type: String,
+                required: true,
+                default: 'pending',  
+            },
+
+            returnReason: {
+                type: String,
+                required: false,
+            },
+            
+            returnRequest: {
+                type: String,
+                required: false,
             }
         }
     ],
@@ -42,7 +68,6 @@ const orderSchema = mongoose.Schema({
         alternatePhone: String,
     },
 
-
     totalPrice: {
         type: Number,
         required: true,
@@ -51,7 +76,7 @@ const orderSchema = mongoose.Schema({
     orderStatus: {
         type: String,
         required: true,
-        default: 'failed',
+        default: 'pending', 
     },
 
     paymentMethod: {
@@ -64,11 +89,6 @@ const orderSchema = mongoose.Schema({
         type: String,
         required: true,
         default: 'not completed',
-    },
-
-    returnReason: {
-        type: String,
-        required: false,
     },
 
     discount: {
@@ -85,9 +105,9 @@ const orderSchema = mongoose.Schema({
         type: Date,
         required: false,
     }
+
 }, {
     timestamps: true,
-
 });
 
 const Order = mongoose.model('Order', orderSchema);

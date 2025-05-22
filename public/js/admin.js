@@ -237,3 +237,41 @@ function getUserDetails(id) {
             contentArea.innerHTML = "<p class='text-red-500'>Failed to load Customer.</p>";
         });
 };
+
+//loadOrders
+document.addEventListener('DOMContentLoaded', () => {
+    const contentArea = document.getElementById('mainContent');
+    const sidebarLinks = document.querySelectorAll('aside a');
+    const loadBtn = document.getElementById('loadOrders');
+
+    loadBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        sidebarLinks.forEach(link => link.classList.remove('bg-purple-200'));
+        loadBtn.classList.add('bg-purple-200');
+
+        fetch('/admin/all-orders').then(response => response.text())
+            .then(html => {
+                contentArea.innerHTML = html;
+            }).catch(error => {
+                console.error('Failed to load orders:', error);
+                contentArea.innerHTML = "<p class='text-red-500'>Failed to load orders.</p>";
+            })
+    })
+});
+
+function getOrderDetails(id) {
+    const contentArea = document.getElementById('mainContent');
+
+    fetch(`/admin/order-details/${id}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+
+    }).then(response => response.text())
+        .then(html => {
+            contentArea.innerHTML = html;
+        })
+        .catch(err => {
+            console.error('Customer page is not loaded', err);
+            contentArea.innerHTML = "<p class='text-red-500'>Failed to load Customer.</p>";
+        });
+};
