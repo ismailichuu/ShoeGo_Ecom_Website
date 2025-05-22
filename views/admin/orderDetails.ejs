@@ -6,11 +6,11 @@
     <!-- Left Section: Products + Status -->
     <div class="md:col-span-2 flex flex-col gap-6">
 
-        <!-- ✅ Product Cards -->
-        <% order.products.forEach(product=> { %>
+        <% order.products.forEach((product, index)=> { %>
             <div class="bg-white p-6 rounded-lg shadow flex flex-col md:flex-row gap-4">
                 <img src="/uploads/products/<%= product.image %>" alt="Product Image"
                     class="w-40 h-40 object-cover rounded">
+
                 <div class="flex flex-col justify-between flex-1">
                     <div>
                         <h3 class="text-lg font-semibold mb-1">
@@ -25,40 +25,65 @@
                         </p>
                         <p class="mt-1">Size: <%= product.size %>
                         </p>
+                        <p class="mt-1 font-medium">Current Status: <%= product.status %>
+                        </p>
                     </div>
+
+                    <!-- Individual Product Status Form -->
+
+                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                    <input type="hidden" name="productId" value="<%= product._id %>">
+
+                    <% nextStatuses.forEach(status=> {
+                        let btnClass = 'bg-gray-300 text-gray-700 hover:bg-gray-400';
+                        if (status === 'shipped') {
+                        btnClass = 'bg-orange-200 text-orange-700 hover:bg-orange-300';
+                        } else if (status === 'out for delivery') {
+                        btnClass = 'bg-yellow-200 text-yellow-700 hover:bg-yellow-300';
+                        } else if (status === 'delivered') {
+                        btnClass = 'bg-green-200 text-green-700 hover:bg-green-300';
+                        } else if (status === 'cancelled') {
+                        btnClass = 'bg-red-200 text-red-700 hover:bg-red-300';
+                        }
+                        %>
+                        <button class="product-status-btn px-4 py-2 rounded <%= btnClass %>"
+                             onclick="updateProductStatus('<%= order._id %>','<%= product.productId._id %>', '<%= status %>')">
+                            <%= status.charAt(0).toUpperCase() + status.slice(1) %>
+                        </button>
+                        <% }) %>
                 </div>
             </div>
             <% }) %>
 
+                <!-- Change Order Status Section -->
                 <div class="bg-white p-6 rounded-lg shadow">
                     <h4 class="text-md font-semibold mb-4">Change Order Status:</h4>
                     <div class="flex gap-4 flex-wrap">
-
-                        <% nextStatuses.forEach(status=> { %>
-                            <form action="/admin/updateStatus" method="POST">
+                        <% nextStatuses.forEach(status=> {
+                            let btnClass = 'bg-gray-300 text-gray-700 hover:bg-gray-400';
+                            if (status === 'shipped') {
+                            btnClass = 'bg-orange-200 text-orange-700 hover:bg-orange-300';
+                            } else if (status === 'out for delivery') {
+                            btnClass = 'bg-yellow-200 text-yellow-700 hover:bg-yellow-300';
+                            } else if (status === 'delivered') {
+                            btnClass = 'bg-green-200 text-green-700 hover:bg-green-300';
+                            } else if (status === 'cancelled') {
+                            btnClass = 'bg-red-200 text-red-700 hover:bg-red-300';
+                            }
+                            %>
+                            <form action="/admin/updateStatus" method="POST" class="inline">
                                 <input type="hidden" name="orderId" value="<%= order._id %>">
                                 <input type="hidden" name="status" value="<%= status %>">
-
-                                <% let btnClass='bg-gray-300 text-gray-700 hover:bg-gray-400' ; if (status==='shipped' )
-                                    btnClass='bg-orange-200 text-orange-700 hover:bg-orange-300' ; else if
-                                    (status==='out for delivery' )
-                                    btnClass='bg-yellow-200 text-yellow-700 hover:bg-yellow-300' ; else if
-                                    (status==='delivered' ) btnClass='bg-green-200 text-green-700 hover:bg-green-300' ;
-                                    else if (status==='cancelled' ) btnClass='bg-red-200 text-red-700 hover:bg-red-300'
-                                    ; %>
-
-                                    <button type="submit" class="px-4 py-2 rounded <%= btnClass %>">
-                                        <%= status.charAt(0).toUpperCase() + status.slice(1) %>
-                                    </button>
+                                <button type="submit" class="px-4 py-2 rounded <%= btnClass %>">
+                                    <%= status.charAt(0).toUpperCase() + status.slice(1) %>
+                                </button>
                             </form>
                             <% }) %>
-
                     </div>
                 </div>
-
     </div>
 
-    <!-- ✅ Right Section: Shipping, Pricing, Order Info -->
+    <!-- Right Section: Shipping, Price, and Meta Info -->
     <div class="flex flex-col gap-4">
 
         <!-- Shipping Details -->
@@ -81,8 +106,10 @@
         <div class="bg-white p-4 rounded-lg shadow border border-blue-500">
             <h4 class="text-sm font-medium mb-2">Price Details</h4>
             <div class="text-sm text-gray-700 space-y-1">
-                <p>Price (<%= order.products.reduce((sum, p)=> sum + p.quantity, 0) %> items): ₹ <%=
-                            order.products.reduce((sum, p)=> sum + p.quantity * p.priceAtPurchase, 0) %></p>
+                <p>
+                    Price (<%= order.products.reduce((sum, p)=> sum + p.quantity, 0) %> items): ₹
+                        <%= order.products.reduce((sum, p)=> sum + p.quantity * p.priceAtPurchase, 0) %>
+                </p>
                 <p>Discount: ₹ <%= order.discount || '0' %>
                 </p>
                 <p>Total: ₹ <%= order.totalPrice %>
@@ -90,7 +117,7 @@
             </div>
         </div>
 
-        <!-- Order Meta Info -->
+        <!-- Order Info -->
         <div class="bg-white p-4 rounded-lg shadow border">
             <h4 class="text-sm font-medium mb-2">Order Info</h4>
             <p><strong>Order ID:</strong>

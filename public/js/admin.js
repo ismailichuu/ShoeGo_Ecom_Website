@@ -275,3 +275,27 @@ function getOrderDetails(id) {
             contentArea.innerHTML = "<p class='text-red-500'>Failed to load Customer.</p>";
         });
 };
+
+async function updateProductStatus(orderId, productId, status) {    
+    try {
+        const res = await fetch('/admin/updateProductStatus', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ orderId, productId, status }),
+        });
+    
+        const data = await res.json();
+    
+        if (res.ok) {
+            location.reload(); // success
+        } else {
+            alert(data.message || 'Failed to update status');
+        }
+    } catch (err) {
+        console.error('Error updating status:', err);
+        alert('Something went wrong');
+    }
+
+}

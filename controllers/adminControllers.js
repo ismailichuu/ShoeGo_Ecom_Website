@@ -533,6 +533,7 @@ export const getOrderDetails = async (req, res) => {
             return res.status(404).send('Order not found');
         }
         const allowedNextStatuses = {
+            placed: ['shipped', 'cancelled'],
             pending: ['shipped', 'cancelled'],
             shipped: ['out for delivery'],
             'out for delivery': ['delivered'],
@@ -541,7 +542,6 @@ export const getOrderDetails = async (req, res) => {
         };
 
         const currentStatus = order.orderStatus;
-        console.log(currentStatus)
         const nextStatuses = allowedNextStatuses[currentStatus] || [];
         console.log(nextStatuses)
         res.render("admin/orderDetails", { order, nextStatuses });;
@@ -551,6 +551,23 @@ export const getOrderDetails = async (req, res) => {
     }
 };
 
+//@route POST /admin/updateProductStatus
+export const updateProductStatus = async (req, res) => {
+  const { orderId, productId, status } = req.body;
+
+  try {
+    console.log(orderId, productId, status)
+    await Order.updateOne(
+      { _id: orderId, 'products.productId': productId },
+      { $set: { 'products.$.productStatus': status } }
+    );
+
+    res.json({ success: true, message: 'Product status updated' });
+  } catch (err) {
+    console.error('Error updating product status:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
 
 
 //@route POST /signout

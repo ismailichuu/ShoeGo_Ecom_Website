@@ -61,59 +61,64 @@
         </thead>
         <tbody class="text-sm">
             <% orders.forEach(order=> { %>
-                <% order.products.forEach(product=> { %>
-                    <tr class="border-b hover:bg-gray-50 transition" onclick="getOrderDetails('<%= order._id %>')">
-                        <!-- Product -->
-                        <td class="py-3 px-4 flex items-center gap-2">
-                            <img src="/uploads/products/<%= product.image %>" class="w-8 h-8 rounded object-cover" />
-                            <span>
-                                <%= product.productId.name %>
-                            </span>
-                        </td>
+                <tr class="border-b hover:bg-gray-50 transition" onclick="getOrderDetails('<%= order._id %>')">
+                    <!-- Products -->
+                    <td class="py-3 px-4">
+                        <div class="flex flex-col gap-2">
+                            <% order.products.forEach(product=> { %>
+                                <div class="flex items-center gap-2">
+                                    <img src="/uploads/products/<%= product.image %>"
+                                        class="w-8 h-8 rounded object-cover" />
+                                    <span>
+                                        <%= product.productId.name %>
+                                    </span>
+                                </div>
+                                <% }) %>
+                        </div>
+                    </td>
 
-                        <!-- Order ID -->
-                        <td class="py-3 px-4">
-                            <%= order.orderId %>
-                        </td>
+                    <!-- Order ID -->
+                    <td class="py-3 px-4">
+                        <%= order.orderId %>
+                    </td>
 
-                        <!-- Date -->
-                        <td class="py-3 px-4">
-                            <%= order.orderDate?.toDateString() %>
-                        </td>
+                    <!-- Date -->
+                    <td class="py-3 px-4">
+                        <%= order.orderDate?.toDateString() %>
+                    </td>
 
-                        <!-- Customer -->
-                        <td class="py-3 px-4">
-                            <%= order.userId.name %>
-                        </td>
+                    <!-- Customer -->
+                    <td class="py-3 px-4">
+                        <%= order.userId.name %>
+                    </td>
 
-                        <!-- Status (Order level or Product level?) -->
-                        <td class="py-3 px-4">
-                            <% if (order.orderStatus==='delivered' ) { %>
+                    <!-- Status -->
+                    <td class="py-3 px-4">
+                        <% if (order.orderStatus==='delivered' ) { %>
+                            <span
+                                class="text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs font-semibold">Delivered</span>
+                            <% } else if (order.orderStatus==='canceled' ) { %>
                                 <span
-                                    class="text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs font-semibold">Delivered</span>
-                                <% } else if (order.orderStatus==='canceled' ) { %>
+                                    class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Cancelled</span>
+                                <% } else if (order.orderStatus==='placed' ) { %>
                                     <span
-                                        class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Cancelled</span>
-                                    <% } else if (order.orderStatus==='placed' ) { %>
-                                        <span
-                                            class="text-orange-600 bg-orange-100 px-2 py-1 rounded-full text-xs font-semibold">On
-                                            Delivery</span>
-                                        <% } %>
-                        </td>
+                                        class="text-orange-600 bg-orange-100 px-2 py-1 rounded-full text-xs font-semibold">On
+                                        Delivery</span>
+                                    <% } %>
+                    </td>
 
-                        <!-- Quantity -->
-                        <td class="py-3 px-4">
-                            <%= product.quantity %>
-                        </td>
+                    <!-- Quantity -->
+                    <td class="py-3 px-4">
+                        <% let totalQuantity=0; order.products.forEach(p=> totalQuantity += p.quantity); %>
+                            <%= totalQuantity %>
+                    </td>
 
-                        <!-- Price -->
-                        <td class="py-3 px-4 font-semibold">₹ <%= product.priceAtPurchase %>
-                        </td>
-                    </tr>
-                    <% }) %>
-                        <% }) %>
+                    <!-- Total Price -->
+                    <td class="py-3 px-4 font-semibold">₹ <%= order.totalPrice %>
+                    </td>
+                </tr>
+                <% }) %>
         </tbody>
-
 
     </table>
 </div>
