@@ -1,33 +1,20 @@
 import express from 'express';
-import { getLogin, handleLogin, getHome, handleGoogle, handleGoogleCallback, getSignup,
-     handleSignup, getVerify, handleVerify, getForgotPassword, handleForgotpassword, getChangePassword, 
-     handleVerifyPassword, handleChangePassword, getProductDetails, handleLogout, getAllProducts, 
-     resendOtp, getProfile, getEditProfile, handleEditProfile, handleSendOtpEmail, handleVerifyOtpEmail, 
-     handleProfileChangePassword, getAddresses, getAddAddress, 
-     handleAddAddress,
-     getEditAddress,
-     handleEditAddress,
-     deleteAddress,
-     getCart,
-     handleAddToCart,
-     handleIncreaseCount,
-     handleDecreaseCount,
-     deleteCart,
-     deleteCartItem,
-     getWishlist,
-     handleAddToWishlist,
-     deleteFromWishlist,
-     getSelectAddress,
-     getAddNewAddress,
-     handleAddNewAddress,
-     getEditAddressCheckout,
-     handleEditAddressCheckout,
-     handleSelectAddress,
-     getPayment, 
-     handlePlaceOrder,
-     getOrders} from '../controllers/userControllers.js';
 import { logger, verifyUser } from '../middlewares/userMiddlware.js';
 import upload from '../configuration/multer.js';
+import { getForgotPassword, getLogin, getSignup, getVerify, handleForgotpassword,
+     handleGoogle, handleGoogleCallback, handleLogin, handleLogout, handleSignup,
+     handleVerify, handleVerifyPassword, resendOtp } from '../controllers/user/authController.js';
+import { getHome } from '../controllers/user/homeController.js';
+import { getAllProducts, getProductDetails } from '../controllers/user/productController.js';
+import { getChangePassword, getEditProfile, getProfile, handleChangePassword, handleEditProfile, 
+     handleProfileChangePassword, handleSendOtpEmail, handleVerifyOtpEmail } from '../controllers/user/profileController.js';
+import { deleteAddress, getAddAddress, getAddNewAddress, getAddresses, getEditAddress, getEditAddressCheckout, getSelectAddress,
+     handleAddAddress, handleAddNewAddress, handleEditAddress, handleEditAddressCheckout, handleSelectAddress } from '../controllers/user/addressController.js';
+import { deleteCart, deleteCartItem, getCart, getOrderSummary, handleAddToCart, handleDecreaseCount, handleIncreaseCount } from '../controllers/user/cartController.js';
+import { deleteFromWishlist, getWishlist, handleAddToWishlist } from '../controllers/user/wishlistController.js';
+import { getPayment } from '../controllers/user/paymentController.js';
+import { downloadInvoice, getOrderDetails, getOrders, handleCancelProduct, handlePlaceOrder, returnProduct } from '../controllers/user/orderController.js';
+import { getWallet } from '../controllers/user/walletController.js';
 
 const router = express.Router();
 
@@ -95,6 +82,8 @@ router.post('/add-to-cart', verifyUser, handleAddToCart);
 
 router.patch('/cart/increase', logger, handleIncreaseCount);
 
+router.get('/cart/order-summary', getOrderSummary);
+
 router.patch('/cart/decrease', logger, handleDecreaseCount);
 
 router.delete('/cart/delete-item', logger, deleteCartItem);
@@ -124,6 +113,16 @@ router.get('/payment/:id', logger, getPayment);
 router.post('/place-order', logger, handlePlaceOrder);
 
 router.get('/orders', logger, getOrders);
+
+router.get('/order-details/:id', logger, getOrderDetails);
+
+router.post('/orders/cancel-product', logger, handleCancelProduct);
+
+router.get('/download-invoice/:orderId', logger, downloadInvoice);
+
+router.post('/orders/return-product', logger, returnProduct);
+
+router.get('/wallet', logger, getWallet);
 
 router.get('/logout', handleLogout);
 

@@ -285,8 +285,15 @@ function increaseQuantity(productId, size, btn) {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                location.reload();
-            } else {
+                btn.parentElement.querySelector('.quantity-count').textContent = data.quantity;
+
+                updateOrderSummary();
+
+                if (data.updatedProductTotal && btn.closest('.cart-item').querySelector('.product-total')) {
+                    btn.closest('.cart-item').querySelector('.product-total').textContent = `₹${data.quantity}`;
+                }
+            }
+            else {
                 msgEl.textContent = data.message || 'Cannot increase further';
                 msgEl.classList.remove('hidden');
 
@@ -294,11 +301,20 @@ function increaseQuantity(productId, size, btn) {
                     msgEl.classList.add('hidden');
                 }, 3000);
             }
+        }).catch(error => {
+            console.error('Error increasing quantity:', error);
+            msgEl.textContent = 'Something went wrong';
+            msgEl.classList.remove('hidden');
+            setTimeout(() => msgEl.classList.add('hidden'), 3000);
+        }).finally(() => {
+            btn.disabled = false;
         });
 };
 
+
 //dicrease quantity
 function decreaseQuantity(productId, size, btn) {
+    btn.disabled = true;
     fetch('/cart/decrease', {
         method: 'PATCH',
         headers: {
@@ -309,13 +325,41 @@ function decreaseQuantity(productId, size, btn) {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                location.reload();
-            } else {
+                console.log(data.quantity)
+                if (data.quantity < 1) {
+                    location.reload();
+                } else {
+
+                    btn.parentElement.querySelector('.quantity-count').textContent = data.quantity;
+
+                    updateOrderSummary();
+
+                    if (data.updatedProductTotal && btn.closest('.cart-item').querySelector('.product-total')) {
+                        btn.closest('.cart-item').querySelector('.product-total').textContent = `₹${data.quantity}`;
+                    }
+                }
+            }
+            else {
                 alert(data.message || 'Error decreasing quantity');
             }
+        }).catch(error => {
+            console.error('Error increasing quantity:', error);
+            msgEl.textContent = 'Something went wrong';
+            msgEl.classList.remove('hidden');
+            setTimeout(() => msgEl.classList.add('hidden'), 3000);
+        }).finally(() => {
+            btn.disabled = false;
         });
 };
 
+function updateOrderSummary() {
+    fetch('/cart/order-summary')
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('order-summary').innerHTML = html;
+        })
+        .catch(err => console.error('Failed to update order summary:', err));
+}
 
 let deleteAction = null;
 
@@ -506,38 +550,47 @@ const removeFromWishlist = (productId, selectedSize) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('placeOrderForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
 
-    const orderId = document.querySelector('input[name="orderId"]').value;
-    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+    const form = document.getElementById('placeOrderForm');
+    if (form) {
 
-    const payload = {
-      orderId,
-      paymentMethod
-    };
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-    try {
-      const response = await fetch('/place-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
+            const orderId = document.querySelector('input[name="orderId"]').value;
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
 
-      const result = await response.json();
-      if (result.success) {
-        showSuccessModal();
-      } else {
-        alert(result.message || "Something went wrong!");
-      }
+            const payload = {
+                orderId,
+                paymentMethod
+            };
 
-    } catch (err) {
-      console.error("Error placing order:", err);
-      alert("Failed to place order. Please try again.");
+            try {
+                const response = await fetch('/place-order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    setTimeout(() => {
+
+                        showSuccessModal();
+
+                    }, 2000)
+                } else {
+                    alert(result.message || "Something went wrong!");
+                }
+
+            } catch (err) {
+                console.error("Error placing order:", err);
+                alert("Failed to place order. Please try again.");
+            }
+        });
     }
-  });
 });
 
 
@@ -545,3 +598,144 @@ document.addEventListener('DOMContentLoaded', () => {
 function showSuccessModal() {
     document.getElementById('paymentSuccessModal').classList.remove('hidden');
 }
+
+function openCancelModal(productId) {
+
+    document.getElementById(`cancelModal-${productId}`).classList.remove('hidden');
+}
+
+function closeCancelModal(productId) {
+    document.getElementById(`cancelModal-${productId}`).classList.add('hidden');
+}
+
+function openReturnModal(productId) {
+    document.getElementById(`returnModal-${productId}`).classList.remove('hidden');
+}
+
+function closeReturnModal(productId) {
+    document.getElementById(`returnModal-${productId}`).classList.add('hidden');
+}
+
+
+
+
+// Enhanced interactivity with modern animations
+document.addEventListener('DOMContentLoaded', function () {
+    // Stagger animation for cards
+    const cards = document.querySelectorAll('.card-hover');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+
+    // Interactive buttons
+    document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', function (e) {
+            // Add ripple effect
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.height, rect.width);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.classList.add('ripple');
+
+            this.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+
+            const cancelbutton = document.getElementById('confirm-cancel-btn');
+            if (cancelbutton) {
+
+                cancelbutton.addEventListener('click', function () {
+
+                    const form = this.closest('form');
+                    if (form) {
+                        form.submit();
+                    }
+                    showNotification('Item Cancelled', 'success');
+                });
+            }
+            const confirmReturn = document.getElementById('confirm-return-btn');
+            if (confirmReturn) {
+
+                confirmReturn.addEventListener('click', function () {
+
+                    const form = this.closest('form');
+                    if (form) {
+                        form.submit();
+                    }
+                    showNotification('Return request submitted', 'success');
+                });
+            }
+
+            // Handle different actions
+            if (this.textContent.includes('Track')) {
+                showNotification('Opening tracking details...', 'info');
+
+            } else if (this.textContent.includes('Buy Again')) {
+                showNotification('Items added to cart!', 'success');
+            }
+        });
+    });
+
+    // Notification system
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 px-6 py-4 rounded-2xl text-white font-semibold z-50 animate-slide-in-right ${type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+            }`;
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    // Smooth scroll animations on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.animate-fade-in-up, .animate-slide-in-right').forEach(el => {
+        el.style.animationPlayState = 'paused';
+        observer.observe(el);
+    });
+});
+
+// Add ripple effect styles
+const style = document.createElement('style');
+style.textContent = `
+      .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
+        transform: scale(0);
+        animation: ripple-animation 0.6s linear;
+        pointer-events: none;
+      }
+      
+      @keyframes ripple-animation {
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+    `;
+document.head.appendChild(style);

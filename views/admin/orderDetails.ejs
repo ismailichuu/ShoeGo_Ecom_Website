@@ -29,56 +29,90 @@
                         </p>
                     </div>
 
-                    <!-- Individual Product Status Form -->
+                    <!-- Individual Product Status Dropdown (Simplified Logic) -->
+                    <select class="product-status-btn px-4 py-2 rounded bg-gray-300 text-white hover:bg-gray-400 mb-2"
+                        onchange="updateProductStatus('<%= order._id %>', '<%= product.productId._id %>','<%= product.size %>', this.value)">
 
-                    <input type="hidden" name="orderId" value="<%= order._id %>">
-                    <input type="hidden" name="productId" value="<%= product._id %>">
+                        <option selected disabled>
+                            <%= product.productStatus ? product.productStatus.charAt(0).toUpperCase() +
+                                product.productStatus.slice(1) : 'Status' %>
+                        </option>
 
-                    <% nextStatuses.forEach(status=> {
-                        let btnClass = 'bg-gray-300 text-gray-700 hover:bg-gray-400';
-                        if (status === 'shipped') {
-                        btnClass = 'bg-orange-200 text-orange-700 hover:bg-orange-300';
-                        } else if (status === 'out for delivery') {
-                        btnClass = 'bg-yellow-200 text-yellow-700 hover:bg-yellow-300';
-                        } else if (status === 'delivered') {
-                        btnClass = 'bg-green-200 text-green-700 hover:bg-green-300';
-                        } else if (status === 'cancelled') {
-                        btnClass = 'bg-red-200 text-red-700 hover:bg-red-300';
-                        }
-                        %>
-                        <button class="product-status-btn px-4 py-2 rounded <%= btnClass %>"
-                             onclick="updateProductStatus('<%= order._id %>','<%= product.productId._id %>', '<%= status %>')">
-                            <%= status.charAt(0).toUpperCase() + status.slice(1) %>
-                        </button>
-                        <% }) %>
+                        <% if (product.productStatus==='placed' || product.productStatus==='pending' ) { %>
+                            <option value="shipped">Shipped</option>
+                            <option value="cancelled">Cancelled</option>
+                            <% } else if (product.productStatus==='shipped' ) { %>
+                                <option value="out for delivery">Out for Delivery</option>
+                                <% } else if (product.productStatus==='out for delivery' ) { %>
+                                    <option value="delivered">Delivered</option>
+                                    <% } %>
+                    </select>
+                       <% if (product.cancelReason) { %>
+                                        <div class="text-sm text-red-600">
+                                            Cancel Reason: <%= product.cancelReason %>
+                                        </div>
+                                        <% } %>
+                    <% if (product.returnRequest) { %>
+                        <div class="mt-4 flex gap-4">
+                            <% if (product.returnRequest) { %>
+                                <div class="text-sm text-yellow-600">
+                                    Return Request: <%= product.returnReason %>
+                                </div>
+                                <% } %>
+
+
+                                    <button
+                                        class="approve-btn px-4 py-1 bg-green-500 hover:bg-green-600 text-white rounded"
+                                        onclick="handleRequestDecision('<%= order._id %>', '<%= product.productId._id %>', '<%= product.size %>', 'approve')">
+                                        Approve
+                                    </button>
+
+                                    <button class="reject-btn px-4 py-1 bg-red-500 hover:bg-red-600 text-white rounded"
+                                        onclick="handleRequestDecision('<%= order._id %>', '<%= product.productId._id %>', '<%= product.size %>', 'reject')">
+                                        Reject
+                                    </button>
+                        </div>
+                        <% } %>
+                        <% if(product.refundRequest) { %>
+                            <div class="text-sm text-yellow-600">
+                                    Refund Request: Approve Amount to user Wallet
+                                </div>
+                            <button
+                                        class="approve-btn px-4 py-1 bg-green-500 hover:bg-green-600 text-white rounded"
+                                        onclick="handleRefundRequest('<%= order._id %>', '<%= product.productId._id %>', '<%= product.size %>', 'approve')">
+                                        Approve
+                                    </button>
+
+                                    <button class="reject-btn px-4 py-1 bg-red-500 hover:bg-red-600 text-white rounded"
+                                        onclick="handleRefundRequest('<%= order._id %>', '<%= product.productId._id %>', '<%= product.size %>', 'reject')">
+                                        Reject
+                                    </button>
+                            <% } %>
+                        <div id="message-<%= product.productId._id %>-<%= product.size %>" class="text-sm mt-2"></div>
+
                 </div>
             </div>
             <% }) %>
 
-                <!-- Change Order Status Section -->
+                <!-- Change Overall Order Status -->
                 <div class="bg-white p-6 rounded-lg shadow">
-                    <h4 class="text-md font-semibold mb-4">Change Order Status:</h4>
+                    <h4 class="text-md font-semibold mb-4">Order Status:</h4>
                     <div class="flex gap-4 flex-wrap">
-                        <% nextStatuses.forEach(status=> {
-                            let btnClass = 'bg-gray-300 text-gray-700 hover:bg-gray-400';
-                            if (status === 'shipped') {
-                            btnClass = 'bg-orange-200 text-orange-700 hover:bg-orange-300';
-                            } else if (status === 'out for delivery') {
-                            btnClass = 'bg-yellow-200 text-yellow-700 hover:bg-yellow-300';
-                            } else if (status === 'delivered') {
-                            btnClass = 'bg-green-200 text-green-700 hover:bg-green-300';
-                            } else if (status === 'cancelled') {
-                            btnClass = 'bg-red-200 text-red-700 hover:bg-red-300';
-                            }
+
+                        <% let btnClass='bg-gray-300 text-gray-700 hover:bg-gray-400' ; if
+                            (order.orderStatus==='shipped' || order.orderStatus==='placed' ) {
+                            btnClass='bg-orange-200 text-orange-700 hover:bg-orange-300' ; } else if
+                            (order.orderStatus==='out for delivery' ) {
+                            btnClass='bg-yellow-200 text-yellow-700 hover:bg-yellow-300' ; } else if
+                            (order.orderStatus==='delivered' ) {
+                            btnClass='bg-green-200 text-green-700 hover:bg-green-300' ; } else if
+                            (order.orderStatus==='cancelled' ) { btnClass='bg-red-200 text-red-700 hover:bg-red-300' ; }
                             %>
-                            <form action="/admin/updateStatus" method="POST" class="inline">
-                                <input type="hidden" name="orderId" value="<%= order._id %>">
-                                <input type="hidden" name="status" value="<%= status %>">
-                                <button type="submit" class="px-4 py-2 rounded <%= btnClass %>">
-                                    <%= status.charAt(0).toUpperCase() + status.slice(1) %>
-                                </button>
-                            </form>
-                            <% }) %>
+
+                            <button type="submit" class="px-4 py-2 rounded <%= btnClass %>">
+                                <%= order.orderStatus %>
+                            </button>
+
                     </div>
                 </div>
     </div>

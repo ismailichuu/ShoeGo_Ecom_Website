@@ -44,12 +44,22 @@ const orderSchema = mongoose.Schema({
                 default: 'pending',  
             },
 
+            refundRequest: {
+                type: Boolean,
+                default: false,
+            },
+
             returnReason: {
                 type: String,
                 required: false,
             },
             
             returnRequest: {
+                type: String,
+                required: false,
+            },
+
+            cancelReason: {
                 type: String,
                 required: false,
             }

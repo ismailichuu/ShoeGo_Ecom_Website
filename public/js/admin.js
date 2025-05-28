@@ -276,20 +276,20 @@ function getOrderDetails(id) {
         });
 };
 
-async function updateProductStatus(orderId, productId, status) {    
+async function updateProductStatus(orderId, productId, size, status) {    
     try {
         const res = await fetch('/admin/updateProductStatus', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ orderId, productId, status }),
+            body: JSON.stringify({ orderId, productId, size, status }),
         });
     
         const data = await res.json();
     
         if (res.ok) {
-            location.reload(); // success
+            location.href = `/admin/order-details/${orderId}?req=new`;
         } else {
             alert(data.message || 'Failed to update status');
         }
@@ -298,4 +298,58 @@ async function updateProductStatus(orderId, productId, status) {
         alert('Something went wrong');
     }
 
+};
+
+function handleRequestDecision(orderId, productId, size, action) {
+    const messageDiv = document.getElementById(`message-${productId}-${size}`);
+    messageDiv.textContent = '';
+    messageDiv.className = 'text-sm mt-2'; 
+
+    fetch(`/admin/orders/handle-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, productId, size, action })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            messageDiv.textContent = `${action.charAt(0).toUpperCase() + action.slice(1)}d successfully`;
+            messageDiv.classList.add('text-green-600');
+            location.href = `/admin/order-details/${orderId}?req=new`
+        } else {
+            messageDiv.textContent = data.message || 'Something went wrong';
+            messageDiv.classList.add('text-red-600');
+        }
+    })
+    .catch(err => {
+        messageDiv.textContent = 'Request failed';
+        messageDiv.classList.add('text-red-600');
+    });
+}
+
+function handleRefundRequest(orderId, productId, size, action) {
+    const messageDiv = document.getElementById(`message-${productId}-${size}`);
+    messageDiv.textContent = '';
+    messageDiv.className = 'text-sm mt-2'; 
+
+    fetch(`/admin/orders/refund-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, productId, size, action })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            messageDiv.textContent = `Refund accepted successfully`;
+            messageDiv.classList.add('text-green-600');
+            location.href = `/admin/order-details/${orderId}?req=new`
+        } else {
+            messageDiv.textContent = data.message || 'Something went wrong';
+            messageDiv.classList.add('text-red-600');
+        }
+    })
+    .catch(err => {
+        messageDiv.textContent = 'Request failed';
+        messageDiv.classList.add('text-red-600');
+    });
 }

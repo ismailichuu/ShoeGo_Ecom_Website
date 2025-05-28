@@ -1,0 +1,262 @@
+<!-- Assuming you're passing an 'order' object to this EJS file -->
+<div class="flex flex-1 bg-gradient-to-br from-gray-100 to-purple-200 min-h-screen">
+    <!-- Left Panel - Orders List -->
+    <div class="w-1/2 p-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-semibold text-gray-800">
+                <%= order.orderId %>
+
+            </h1>
+            <div class="mt-6">
+                <% if (order.orderStatus==='delivered' ) { %>
+                    <a href="/download-invoice/<%= order._id %>"
+                        class="inline-flex items-center gap-2 text-sm px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-full shadow-lg hover:from-blue-600 hover:to-indigo-700 transition duration-300 ease-in-out">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Download Invoice
+                    </a>
+                    <% } else { %>
+                        <div
+                            class="inline-flex items-center gap-2 px-6 py-2 bg-gray-200 text-gray-500 rounded-full shadow-inner cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M18.364 5.636l-12.728 12.728m0-12.728l12.728 12.728" />
+                            </svg>
+                            Invoice Not Available
+                        </div>
+                        <% } %>
+
+            </div>
+
+            
+
+
+        </div>
+        <% if(msg) { %>
+                <p class="text-red-600 text-center" id="error">
+                    <%= msg %>
+                </p>
+                <script>
+                    setTimeout(() => {
+                        document.getElementById('error').style.display = 'none';
+                    }, 8000);
+                </script>
+                <% } %>
+
+        <!-- Orders List -->
+        <div class="space-y-4">
+            <% order.products.forEach(product=> { %>
+
+                <div
+                    class="bg-white rounded-lg p-4 shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-shadow">
+                    <div class="flex items-start gap-4">
+                        <img src="/uploads/products/<%= product.image %>" alt="Product Image"
+                            class="w-11 h-11 rounded-lg object-cover bg-gray-100">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-800 mb-1">
+                                <%= product.productId.name %>
+                            </h3>
+                            <p class="text-gray-600 mb-2">Size: <%= product.size %>
+                            </p>
+                            <p class="text-gray-600 mb-2">₹ <%= product.priceAtPurchase %>
+                            </p>
+
+                            <!-- Order Timeline -->
+                            <div class="space-y-2">
+                                <% if (product.productStatus==='pending' ) { %>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                        <span class="text-sm text-gray-600">Pending</span>
+                                    </div>
+                                    <% } else if (product.productStatus==='shipped' ) { %>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <span class="text-sm text-gray-600">Shipped</span>
+                                        </div>
+                                        <% } else if (product.productStatus==='delivered' ) { %>
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                                <span class="text-sm text-gray-600">Delivered</span>
+                                            </div>
+                                            <% } else if (product.productStatus==='return-requested' ) { %>
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                                    <span class="text-sm text-gray-600">Return Requested</span>
+                                                </div>
+                                                <% } else if (product.productStatus==='refunded' ) { %>
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                                        <span class="text-sm text-gray-600">Refunded</span>
+                                                    </div>
+                                                    <% } else if (product.productStatus==='cancelled' ) { %>
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                                            <span class="text-sm text-gray-600">cancelled</span>
+                                                        </div>
+                                                        <% } %>
+                                                            <% if (product.productStatus==='pending' ||
+                                                                product.productStatus==='shipped' ||
+                                                                product.productStatus==='Placed' ||
+                                                                product.productStatus==='out for delivery' ) { %>
+                                                                <button type="button"
+                                                                    class="mt-2 bg-red-500 text-white text-sm px-3 py-1 rounded hover:bg-red-600"
+                                                                    onclick="openCancelModal('<%= product.productId._id %>')">
+                                                                    Cancel Product
+                                                                </button>
+                                                                <!-- Modal (hidden by default) -->
+                                                                <div id="cancelModal-<%= product.productId._id %>"
+                                                                    class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden">
+                                                                    <div
+                                                                        class="bg-white p-6 rounded-lg shadow-lg w-[90%] md:w-[400px]">
+                                                                        <h2
+                                                                            class="text-lg font-semibold mb-4 text-red-600">
+                                                                            Cancel Product</h2>
+                                                                        <form action="/orders/cancel-product"
+                                                                            method="POST">
+                                                                            <input type="hidden" name="orderId"
+                                                                                value="<%= order._id %>">
+                                                                            <input type="hidden" name="productId"
+                                                                                value="<%= product.productId._id %>">
+                                                                            <input type="hidden" name="size"
+                                                                                value="<%= product.size %>">
+                                                                            <label
+                                                                                class="block mb-2 text-sm font-medium text-gray-700">Reason
+                                                                                for cancellation:</label>
+                                                                            <textarea name="cancelReason" required
+                                                                                placeholder="Enter reason"
+                                                                                class="w-full border p-2 rounded mb-4 text-sm"
+                                                                                required></textarea>
+                                                                            <div class="flex justify-end gap-2">
+                                                                                <button type="button"
+                                                                                    onclick="closeCancelModal('<%= product.productId._id %>')"
+                                                                                    class="px-4 py-2 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Close</button>
+                                                                                <button type="submit"
+                                                                                    id="confirm-cancel-btn"
+                                                                                    class="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700">Confirm
+                                                                                    Cancel</button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                                <% } %>
+
+                                                                    <% if (product.productStatus==='delivered' ) { %>
+                                                                        <!-- Return Button Trigger -->
+                                                                        <button type="button"
+                                                                            class="mt-2 bg-blue-500 text-white text-sm px-3 py-1 rounded hover:bg-blue-600"
+                                                                            onclick="openReturnModal('<%= product.productId._id %>')">
+                                                                            Return Product
+                                                                        </button>
+
+                                                                        <!-- Return Modal -->
+                                                                        <div id="returnModal-<%= product.productId._id %>"
+                                                                            class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden">
+                                                                            <div
+                                                                                class="bg-white p-6 rounded-lg shadow-lg w-[90%] md:w-[400px]">
+                                                                                <h2
+                                                                                    class="text-lg font-semibold mb-4 text-blue-600">
+                                                                                    Return Product</h2>
+                                                                                <form action="/orders/return-product"
+                                                                                    method="POST">
+                                                                                    <input type="hidden" name="orderId"
+                                                                                        value="<%= order._id %>">
+                                                                                    <input type="hidden"
+                                                                                        name="productId"
+                                                                                        value="<%= product.productId._id %>">
+                                                                                    <input type="hidden" name="size"
+                                                                                        value="<%= product.size %>">
+                                                                                    <label
+                                                                                        class="block mb-2 text-sm font-medium text-gray-700">Reason
+                                                                                        for return:</label>
+                                                                                    <textarea name="returnReason"
+                                                                                        required
+                                                                                        placeholder="Enter reason"
+                                                                                        class="w-full border p-2 rounded mb-4 text-sm"></textarea>
+                                                                                    <div class="flex justify-end gap-2">
+                                                                                        <button type="button"
+                                                                                            onclick="closeReturnModal('<%= product.productId._id %>')"
+                                                                                            class="px-4 py-2 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300">Close</button>
+                                                                                        <button type="submit"
+                                                                                            id="confirm-return-btn"
+                                                                                            class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Confirm
+                                                                                            Return</button>
+                                                                                    </div>
+                                                                                </form>
+                                                                            </div>
+                                                                        </div>
+                                                                        <% } else if
+                                                                            (product.productStatus==='cancelled' ) { %>
+                                                                            <p
+                                                                                class="mt-2 text-sm text-gray-500 italic">
+                                                                                Product Cancelled</p>
+                                                                            <% } %>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <% }) %>
+        </div>
+    </div>
+
+    <!-- Right Panel - Order Details -->
+    <div class="w-1/2 bg-white shadow-lg">
+        <div class="p-6">
+            <!-- Shipping Details -->
+            <div class="mb-6">
+                <h2 class="font-semibold text-gray-800 mb-4">Shipping Details</h2>
+                <div class="space-y-2">
+                    <p class="text-sm text-gray-600"><span class="font-medium">
+                            <%= order.userId.name %>
+                        </span></p>
+                    <p class="text-sm text-gray-600">
+                        <%= order.shippingAddress.houseNo %>, <%= order.shippingAddress.street %>
+                    </p>
+                    <p class="text-sm text-gray-600">
+                        <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> - <%=
+                                    order.shippingAddress.pincode %>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Price Details -->
+            <div class="mb-6">
+                <h2 class="font-semibold text-gray-800 mb-4">Price Details</h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Total Items</span>
+                        <span class="text-sm font-medium">
+                            <%= order.products.length %>
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Delivery Charges</span>
+                        <span class="text-sm font-medium text-green-600">Free</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Payment Method</span>
+                        <span class="text-sm font-medium">
+                            <%= order.paymentMethod %>
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Payment Status</span>
+                        <span class="text-sm font-medium">
+                            <%= order.paymentStatus %>
+                        </span>
+                    </div>
+                    <hr class="my-3">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-gray-800">Total Amount</span>
+                        <span class="font-semibold text-gray-800">₹ <%= order.totalPrice %></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
