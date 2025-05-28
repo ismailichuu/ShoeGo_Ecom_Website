@@ -1,0 +1,50 @@
+<div class="container mx-auto px-4 py-6">
+  <h2 class="text-2xl font-bold mb-6">My Orders</h2>
+
+
+  <% orders.forEach(order=> { %>
+    <% order.products.forEach(product=> { %>
+      <div
+        class="bg-white shadow-md rounded-xl p-4 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between">
+
+        <!-- Product Info -->
+        <div class="flex items-start gap-4">
+          <a href="/product/<%= product.productId._id %>">
+            <img src="/uploads/products/<%= product.image %>" alt="Product" class="w-20 h-20 object-cover rounded-lg">
+          </a>
+          <div>
+            <h3 class="font-semibold text-lg">
+              <%= product.productId.name %>
+            </h3>
+            <p class="text-sm text-blue-600">Order ID: <%= order.orderId %>
+            </p>
+            <p class="text-pink-600 font-bold mt-1">₹ <%= product.priceAtPurchase %>
+            </p>
+          </div>
+        </div>
+
+        <!-- Order Status & Actions -->
+        <div class="mt-4 md:mt-0 text-sm md:text-right gap-4">
+          <% if (product.productStatus==='placed' || product.productStatus==='shipped' ||
+            product.productStatus==='pending' ) { %>
+            <p class="text-green-600 font-medium">🟢 Expected on <%= order.deliveryDate?.toDateString() || 'TBD' %>
+            </p>
+            <% } else if (product.productStatus==='cancelled' ) { %>
+              <p class="text-red-600 font-medium">🔴 Canceled on <%= order.orderDate?.toDateString() %>
+              </p>
+              <% } else if (product.productStatus==='delivered' ) { %>
+                <p class="text-green-600 font-medium">🟢 Delivered on <%= order.deliveryDate?.toDateString() %>
+                </p>
+                <% } else if (product.productStatus==='refunded' ) { %>
+                  <p class="text-yellow-600 font-medium">🟡 Refund completed</p>
+                    <% } else if (product.productStatus==='return-requested' ) { %>
+                    <p class="text-yellow-600 font-medium">🟡 Ready to return</p>
+                    <% } %>
+
+                      <a class=" text-sm text-blue-600 underline cursor-pointer"
+                        href="/order-details/<%= order._id %>">View Details</a>
+        </div>
+      </div>
+      <% }) %>
+        <% }) %>
+</div>

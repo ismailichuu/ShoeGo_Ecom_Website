@@ -1,0 +1,66 @@
+<div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6 mt-10">
+  <h2 class="text-lg font-semibold mb-4">My lostandfound Wallet</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <!-- Balance Section -->
+    <div class="md:col-span-2">
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <div class="flex justify-between text-sm text-gray-700 mb-2">
+          <span>Total Balance</span>
+          <span class="font-semibold text-indigo-700">₹ <%= totalBalance %></span>
+        </div>
+        <div class="flex justify-between border-t pt-2 text-sm">
+          <span>Wallet</span>
+          <span>₹ <%= walletBalance %></span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span>Gift cards</span>
+          <span>₹ <%= giftCardBalance %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Section -->
+    <div>
+      <div class="bg-gray-50 p-4 rounded-lg space-y-2">
+        <div class="text-sm font-medium text-gray-600">Do more with FitBazar Wallet</div>
+        <ul class="text-sm text-indigo-600 space-y-1">
+          <li><a href="#" class="hover:underline">Add gift cards to wallet</a></li>
+          <li><a href="#" class="hover:underline">How to add cash to balance</a></li>
+          <li><a href="#" class="hover:underline">Check Wallet transaction history</a></li>
+        </ul>
+        <hr />
+        <div class="text-sm">
+          <a href="#" class="text-gray-700 hover:text-indigo-600 flex items-center gap-2">
+            <span>Account Settings</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add money section -->
+  <div class="bg-gray-100 p-4 rounded-lg mb-6">
+    <div class="mb-2 text-sm font-medium text-gray-700">Add money to wallet</div>
+    <form action="/wallet/add" method="POST" class="space-y-3">
+      <input type="number" name="amount" class="w-full p-2 border rounded" placeholder="₹ 1000" required />
+      <div class="flex gap-2">
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white py-1 px-4 rounded">Add money to wallet</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Offer Box -->
+  <div class="bg-black text-white p-4 rounded-lg text-sm">
+    <p>Get upto 20% back<br /><span class="text-gray-300 text-xs">On adding 500 or more</span></p>
+  </div>
+
+  <!-- Footer Links -->
+  <div class="text-center mt-4 text-xs text-gray-500 space-x-4">
+    <a href="#" class="hover:underline">Help & FAQs</a>
+    <a href="#" class="hover:underline">Condition of Use</a>
+  </div>
+</div>

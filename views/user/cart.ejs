@@ -46,11 +46,11 @@
                                                     d="M20 12H4" />
                                             </svg>
                                         </button>
-                                        <span class="font-medium">
+                                        <span class="quantity-count font-medium">
                                             <%= item.quantity %>
                                         </span>
                                         <button
-                                            class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+                                            class=" w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
                                             onclick="increaseQuantity('<%= item.productId._id %>', '<%= item.size %>', this)">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor">
@@ -70,9 +70,6 @@
                                         <p class="text-lg font-medium text-indigo-600">₹<%= item.productId.discountPrice
                                                 %>
                                         </p>
-                                        <p class="text-sm font-medium text-gray-700">Total: ₹<%=
-                                                item.productId.discountPrice * item.quantity %>
-                                        </p>
                                     </div>
                                     <button
                                         onclick="showDeleteModal(() => deleteCartItem('<%= item.productId._id %>', '<%= item.size %>'))"
@@ -87,11 +84,14 @@
                                 </div>
                             </div>
                         </div>
+                        <% }) %>
             </div>
 
-            <%- include('../partials/orderSummary') %>
-
-                <% if (cart && cart.cartItems && cart.cartItems.length> 0) { %>
+            <div class="w-full space-y-4">
+                <%- include('../partials/orderSummary') %>
+            </div>
+            <% if (cart && cart.cartItems && cart.cartItems.length> 0) { %>
+                <div class="me-end">
                     <a href="/select-address/<%= cart._id %>" class="block mt-4">
                         <button
                             class="w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
@@ -104,53 +104,54 @@
                             </svg>
                         </button>
                     </a>
-                    <% } %>
-        </div>
-        </div>
-
-        <!-- You Might Also Like -->
-        <% if (related && related.length> 0) { %>
-            <div class="mt-16">
-                <h2 class="text-xl font-semibold text-gray-800 mb-6">You Might Also Like</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <% related.forEach(product=> { %>
-                        <a href="/product/<%= product._id %>" class="group">
-                            <div
-                                class="bg-white shadow-sm rounded-lg overflow-hidden relative w-full h-auto flex flex-col hover:shadow transition-shadow">
-                                <div class="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                        fill="currentColor">
-                                        <path fill-rule="evenodd"
-                                            d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <img src="/uploads/products/<%= product.images[0] %>" alt="Shoe"
-                                    class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
-                                <div class="p-4 flex-1 flex flex-col justify-between">
-                                    <div>
-                                        <p class="text-xs text-gray-500">
-                                            <%= product.categoryId[0].name %>
-                                        </p>
-                                        <h3 class="text-md font-medium truncate" title="<%= product.name %>">
-                                            <%= product.name %>
-                                        </h3>
-                                    </div>
-                                    <div class="mt-2">
-                                        <p class="text-sm line-through text-gray-500">₹<%= product.basePrice %>
-                                        </p>
-                                        <p class="text-indigo-600 font-bold text-base mt-1">₹<%= product.discountPrice
-                                                %>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        <% }) %>
                 </div>
+                <% } %>
             </div>
-            <% } %>
-                <% }) %>
+            </div>
+
+            <!-- You Might Also Like -->
+            <% if (related && related.length> 0) { %>
+                <div class="mt-16">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">You Might Also Like</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <% related.forEach(product=> { %>
+                            <a href="/product/<%= product._id %>" class="group">
+                                <div
+                                    class="bg-white shadow-sm rounded-lg overflow-hidden relative w-full h-auto flex flex-col hover:shadow transition-shadow">
+                                    <div class="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <img src="/uploads/products/<%= product.images[0] %>" alt="Shoe"
+                                        class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+                                    <div class="p-4 flex-1 flex flex-col justify-between">
+                                        <div>
+                                            <p class="text-xs text-gray-500">
+                                                <%= product.categoryId[0].name %>
+                                            </p>
+                                            <h3 class="text-md font-medium truncate" title="<%= product.name %>">
+                                                <%= product.name %>
+                                            </h3>
+                                        </div>
+                                        <div class="mt-2">
+                                            <p class="text-sm line-through text-gray-500">₹<%= product.basePrice %>
+                                            </p>
+                                            <p class="text-indigo-600 font-bold text-base mt-1">₹<%=
+                                                    product.discountPrice %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            <% }) %>
+                    </div>
+                </div>
+                <% } %>
+
                     <% } else { %>
                         <div class="flex flex-col items-center justify-center bg-gray-300 p-12">
                             <div class="mb-6 p-6">
@@ -161,7 +162,8 @@
                                 </svg>
                             </div>
                             <h2 class="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h2>
-                            <p class="text-gray-500 mb-8">Looks like you haven't added any items to your cart yet.</p>
+                            <p class="text-gray-500 mb-8">Looks like you haven't added any items to your cart yet.
+                            </p>
                             <a href="/allProducts"
                                 class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 Start Shopping

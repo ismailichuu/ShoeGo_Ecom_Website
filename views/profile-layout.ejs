@@ -1,35 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>
-    <%= 'ShoeGo | ' + title || 'Profile' %>
-  </title>
+  <title>ShoeGo | My Orders</title>
   <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon">
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/output.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    @keyframes slideInRight {
+      from { transform: translateX(20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .animate-fade-in-up { animation: fadeInUp 0.6s ease-out; }
+    .animate-pulse-custom { animation: pulse 2s infinite; }
+    .animate-slide-in-right { animation: slideInRight 0.4s ease-out; }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    
+    .progress-bar {
+      background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6);
+      background-size: 200% 100%;
+      animation: gradient-shift 3s ease infinite;
+    }
+    
+    @keyframes gradient-shift {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    
+    .floating-action {
+      box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+    }
+    
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 24px;
+    }
+  </style>
 </head>
 
-<body class="bg-gray-300">
+<body class="bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50 min-h-screen font-['Inter']">
   <div class="min-h-screen flex">
-    <!-- Sidebar (optional) -->
-    <aside class="w-64 bg-gray-100 p-6 shadow-md hidden md:block">
-      <a href="/"><h1 class="text-2xl font-bold text-gray-600 mb-6">ShoeGO</h1></a>
-      <nav class="space-y-4">
-        <a href="/profile" class="block p-3 bg-purple-100 rounded hover:bg-purple-200 transition"><i class="fa-solid fa-address-card"></i> Profile Information</a>
-        <a href="/addresses" class="block p-3 bg-purple-100 rounded hover:bg-purple-200 transition"><i class="fa-solid fa-address-book"></i> My Addresses</a>
-        <a href="/orders" class="block p-3 bg-purple-100 rounded hover:bg-purple-200 transition"><i class="fa-solid fa-bag-shopping"></i> My Orders</a>
-        <a href="/wishlist" class="block p-3 bg-purple-100 rounded hover:bg-purple-200 transition"><i class="fa-solid fa-heart"></i> My Wishlist</a>
-        <a href="/wallet" class="block p-3 bg-purple-100 rounded hover:bg-purple-200 transition"><i class="fa-solid fa-wallet"></i> My Wallet</a>
-        <a href="/referrals" class="block p-3 bg-purple-100 rounded hover:bg-purple-200 transition"><i class="fa-solid fa-user-group"></i> My Referrals</a>
-        <a href="/logout" class="block p-3 text-red-700 bg-purple-100 rounded hover:bg-red-300 transition"><i class="fa-solid fa-right-from-bracket" style="color: #cd7070;"></i> Logout</a>
-      </nav>
+    <!-- Modern Sidebar -->
+    <aside class="w-64 glass-effect p-6 shadow-xl hidden md:block relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-purple-600/10 to-blue-600/10"></div>
+      <div class="relative z-10">
+        <a href="/"><h1 class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-8">ShoeGO</h1></a>
+        <nav class="space-y-3">
+          <a href="/profile" class="group block p-4 rounded-2xl hover:bg-white/60 transition-all duration-300 backdrop-blur-sm">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-address-card text-purple-500 group-hover:scale-110 transition-transform"></i>
+              <span class="text-gray-700 group-hover:text-purple-700 font-medium">Profile</span>
+            </div>
+          </a>
+          <a href="/addresses" class="group block p-4 rounded-2xl hover:bg-white/60 transition-all duration-300 backdrop-blur-sm">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-address-book text-purple-500 group-hover:scale-110 transition-transform"></i>
+              <span class="text-gray-700 group-hover:text-purple-700 font-medium">Addresses</span>
+            </div>
+          </a>
+          <a href="/orders" class="group block p-4 rounded-2xl hover:bg-white/60 transition-all duration-300 backdrop-blur-sm">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-bag-shopping text-purple-500 group-hover:scale-110 transition-transform"></i>
+              <span class="text-gray-700 group-hover:text-purple-700 font-medium">My Orders</span>
+            </div>
+          </a>
+          <a href="/wishlist" class="group block p-4 rounded-2xl hover:bg-white/60 transition-all duration-300 backdrop-blur-sm">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-heart text-purple-500 group-hover:scale-110 transition-transform"></i>
+              <span class="text-gray-700 group-hover:text-purple-700 font-medium">Wishlist</span>
+            </div>
+          </a>
+          <a href="/wallet" class="group block p-4 rounded-2xl hover:bg-white/60 transition-all duration-300 backdrop-blur-sm">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-wallet text-purple-500 group-hover:scale-110 transition-transform"></i>
+              <span class="text-gray-700 group-hover:text-purple-700 font-medium">Wallet</span>
+            </div>
+          </a>
+          <a href="/referrals" class="group block p-4 rounded-2xl hover:bg-white/60 transition-all duration-300 backdrop-blur-sm">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-user-group text-purple-500 group-hover:scale-110 transition-transform"></i>
+              <span class="text-gray-700 group-hover:text-purple-700 font-medium">Referrals</span>
+            </div>
+          </a>
+          <a href="/logout" class="group block p-4 rounded-2xl hover:bg-red-50 transition-all duration-300 mt-8">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-right-from-bracket text-red-500 group-hover:scale-110 transition-transform"></i>
+              <span class="text-red-600 group-hover:text-red-700 font-medium">Logout</span>
+            </div>
+          </a>
+        </nav>
+      </div>
     </aside>
 
     <!-- Profile Main Content -->
@@ -39,5 +141,4 @@
   </div>
   <script src="/js/user.js"></script>
 </body>
-
 </html>

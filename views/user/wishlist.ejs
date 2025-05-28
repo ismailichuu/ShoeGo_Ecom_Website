@@ -8,168 +8,287 @@
     <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/output.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
         integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'bounce-subtle': 'bounceSubtle 2s infinite',
+                        'heart-beat': 'heartBeat 1.5s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(50px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        bounceSubtle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-3px)' }
+                        },
+                        heartBeat: {
+                            '0%': { transform: 'scale(1)' },
+                            '14%': { transform: 'scale(1.1)' },
+                            '28%': { transform: 'scale(1)' },
+                            '42%': { transform: 'scale(1.1)' },
+                            '70%': { transform: 'scale(1)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 
-<body class="bg-gray-300">
-    <header class="bg-gray-700 py-4 shadow-sm">
-        <div class="container mx-auto flex items-center justify-between px-4">
+<body class="font-inter bg-gradient-to-br from-rose-100 via-purple-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-lg border-b border-white/20 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Left side: Logo + Nav -->
+                <div class="flex items-center space-x-12">
+                    <a href="/" class="transition-transform hover:scale-105">
+                        <img src="/images/logo.png" alt="Shoego logo" class="w-40 opacity-90">
+                    </a>
 
-            <!-- Left side: Logo + Nav -->
-            <div class="flex items-center space-x-10">
-                <a href="/"><img src="/images/logo.png" alt="Shoego logo" class="w-40 opacity-90"></a>
+                    <nav class="hidden md:block">
+                        <ul class="flex space-x-8">
+                            <li>
+                                <a href="/allProducts?search=&category=681cde24cdabafe21e645d55&minPrice=0&maxPrice=0&sort="
+                                    class="text-gray-700 hover:text-indigo-600 transition-all duration-300 font-medium relative group">
+                                    Boots
+                                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/allProducts?search=&category=681cde24cdabafe21e645d53&minPrice=0&maxPrice=0&sort="
+                                    class="text-gray-700 hover:text-indigo-600 transition-all duration-300 font-medium relative group">
+                                    Formal
+                                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="http://127.0.0.1:8080/allProducts?search=&category=681cde24cdabafe21e645d54&minPrice=0&maxPrice=0&sort="
+                                    class="text-gray-700 hover:text-indigo-600 transition-all duration-300 font-medium relative group">
+                                    Sneakers
+                                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
 
-                <nav>
-                    <ul class="space-x-6 hidden md:flex">
-                        <li><a href="/allProducts?search=&category=681cde24cdabafe21e645d55&minPrice=0&maxPrice=0&sort="
-                                class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Boots</a>
-                        </li>
-                        <li><a href="/allProducts?search=&category=681cde24cdabafe21e645d53&minPrice=0&maxPrice=0&sort="
-                                class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Formal</a></li>
-                        <li><a href="http://127.0.0.1:8080/allProducts?search=&category=681cde24cdabafe21e645d54&minPrice=0&maxPrice=0&sort="
-                                class="text-gray-300 hover:text-gray-900 transition-colors font-medium">Sneakers</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-
-            <!-- Right side: Search bar + Icons -->
-            <div class="flex items-center space-x-6">
-
-                <!-- Search input -->
-                <div class="relative">
-                    <form method="GET" action="/allProducts"
-                        class="flex items-center bg-gray-300 rounded-full px-3 py-1">
-                        <input type="text" name="search" value="" placeholder="Search shoes..."
-                            class="outline-none px-2 py-1 rounded-full w-60 text-black" />
-                        <button type="submit" class="text-purple-600 font-bold px-2">🔍</button>
+                <!-- Right side: Search bar + Icons -->
+                <div class="flex items-center space-x-6">
+                    <!-- Search input -->
+                    <form method="GET" action="/allProducts" class="relative group">
+                        <div class="flex items-center bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:bg-white">
+                            <input type="text" name="search" value="" placeholder="Search shoes..."
+                                class="outline-none px-2 py-1 rounded-full w-60 text-gray-700 bg-transparent placeholder-gray-500" />
+                            <button type="submit" class="text-purple-600 hover:text-purple-700 font-bold px-2 transition-colors">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
                     </form>
-                </div>
 
-                <!-- Icons -->
-                <div class="flex items-center space-x-4">
-                    <a href="/profile"> <i
-                            class="fas fa-user text-gray-300 h-5 w-5 hover:text-gray-500 cursor-pointer"></i></a>
-                    <a href="/cart"><i
-                            class="fas fa-shopping-cart text-gray-300 h-5 w-5 hover:text-yellow-500 cursor-pointer"></i></a>
+                    <!-- Icons -->
+                    <div class="flex items-center space-x-4">
+                        <a href="/profile" class="group">
+                            <div class="bg-white/80 backdrop-blur-sm p-3 rounded-full shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:bg-white group-hover:scale-110">
+                                <i class="fas fa-user text-gray-600 group-hover:text-indigo-600 transition-colors"></i>
+                            </div>
+                        </a>
+                        <a href="/cart" class="group">
+                            <div class="bg-white/80 backdrop-blur-sm p-3 rounded-full shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:bg-white group-hover:scale-110">
+                                <i class="fas fa-shopping-cart text-gray-600 group-hover:text-yellow-500 transition-colors"></i>
+                            </div>
+                        </a>
+                    </div>
                 </div>
-
             </div>
-
         </div>
     </header>
 
     <!-- Wishlist Section -->
-    <section class="px-6 py-10">
-        <h2 class="text-3xl font-semibold mb-6">My Wishlist</h2>
-        <div id="error-wishlist" class="text-red-600 font-medium mt-2 hidden"></div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-            <% if (wishlist && wishlist.items && wishlist.items.length> 0) { %>
-                <% wishlist.items.forEach(item=> { %>
-                    <div class="bg-white rounded-2xl shadow-md overflow-hidden w-[275px] border border-blue-300 p-3">
-                        <a href="/product/<%= item.productId._id %>">
-                        <img src="/uploads/products/<%= item.productId.images[0] || 'https://via.placeholder.com/200' %>"
-                            alt="<%= item.productId.name %>" class="w-full h-[180px] object-cover rounded-lg" />
-                        </a>
-                        <div class="pt-3 px-1">
-                            <h3 class="text-gray-800 font-semibold text-lg">
+    <section class="max-w-7xl mx-auto px-6 py-12 animate-fade-in">
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold bg-gradient-to-r from-rose-500 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
+                <i class="fas fa-heart text-red-500 animate-heart-beat mr-3"></i>
+                My Wishlist
+            </h1>
+            <p class="text-gray-600 text-lg">Your favorite shoes collection</p>
+        </div>
+
+        <div id="error-wishlist" class="text-red-600 font-medium mt-2 hidden bg-red-50 border border-red-200 rounded-lg p-3"></div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <% if (wishlist && wishlist.items && wishlist.items.length > 0) { %>
+                <% wishlist.items.forEach((item, index) => { %>
+                    <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-xl border border-white/30 overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 animate-slide-up group"
+                         style="animation-delay: <%= index * 0.1 %>s">
+                        
+                        <!-- Product Image -->
+                        <div class="relative overflow-hidden">
+                            <a href="/product/<%= item.productId._id %>">
+                                <img src="/uploads/products/<%= item.productId.images[0] || 'https://via.placeholder.com/200' %>"
+                                     alt="<%= item.productId.name %>" 
+                                     class="w-full h-60 object-cover transition-transform duration-500 group-hover:scale-110" />
+                            </a>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+
+                        <!-- Product Info -->
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2 group-hover:text-indigo-600 transition-colors">
                                 <%= item.productId.name %>
                             </h3>
-                            <p class="text-gray-700 font-light text-sm mt-1">Size : <%= item.size %>
-                            </p>
-                            <p class="text-gray-700 font-medium text-base mt-1 ">
-                                <span class="text-gray-700 font-medium text-base mt-1 line-through">₹<%=
-                                        item.productId.basePrice %></span>
-                                <%= item.productId.discountPrice %>
-                            </p>
+                            
+                            <div class="flex items-center mb-3">
+                                <span class="bg-indigo-100 text-indigo-800 text-sm font-medium py-1 px-3 rounded-full">
+                                    Size: <%= item.size %>
+                                </span>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <span class="text-gray-500 line-through text-lg">₹<%= item.productId.basePrice %></span>
+                                <span class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent ml-2">
+                                    ₹<%= item.productId.discountPrice %>
+                                </span>
+                            </div>
 
-                            <div class="flex justify-between items-center mt-4">
+                            <!-- Action Buttons -->
+                            <div class="flex gap-3">
                                 <button onclick="addToCart('<%= item.productId._id %>','<%= item.size %>')"
-                                    class="bg-black text-white text-sm px-4 py-1 rounded-lg flex items-center gap-1 hover:bg-gray-700">
-                                    Move <i class="fa-solid fa-cart-shopping"></i>
+                                    class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 hover:shadow-lg transform hover:scale-105 flex items-center justify-center gap-2">
+                                    Move to Cart <i class="fa-solid fa-cart-shopping"></i>
                                 </button>
-                                <button onclick="removeFromWishlist('<%= item.productId._id %>','<%= item.size %>')" class="bg-gray-200 text-sm px-3 py-1 rounded hover:bg-gray-300">
-                                    Remove
+                                <button onclick="removeFromWishlist('<%= item.productId._id %>','<%= item.size %>')" 
+                                    class="bg-gray-100 hover:bg-red-50 text-gray-700 hover:text-red-600 font-medium py-3 px-4 rounded-xl transition-all duration-300 hover:shadow-lg transform hover:scale-105">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <% }) %>
-                        <% } else { %>
-
-                            <p class="text-center text-gray-600">Your Wishlist is empty.</p>
-                            <% } %>
+                <% }) %>
+            <% } else { %>
+                <div class="col-span-full text-center py-20">
+                    <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-xl border border-white/30 p-12 max-w-md mx-auto">
+                        <i class="fas fa-heart-broken text-6xl text-gray-300 mb-6"></i>
+                        <h3 class="text-2xl font-bold text-gray-700 mb-4">Your Wishlist is Empty</h3>
+                        <p class="text-gray-500 mb-6">Start adding shoes you love to see them here!</p>
+                        <a href="/allProducts" 
+                           class="inline-block bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium py-3 px-8 rounded-xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 hover:shadow-lg transform hover:scale-105">
+                            Explore Shoes
+                        </a>
+                    </div>
+                </div>
+            <% } %>
         </div>
     </section>
 
-    <!-- Repeat above block for other wishlist items -->
-    </div>
-    </section>
+    <!-- You Might Also Like Section -->
+    <section class="max-w-7xl mx-auto px-6 py-12">
+        <div class="mb-12">
+            <h2 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                You Might Also Like
+            </h2>
+            <p class="text-gray-600">Discover more amazing shoes from our collection</p>
+        </div>
 
-    <!-- Discover More Section -->
-    <section class="p-6">
-        <div class="mt-16">
-            <h2 class="text-xl font-semibold text-gray-800 mb-6">You Might Also Like</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <% if(related.length > 0) { %>
+                <% related.forEach((product, index) => { %>
+                    <a href="/product/<%=product._id %>" class="group">
+                        <div class="bg-white/90 backdrop-blur-lg rounded-3xl overflow-hidden shadow-xl border border-white/30 h-96 flex flex-col transition-all duration-500 hover:shadow-2xl hover:-translate-y-3 hover:bg-white animate-slide-up"
+                             style="animation-delay: <%= index * 0.1 %>s">
+                            
+                            <!-- Wishlist Button -->
+                            <button class="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/80 backdrop-blur-sm border border-white/30 transition-all duration-300 hover:bg-white hover:scale-110 group-hover:shadow-lg">
+                                <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors"></i>
+                            </button>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-                <% if(related.length> 0) { %>
-                    <% related.forEach(product=> { %>
-                        <a href="/product/<%=product._id %>">
-                            <div
-                                class="bg-white shadow-lg rounded-lg overflow-hidden relative w-full h-[350px] flex flex-col">
-                                <button class="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10">
-                                    <i class="fas fa-heart"></i>
-                                </button>
+                            <!-- Product Image -->
+                            <div class="relative overflow-hidden rounded-t-3xl">
+                                <img src="/uploads/products/<%= product.images[0] %>" alt="<%= product.name %>"
+                                     class="w-full h-52 object-cover transition-transform duration-500 group-hover:scale-110">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            </div>
 
-                                <img src="/uploads/products/<%= product.images[0] %>" alt="Shoe"
-                                    class="w-full h-48 object-cover">
-
-                                <div class="p-4 flex-1 flex flex-col justify-between">
-                                    <h3 class="text-md font-semibold truncate" title="<%= product.name %>">
+                            <!-- Product Info -->
+                            <div class="p-6 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800 truncate group-hover:text-indigo-600 transition-colors" 
+                                        title="<%= product.name %>">
                                         <%= product.name %>
                                     </h3>
-                                    <p class="text-xs text-gray-500 mt-1">
+                                    <p class="text-sm text-gray-500 mt-1 font-medium">
                                         <%= product.categoryId[0].name %>
                                     </p>
-                                    <div class="mt-2">
-                                        <p class="text-sm line-through text-black">₹<%= product.basePrice %>
-                                        </p>
-                                        <p class="text-indigo-600 font-bold text-base mt-1">₹ <%= product.discountPrice
-                                                %>
-                                        </p>
-                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 space-y-1">
+                                    <p class="text-sm line-through text-gray-400">₹<%= product.basePrice %></p>
+                                    <p class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                                        ₹<%= product.discountPrice %>
+                                    </p>
                                 </div>
                             </div>
-                        </a>
-                        <% }) %>
-                            <% } %>
-            </div>
+                        </div>
+                    </a>
+                <% }) %>
+            <% } %>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-white p-6 mt-10 text-sm text-gray-600 grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div>
-            <h4 class="font-semibold mb-2">About</h4>
-            <p>Learn about us, our journey, and vision.</p>
-        </div>
-        <div>
-            <h4 class="font-semibold mb-2">Help</h4>
-            <p>FAQs, shipping, returns & more.</p>
-        </div>
-        <div>
-            <h4 class="font-semibold mb-2">Consumer Policy</h4>
-            <p>Terms of service, privacy, and policies.</p>
-        </div>
-        <div>
-            <h4 class="font-semibold mb-2">Mail Us:</h4>
-            <p>shoego@support.in</p>
-            <p>123 Shoe St, Fashion City, India</p>
+    <footer class="bg-white/90 backdrop-blur-lg border-t border-white/20 mt-20">
+        <div class="max-w-7xl mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="space-y-4">
+                    <h4 class="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">About</h4>
+                    <p class="text-gray-600">Learn about us, our journey, and vision for the future of footwear.</p>
+                </div>
+                <div class="space-y-4">
+                    <h4 class="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Help</h4>
+                    <p class="text-gray-600">FAQs, shipping information, returns & exchanges, and customer support.</p>
+                </div>
+                <div class="space-y-4">
+                    <h4 class="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Consumer Policy</h4>
+                    <p class="text-gray-600">Terms of service, privacy policy, and consumer guidelines.</p>
+                </div>
+                <div class="space-y-4">
+                    <h4 class="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Contact Us</h4>
+                    <div class="space-y-2 text-gray-600">
+                        <p class="flex items-center gap-2">
+                            <i class="fas fa-envelope text-indigo-500"></i>
+                            shoego@support.in
+                        </p>
+                        <p class="flex items-center gap-2">
+                            <i class="fas fa-map-marker-alt text-indigo-500"></i>
+                            123 Shoe St, Fashion City, India
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 mt-8 pt-8 text-center">
+                <p class="text-gray-500">© 2024 ShoeGo. All rights reserved. Made with ❤️ for shoe lovers.</p>
+            </div>
         </div>
     </footer>
+
     <script src="/js/user.js"></script>
 </body>
 
