@@ -87,7 +87,7 @@ export const deleteCategory = async (req, res) => {
         await Category.deleteOne({ _id: categoryId })
         res.json({ success: true });
     } catch (error) {
-        console.error(err);
+        console.error(error);
     }
 }
 
@@ -99,7 +99,7 @@ export const getEditCategory = async (req, res) => {
         const categoryId = req.query.id;
         const category = await Category.findById(categoryId);
         res.render('admin/editCategory', { category, msg, layout: layout });
-    } catch (error) {
+    } catch (err) {
         console.error(err);
     }
 }

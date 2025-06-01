@@ -1,6 +1,6 @@
 import express from 'express';
 import { logger, verifyUser } from '../middlewares/userMiddlware.js';
-import upload from '../configuration/multer.js';
+import upload from '../config/multer.js';
 import { getForgotPassword, getLogin, getSignup, getVerify, handleForgotpassword,
      handleGoogle, handleGoogleCallback, handleLogin, handleLogout, handleSignup,
      handleVerify, handleVerifyPassword, resendOtp } from '../controllers/user/authController.js';

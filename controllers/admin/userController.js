@@ -2,6 +2,7 @@
 import User from '../../models/userSchema.js';
 import Address from '../../models/addressSchema.js';
 import Order from '../../models/orderSchema.js';
+import Wallet from '../../models/walletSchema.js';
 
 //@route GET /customers
 export const getCustomers = async (req, res) => {
@@ -65,23 +66,70 @@ export const handleBlockUser = async (req, res) => {
 
 //@router GET /customerDetails
 export const getCustomerDetails = async (req, res) => {
-    try {
-        const layout = req.query.req ? 'layout' : false;
-        const userId = req.query.id;
-        const customer = await User.findById(userId);
-        const joinedDate = new Date(customer.createdAt).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
-        const address = await Address.findOne({ userId, isDefault: true });
-        console.log(userId)
-        res.render('admin/customerDetails', { customer, joinedDate, layout: layout, address });
-    } catch (error) {
-        console.log(error);
-        res.status(500).send('Server error');
-    }
+  try {
+    const layout = req.query.req ? 'layout' : false;
+    const userId = req.query.id;
+    const currentPage = parseInt(req.query.page) || 1;
+    const limit = 5;
+
+    const customer = await User.findById(userId);
+    if (!customer) return res.status(404).send('Customer not found');
+
+    const joinedDate = new Date(customer.createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    const address = await Address.findOne({ userId, isDefault: true });
+
+    // Fetch all orders (latest first)
+    const totalOrders = await Order.countDocuments({ userId });
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    const orders = await Order.find({ userId })
+      .populate('products.productId')
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * limit)
+      .limit(limit);
+
+    // Optionally calculate amount spent or monthly orders
+    const totalAmount = orders.reduce((sum, order) => {
+      return sum + order.products.reduce((s, p) => s + p.totalPrice, 0);
+    }, 0);
+
+    const monthlyOrders = await Order.countDocuments({
+      userId,
+      createdAt: {
+        $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      },
+    });
+
+    const wallet = await Wallet.findOne({userId});
+    const walletBalance = wallet.balance;
+
+    const balanceNote = monthlyOrders > 0 ? 'Growing this month' : 'No recent activity';
+
+    res.render('admin/customerDetails', {
+      customer,
+      joinedDate,
+      address,
+      orders,
+      totalOrders,
+      totalAmount,
+      monthlyOrders,
+      balanceNote,
+      layout,
+      currentPage,
+      totalPages,
+      walletBalance,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
 };
+
 
 //@router GET /orders
 export const getOrders = async (req, res) => {

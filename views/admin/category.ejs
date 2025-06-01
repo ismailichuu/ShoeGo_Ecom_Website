@@ -145,7 +145,7 @@
               <% } %>
 
                 <% if (pagination.hasNext) { %>
-                  <a href="?page=<%= pagination.page + 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %><%= search ? '&search=' + search : '' %>&req=new%>"
+                  <a href="/admin/categories?page=<%= pagination.page + 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %><%= search ? '&search=' + search : '' %>&req=new%>"
                     class="px-3 py-1 bg-gray-200 rounded">Next</a>
                   <% } %>
       </div>

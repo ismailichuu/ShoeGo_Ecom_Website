@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import process from 'process';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 

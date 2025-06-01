@@ -4,8 +4,10 @@ import { google } from "../../auth/google.js";
 import User from "../../models/userSchema.js";
 import jwt from 'jsonwebtoken';
 import { generateOtp, hashingPassword } from "../../util/functions.js";
-import sendOTPEmail from "../../configuration/nodemailer.transporter.js";
+import sendOTPEmail from "../../config/nodemailer.transporter.js";
 import { generateToken } from "../../util/jwt.js";
+import process from 'process';
+import { logger } from "../../util/logger.js";
 
 //@route GET /login
 export const getLogin = (req, res) => {
@@ -92,7 +94,8 @@ export const getVerify = (req, res) => {
         const email = decoded.email;
         req.session.token = token;
         res.render('user/verify', { signup, email, msg, admin: false });
-    } catch (err) {
+    } catch (error) {
+        logger.error('from Get verify', error.toString());
         req.session.err = 'Session Expired Signup Again';
         return res.redirect('/signup');
     }

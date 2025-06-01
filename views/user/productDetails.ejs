@@ -90,7 +90,7 @@
             <div class="space-y-6">
                 <!-- Main Image -->
                 <div class="aspect-square bg-white rounded-2xl shadow-lg overflow-hidden group cursor-zoom-in">
-                    <img id="mainImage" src="/uploads/products/<%= product.images[0] %>" alt="<%= product.name %>"
+                    <img id="mainImage" src="<%= product.images[0] %>" alt="<%= product.name %>"
                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                         onclick="openZoomModal(this.src)" />
                 </div>
@@ -99,9 +99,9 @@
                 <div class="grid grid-cols-4 gap-4">
                     <% product.images.forEach(image => { %>
                         <div class="aspect-square bg-white rounded-xl shadow-md overflow-hidden border-2 border-transparent hover:border-indigo-500 transition-colors thumbnail-wrapper cursor-pointer">
-                            <img src="/uploads/products/<%= image %>" alt="<%= product.name %> - View"
+                            <img src="<%= image %>" alt="<%= product.name %> - View"
                                 class="w-full h-full object-cover thumbnail-image hover:scale-105 transition-transform duration-200"
-                                data-src="/uploads/products/<%= image %>">
+                                data-src="<%= image %>">
                         </div>
                     <% }) %>
                 </div>
@@ -259,7 +259,7 @@
                         <a href="/product/<%= product._id %>" class="group">
                             <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                                 <div class="relative">
-                                    <img src="/uploads/products/<%= product.images[0] %>" alt="<%= product.name %>"
+                                    <img src="<%= product.images[0] %>" alt="<%= product.name %>"
                                         class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
                                     <button class="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors">
                                         <i class="fas fa-heart text-gray-400 hover:text-red-500"></i>

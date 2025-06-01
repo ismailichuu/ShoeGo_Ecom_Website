@@ -27,11 +27,11 @@ router.get('/editProduct', logger, getEditProduct);
 
 router.post('/editProduct', logger, validateEditProductImages, handleEditProduct);
 
-router.get('/customers', getCustomers);
+router.get('/customers', logger, getCustomers);
 
-router.get('/customerDetails', getCustomerDetails);
+router.get('/customerDetails', logger, getCustomerDetails);
 
-router.patch('/blockUser', handleBlockUser);
+router.patch('/blockUser', logger, handleBlockUser);
 
 router.get('/categories', logger, getCategory);
 

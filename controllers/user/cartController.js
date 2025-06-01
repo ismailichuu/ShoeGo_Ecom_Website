@@ -248,8 +248,6 @@ export const handleDecreaseCount = async (req, res) => {
             (item) => item.productId.equals(objectId) && item.size === size
         );
 
-        const product = await Product.findById(productId);
-
         if (itemIndex === -1) {
             return res.status(404).json({ success: false, message: 'Item not found in cart' });
         }

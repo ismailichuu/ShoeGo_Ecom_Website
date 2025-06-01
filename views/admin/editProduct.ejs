@@ -39,7 +39,7 @@
       <% for (let i=0; i < 3; i++) { %>
         <div class="image-box" data-index="<%= i %>">
           <% if (product.images[i]) { %>
-            <img src="/uploads/products/<%= product.images[i] %>" class="h-32 object-cover rounded" />
+            <img src="<%= product.images[i] %>" class="h-32 object-cover rounded" />
             <% } else { %>
               <span class="text-gray-400">Click to add</span>
               <% } %>

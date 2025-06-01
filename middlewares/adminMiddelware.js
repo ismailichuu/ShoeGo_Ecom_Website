@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import upload from '../configuration/multer.js';
+import upload from '../config/multer.js';
+import process from 'process';
 
 //multer
 export const validateAddProductImages = (req, res, next) => {

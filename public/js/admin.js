@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 
 //products page
 document.addEventListener('DOMContentLoaded', () => {
@@ -34,8 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     .then(response => response.text())
                     .then(html => {
                         contentArea.innerHTML = html;
-                        initializeImageCropping(); // initialize logic after content is injected
                         initializeSizeSelection();
+                        initializeImageCropping();
                     })
                     .catch(err => {
                         console.error('add product page is not loaded', err);
@@ -45,6 +46,168 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function initializeSizeSelection() {
+  console.log('initializeSizeSelection called');
+  const sizeButtons = document.querySelectorAll('.size-btn');
+  console.log('sizeButtons found:', sizeButtons.length);
+  const selectedSizesInput = document.getElementById('selectedSizes');
+  const selectedSizes = new Set();
+
+  sizeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      console.log('Clicked size button:', button.getAttribute('data-size'));
+      const size = button.getAttribute('data-size');
+
+      if (selectedSizes.has(size)) {
+        selectedSizes.delete(size);
+        button.classList.remove('bg-purple-600', 'text-white');
+        button.classList.add('bg-gray-300', 'text-black');
+      } else {
+        selectedSizes.add(size);
+        button.classList.remove('bg-gray-300', 'text-black');
+        button.classList.add('bg-purple-600', 'text-white');
+      }
+
+      // Update hidden input value
+      selectedSizesInput.value = Array.from(selectedSizes).join(',');
+      console.log('Selected sizes:', selectedSizesInput.value);
+    });
+  });
+}
+
+// Now handle dynamic content loading and call the function after page load
+document.addEventListener('DOMContentLoaded', () => {
+  const contentArea = document.getElementById('mainContent');
+
+  if (contentArea) {
+    document.addEventListener('click', function (e) {
+      const target = e.target.closest('#addProduct');
+      if (target) {
+        e.preventDefault();
+
+        fetch('/admin/addProduct')
+          .then(response => response.text())
+          .then(html => {
+            contentArea.innerHTML = html;
+            initializeImageCropping();
+            initializeSizeSelection();
+          })
+          .catch(err => {
+            console.error('Add product page is not loaded', err);
+            contentArea.innerHTML = "<p class='text-red-500'>Failed to load add product.</p>";
+          });
+      }
+    });
+  }
+});
+
+// Define initializeImageCropping function first
+const initializeImageCropping = () => {
+  const imageBoxes = document.querySelectorAll('.image-box');
+  const fileInputs = document.querySelectorAll('.hidden-file');
+  const cropModal = document.getElementById('cropModal');
+  const cropImage = document.getElementById('cropImage');
+  const confirmCrop = document.getElementById('confirmCrop');
+  const cancelCrop = document.getElementById('cancelCrop');
+
+  let cropper;
+  let activeInputIndex;
+
+  imageBoxes.forEach(box => {
+    box.addEventListener('click', () => {
+      activeInputIndex = box.getAttribute('data-index');
+      fileInputs[activeInputIndex].click();
+    });
+  });
+
+  fileInputs.forEach(input => {
+    input.addEventListener('change', e => {
+      const file = e.target.files[0];
+      const errorMessage = document.getElementById('fileError'); // Select the <p> tag for error message
+
+      // Clear any previous error message
+      errorMessage.textContent = '';
+      errorMessage.classList.add('hidden'); // Hide the error message initially
+
+      if (!file) return;
+
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+      const maxSize = 2 * 1024 * 1024; // 2MB
+
+      if (!validTypes.includes(file.type)) {
+        errorMessage.textContent = 'Only image files (jpg, jpeg, png, webp) are allowed.';
+        errorMessage.classList.remove('hidden'); // Show the error message
+        e.target.value = ''; // Clear the input field
+        return;
+      }
+
+      if (file.size > maxSize) {
+        errorMessage.textContent = 'Image size must be under 2MB.';
+        errorMessage.classList.remove('hidden');
+        e.target.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        cropImage.src = reader.result;
+        cropModal.classList.remove('hidden');
+
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(cropImage, {
+          aspectRatio: NaN,
+          viewMode: 2,
+          movable: true,
+          zoomable: true,
+          scalable: true,
+          rotatable: true,
+          guides: true,
+          center: true,
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+
+  if (cancelCrop) {
+    cancelCrop.addEventListener('click', () => {
+      cropModal.classList.add('hidden');
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
+    });
+  }
+
+  if (confirmCrop) {
+    confirmCrop.addEventListener('click', () => {
+      if (!cropper) return;
+
+      const canvas = cropper.getCroppedCanvas({
+        width: 800,
+        height: 800,
+      });
+
+      canvas.toBlob(blob => {
+        const newFile = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+
+        const dt = new DataTransfer();
+        dt.items.add(newFile);
+
+        fileInputs[activeInputIndex].files = dt.files;
+
+        imageBoxes[activeInputIndex].innerHTML = `<img src="${canvas.toDataURL()}" class="h-32 object-cover rounded" />`;
+
+        cropModal.classList.add('hidden');
+        cropper.destroy();
+        cropper = null;
+      }, 'image/jpeg');
+    });
+  }
+};
+
 
 //deleteProduct
 function deleteProduct(id) {
@@ -85,6 +248,141 @@ function editProduct(id) {
             contentArea.innerHTML = "<p class='text-red-500'>Failed to load edit Category.</p>";
         });
 }
+
+function editSizeSelection() {
+  const sizeButtons = document.querySelectorAll('.size-btn');
+  const selectedSizesInput = document.getElementById('selectedSizes');
+  const selectedSizes = new Set(selectedSizesInput.value.split(',').filter(Boolean));
+
+  sizeButtons.forEach(button => {
+    const size = button.getAttribute('data-size');
+
+    // Initialize button style for existing selected sizes
+    if (selectedSizes.has(size)) {
+      button.classList.remove('bg-gray-300', 'text-black');
+      button.classList.add('bg-purple-600', 'text-white');
+    }
+
+    button.addEventListener('click', () => {
+      if (selectedSizes.has(size)) {
+        selectedSizes.delete(size);
+        button.classList.remove('bg-purple-600', 'text-white');
+        button.classList.add('bg-gray-300', 'text-black');
+      } else {
+        selectedSizes.add(size);
+        button.classList.remove('bg-gray-300', 'text-black');
+        button.classList.add('bg-purple-600', 'text-white');
+      }
+
+      selectedSizesInput.value = Array.from(selectedSizes).join(',');
+    });
+  });
+}
+
+const editImageCropping = () => {
+  const imageBoxes = document.querySelectorAll('.image-box');
+  const fileInputs = document.querySelectorAll('.hidden-file');
+  const cropModal = document.getElementById('cropModal');
+  const cropImage = document.getElementById('cropImage');
+  const confirmCrop = document.getElementById('confirmCrop');
+  const cancelCrop = document.getElementById('cancelCrop');
+  const errorMessages = document.querySelectorAll('.error-message');
+
+  let cropper;
+  let activeInputIndex;
+
+  imageBoxes.forEach((box, index) => {
+    box.addEventListener('click', () => {
+      activeInputIndex = index;
+      fileInputs[activeInputIndex].click();
+    });
+  });
+
+  fileInputs.forEach((input, index) => {
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      const errorMessage = document.getElementById('fileError');
+
+      // Clear previous error
+      errorMessage.textContent = '';
+      errorMessage.classList.add('hidden');
+
+      if (!file) return;
+
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+      const maxSize = 2 * 1024 * 1024;
+
+      if (!validTypes.includes(file.type)) {
+        errorMessage.textContent = 'Only image files (jpg, jpeg, png, webp) are allowed.';
+        errorMessage.classList.remove('hidden');
+        e.target.value = '';
+        return;
+      }
+
+      if (file.size > maxSize) {
+        errorMessage.textContent = 'Image size must be under 2MB.';
+        errorMessage.classList.remove('hidden');
+        e.target.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        cropImage.src = reader.result;
+        cropModal.classList.remove('hidden');
+
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(cropImage, {
+          aspectRatio: NaN,
+          viewMode: 2,
+          movable: true,
+          zoomable: true,
+          scalable: true,
+          rotatable: true,
+          guides: true,
+          center: true,
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  if (cancelCrop) {
+    cancelCrop.addEventListener('click', () => {
+      cropModal.classList.add('hidden');
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
+    });
+  }
+
+  if (confirmCrop) {
+    confirmCrop.addEventListener('click', () => {
+      if (!cropper) return;
+
+      const canvas = cropper.getCroppedCanvas({
+        width: 800,
+        height: 800,
+      });
+
+      canvas.toBlob((blob) => {
+        const newFile = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+
+        const dt = new DataTransfer();
+        dt.items.add(newFile);
+
+        fileInputs[activeInputIndex].files = dt.files;
+
+        imageBoxes[activeInputIndex].innerHTML = `<img src="${canvas.toDataURL()}" class="h-32 object-cover rounded" />`;
+
+        cropModal.classList.add('hidden');
+        cropper.destroy();
+        cropper = null;
+      }, 'image/jpeg');
+    });
+  }
+};
 
 
 //categoryManagment
@@ -353,3 +651,4 @@ function handleRefundRequest(orderId, productId, size, action) {
         messageDiv.classList.add('text-red-600');
     });
 }
+

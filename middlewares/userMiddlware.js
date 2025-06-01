@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/userSchema.js';
+import process from 'process';
 
 export const logger = (req, res, next) => {
   try {

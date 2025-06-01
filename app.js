@@ -4,9 +4,10 @@ import userRouter from './routers/userRoutes.js';
 import url from 'url';
 import path from 'path';
 import session from 'express-session';
-import mongoConnect from './configuration/db.js';
+import mongoConnect from './config/db.js';
 import expressLayout from 'express-ejs-layouts';
 import cookieParser from 'cookie-parser';
+import process from 'process';
 
 const app = express();
 const port = process.env.PORT || 8080;

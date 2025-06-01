@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const profile = document.getElementById('profile');
 if (profile) {
 
@@ -42,7 +43,8 @@ async function sendEmailOTP() {
             messageEl.textContent = data.message || 'Failed to send OTP.';
             messageEl.className = 'text-sm mt-2 text-red-600';
         }
-    } catch (err) {
+    } catch (error) {
+        console.log(error);
         messageEl.textContent = 'An error occurred. Please try again.';
         messageEl.className = 'text-sm mt-2 text-red-600';
     }
@@ -84,10 +86,12 @@ async function verifyOtp() {
             messageEl.className = 'text-red-600';
         }
     } catch (err) {
+        console.log(err);
         messageEl.textContent = 'Error verifying OTP.';
         messageEl.className = 'text-red-600';
     }
 }
+
 
 function openPasswordModal() {
     document.getElementById('changePasswordModal').classList.remove('hidden');
@@ -101,6 +105,8 @@ function closePasswordModal() {
 document.addEventListener('DOMContentLoaded', () => {
 
     const form = document.getElementById("changePasswordForm");
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
 
     if (form) {
         form.addEventListener("submit", async function (e) {
@@ -109,6 +115,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(this);
             const currentPassword = formData.get("currentPassword");
             const newPassword = formData.get("newPassword");
+
+            // Frontend validation for strong password
+            const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+            if (!strongPasswordRegex.test(newPassword)) {
+                errorMessage.textContent = "New password must include uppercase, lowercase, number, and symbol (min 8 characters).";
+                successMessage.textContent = "";
+                newPassword.classList.add('border-red-500');
+                setTimeout(() => (errorMessage.textContent = ""), 4000);
+                return;
+            }
 
             const response = await fetch("/profile/change-password", {
                 method: "POST",
@@ -314,6 +330,7 @@ function increaseQuantity(productId, size, btn) {
 
 //dicrease quantity
 function decreaseQuantity(productId, size, btn) {
+    const msgEl = btn.closest('div').querySelector('.limitMessage');
     btn.disabled = true;
     fetch('/cart/decrease', {
         method: 'PATCH',
@@ -582,12 +599,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     }, 2000)
                 } else {
-                    alert(result.message || "Something went wrong!");
+                    location.href('/cart');
                 }
 
             } catch (err) {
                 console.error("Error placing order:", err);
-                alert("Failed to place order. Please try again.");
+                location.href = '/cart';
             }
         });
     }

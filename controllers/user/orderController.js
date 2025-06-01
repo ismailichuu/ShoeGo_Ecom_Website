@@ -4,6 +4,7 @@ import { decodeUserId } from "../../util/jwt.js";
 import Cart from "../../models/cartSchema.js";
 import Order from "../../models/orderSchema.js";
 import PDFDocument from 'pdfkit';
+import { Buffer } from 'buffer';
 
 //@route POST /place-order
 export const handlePlaceOrder = async (req, res) => {
@@ -14,6 +15,11 @@ export const handlePlaceOrder = async (req, res) => {
         const orderDate = new Date();
         const deliveryDate = new Date(orderDate);
         deliveryDate.setDate(orderDate.getDate() + 7);
+
+        const cart = await Cart.findOne({ userId });
+        if (!cart || cart.cartItems.length < 1) {
+            return res.status(404).json({ success: false, message: 'Cart is empty' });
+        }
 
         const order = await Order.findById(orderId);
         if (!order) {
@@ -80,6 +86,47 @@ export const getOrderDetails = async (req, res) => {
             return res.status(404).send('Order not found');
         }
 
+        const statuses = order.products.map(p => p.productStatus);
+
+        let newStatus = '';
+        const uniqueStatuses = [...new Set(statuses)];
+
+        if (uniqueStatuses.length === 1 && uniqueStatuses[0] === 'cancelled') {
+            newStatus = 'cancelled';
+
+        } else if (uniqueStatuses.length === 1 && uniqueStatuses[0] === 'refunded') {
+            newStatus = 'refunded';
+
+        } else if (uniqueStatuses.every(s => ['refunded', 'refund-requested'].includes(s))) {
+            newStatus = 'refund-requested';
+
+        } else if (statuses.includes('refund-requested')) {
+            newStatus = 'refund-requested';
+
+        } else if (
+            uniqueStatuses.every(s => ['cancelled', 'delivered'].includes(s)) &&
+            statuses.includes('delivered')
+        ) {
+            newStatus = 'delivered';
+
+        } else if (statuses.includes('out for delivery')) {
+            newStatus = 'out for delivery';
+
+        } else if (statuses.includes('shipped')) {
+            newStatus = 'shipped';
+
+        } else if (statuses.includes('pending')) {
+            newStatus = 'pending';
+
+        } else if (statuses.includes('placed')) {
+            newStatus = 'placed';
+        }
+
+        if (order.orderStatus !== newStatus && newStatus !== '') {
+            order.orderStatus = newStatus;
+            await order.save();
+        }
+
         res.render("user/orderDetails", { order, layout: 'profile-layout', msg });
     } catch (error) {
         console.error("Error fetching order details:", error);
@@ -115,46 +162,9 @@ export const handleCancelProduct = async (req, res) => {
         // Update product status and reason
         product.productStatus = 'cancelled';
         product.cancelReason = cancelReason;
-        const statuses = order.products.map(p => p.productStatus);
-        const uniqueStatuses = [...new Set(statuses)];
-
-        let newStatus = '';
-
-        if (uniqueStatuses.length === 1 && uniqueStatuses[0] === 'cancelled') {
-            newStatus = 'cancelled';
-
-        } else if (uniqueStatuses.length === 1 && uniqueStatuses[0] === 'refunded') {
-            newStatus = 'refunded';
-
-        } else if (uniqueStatuses.every(s => ['refunded', 'refund-requested'].includes(s))) {
-            newStatus = 'refund-requested';
-
-        } else if (statuses.includes('refund-requested')) {
-            newStatus = 'refund-requested';
-
-        } else if (
-            uniqueStatuses.every(s => ['cancelled', 'delivered'].includes(s)) &&
-            statuses.includes('delivered')
-        ) {
-            newStatus = 'delivered';
-
-        } else if (statuses.includes('out for delivery')) {
-            newStatus = 'out for delivery';
-
-        } else if (statuses.includes('shipped')) {
-            newStatus = 'shipped';
-
-        } else if (statuses.includes('pending')) {
-            newStatus = 'pending';
-
-        } else if (statuses.includes('placed')) {
-            newStatus = 'placed';
-        }
-
 
         const price = product.priceAtPurchase;
         order.totalPrice -= price * quantity;
-
 
         // Save updated order
         await order.save();

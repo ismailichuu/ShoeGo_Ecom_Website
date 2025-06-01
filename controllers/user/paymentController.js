@@ -9,18 +9,20 @@ export const getPayment = async (req, res) => {
     try {
         const userId = decodeUserId(req.cookies?.token);
         const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
-        if (!cart) res.redirect('/cart');
+        if (!cart || cart.cartItems.length < 1) {
+            return res.redirect('/cart');
+        }
         const orderId = req.params.id;
         const order = await Order.findById(orderId);
         if (!order) {
-            res.redirect('/cart');
+            return res.redirect('/cart');
         }
         const orderDate = new Date();
         const deliveryDate = new Date();
         deliveryDate.setDate(orderDate.getDate() + 7);
         const options = { day: 'numeric', month: 'long', year: 'numeric' };
         const formattedDeliveryDate = deliveryDate.toLocaleDateString('en-US', options);
-        const { cartItems, grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(cart.cartItems);
+        const { grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(cart.cartItems);
         res.render('user/payment', {
             layout: 'checkOutLayout', cart, deliveryDate: formattedDeliveryDate,
             grandTotal, deliveryCharge, total, totalWithoutTax, totalTax, orderId

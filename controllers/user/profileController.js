@@ -3,9 +3,11 @@ import bcrypt from 'bcrypt';
 import User from "../../models/userSchema.js";
 import jwt from 'jsonwebtoken';
 import { generateOtp, hashingPassword } from "../../util/functions.js";
-import sendOTPEmail from "../../configuration/nodemailer.transporter.js";
+import sendOTPEmail from "../../config/nodemailer.transporter.js";
 import { generateToken, verifyToken } from "../../util/jwt.js";
 import Address from '../../models/addressSchema.js';
+import process from 'process';
+import { logger } from '../../util/logger.js';
 
 //@route GET /changePassword
 export const getChangePassword = (req, res) => {
@@ -76,7 +78,7 @@ export const getEditProfile = async (req, res) => {
     try {
         const msg = req.session.err || null;
         const token = req.cookies?.token;
-        if (!token) return redirect('/');
+        if (!token) return res.redirect('/');
         const decoded = verifyToken(token);
         const userId = decoded.userId;
         const user = await User.findById(userId);
@@ -89,54 +91,54 @@ export const getEditProfile = async (req, res) => {
 
 //@route POST /profile/edit
 export const handleEditProfile = async (req, res) => {
-    try {
-        const { name, mobileNumber, gender, newsLetter } = req.body;
+  try {
+    const { name, mobileNumber, gender, newsLetter } = req.body;
 
-        const token = req.cookies?.token;
-        if (!token) {
-            req.session.err = 'session expired';
-            return res.redirect('/login');
-        }
-        const decoded = verifyToken(token);
-        const userId = decoded.userId;
-
-        const user = await User.findById(userId);
-        if (!user) {
-            req.session.err = 'User not found';
-            return res.redirect('/login');
-        }
-
-        const updateData = {
-            name,
-            mobileNumber,
-            gender,
-            newsLetter: newsLetter === 'on',
-        };
-
-        if (req.file) {
-            updateData.profile = '/uploads/profiles/' + req.file.filename;
-        }
-
-        const isDataSame =
-            user.name === updateData.name &&
-            user.mobileNumber === updateData.mobileNumber &&
-            user.gender === updateData.gender &&
-            user.newsLetter === updateData.newsLetter &&
-            !req.file; 
-
-        if (isDataSame) {
-            req.session.err = 'No changes Can\'t Save!'
-            return res.redirect('/profile/edit');
-        }
-
-        await User.updateOne({ _id: userId }, updateData);
-        res.redirect('/profile');
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Error updating profile.");
+    const token = req.cookies?.token;
+    if (!token) {
+      req.session.err = 'session expired';
+      return res.redirect('/login');
     }
+    const decoded = verifyToken(token);
+    const userId = decoded.userId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      req.session.err = 'User not found';
+      return res.redirect('/login');
+    }
+
+    const updateData = {
+      name,
+      mobileNumber,
+      gender,
+      newsLetter: newsLetter === 'on',
+    };
+
+    if (req.file) {
+      updateData.profile = req.file.path; 
+    }
+
+    const isDataSame =
+      user.name === updateData.name &&
+      user.mobileNumber === updateData.mobileNumber &&
+      user.gender === updateData.gender &&
+      user.newsLetter === updateData.newsLetter &&
+      !req.file;
+
+    if (isDataSame) {
+      req.session.err = "Can't save without any change";
+      return res.redirect('/profile/edit');
+    }
+
+    await User.updateOne({ _id: userId }, updateData);
+    res.redirect('/profile');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error updating profile.');
+  }
 };
+
 
 //@route POST /send-otp-email
 export const handleSendOtpEmail = async (req, res) => {
@@ -179,7 +181,7 @@ export const handleSendOtpEmail = async (req, res) => {
 
 //@route POST /verify-otp-email
 export const handleVerifyOtpEmail = async (req, res) => {
-    const { email, otp } = req.body;
+    const { otp } = req.body;
 
     try {
         const token = req.cookies?.token;
@@ -215,6 +217,7 @@ export const handleVerifyOtpEmail = async (req, res) => {
 
         return res.status(200).json({ message: 'OTP verified successfully!' });
     } catch (err) {
+        logger.error('handleVerifyPassword', err.toString());
         return res.status(500).json({ message: 'Something went wrong.' });
     }
 };

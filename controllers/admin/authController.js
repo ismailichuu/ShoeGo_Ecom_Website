@@ -2,6 +2,7 @@
 import bcrypt from 'bcrypt';
 import User from '../../models/userSchema.js';
 import { generateToken } from '../../util/jwt.js';
+import process from 'process';
 
 //@route GET /admin/login
 export const getLogin = (req, res) => {

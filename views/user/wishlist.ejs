@@ -142,7 +142,7 @@
                         <!-- Product Image -->
                         <div class="relative overflow-hidden">
                             <a href="/product/<%= item.productId._id %>">
-                                <img src="/uploads/products/<%= item.productId.images[0] || 'https://via.placeholder.com/200' %>"
+                                <img src="<%= item.productId.images[0] %>"
                                      alt="<%= item.productId.name %>" 
                                      class="w-full h-60 object-cover transition-transform duration-500 group-hover:scale-110" />
                             </a>
@@ -221,7 +221,7 @@
 
                             <!-- Product Image -->
                             <div class="relative overflow-hidden rounded-t-3xl">
-                                <img src="/uploads/products/<%= product.images[0] %>" alt="<%= product.name %>"
+                                <img src="<%= product.images[0] %>" alt="<%= product.name %>"
                                      class="w-full h-52 object-cover transition-transform duration-500 group-hover:scale-110">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>

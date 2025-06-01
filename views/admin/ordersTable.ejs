@@ -16,7 +16,7 @@
                                     <div class="relative">
                                         <input type="text" name="search" placeholder="Search here" value="<%= search %>"
                                             class="pl-10 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none"
-                                            id="search-input" />
+                                            id="search-input-order" />
                                         <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
                                             fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -60,70 +60,76 @@
             </tr>
         </thead>
         <tbody class="text-sm">
-            <% orders.forEach(order=> { %>
-                <tr class="border-b hover:bg-gray-50 transition" onclick="getOrderDetails('<%= order._id %>')">
-                    <!-- Products -->
-                    <td class="py-3 px-4">
-                        <div class="flex flex-col gap-2">
-                            <% order.products.forEach(product=> { %>
-                                <div class="flex items-center gap-2">
-                                    <img src="/uploads/products/<%= product.image %>"
-                                        class="w-8 h-8 rounded object-cover" />
-                                    <span>
-                                        <%= product.productId.name %>
-                                    </span>
-                                    <% if(product.productStatus === 'return-requested') {%>
-                                    <p class="text-red-600">Return Requested</p>
-                                    <% } %>
-                                </div>
-                                <% }) %>
-                        </div>
-                    </td>
+            <% if(orders && orders.length> 0) { %>
+                <% orders.forEach(order=> { %>
+                    <tr class="border-b hover:bg-gray-50 transition" onclick="getOrderDetails('<%= order._id %>')">
+                        <!-- Products -->
+                        <td class="py-3 px-4">
+                            <div class="flex flex-col gap-2">
+                                <% order.products.forEach(product=> { %>
+                                    <div class="flex items-center gap-2">
+                                        <img src="<%= product.image %>" class="w-8 h-8 rounded object-cover" />
+                                        <span>
+                                            <%= product.productId.name %>
+                                        </span>
+                                        <% if(product.productStatus==='return-requested' ) {%>
+                                            <p class="text-red-600">Return Requested</p>
+                                            <% } %>
+                                    </div>
+                                    <% }) %>
 
-                    <!-- Order ID -->
-                    <td class="py-3 px-4">
-                        <%= order.orderId %>
-                    </td>
+                            </div>
+                        </td>
 
-                    <!-- Date -->
-                    <td class="py-3 px-4">
-                        <%= order.orderDate?.toDateString() %>
-                    </td>
+                        <!-- Order ID -->
+                        <td class="py-3 px-4">
+                            <%= order.orderId %>
+                        </td>
 
-                    <!-- Customer -->
-                    <td class="py-3 px-4">
-                        <%= order.userId.name %>
-                    </td>
+                        <!-- Date -->
+                        <td class="py-3 px-4">
+                            <%= order.orderDate?.toDateString() %>
+                        </td>
 
-                    <!-- Status -->
-                    <td class="py-3 px-4">
-                        <% if (order.orderStatus==='delivered' ) { %>
-                            <span
-                                class="text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs font-semibold">Delivered</span>
-                            <% } else if (order.orderStatus==='cancelled' ) { %>
+                        <!-- Customer -->
+                        <td class="py-3 px-4">
+                            <%= order.userId.name %>
+                        </td>
+
+                        <!-- Status -->
+                        <td class="py-3 px-4">
+                            <% if (order.orderStatus==='delivered' ) { %>
                                 <span
-                                    class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Cancelled</span>
-                                <% } else if (order.orderStatus==='placed' ) { %>
+                                    class="text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs font-semibold">Delivered</span>
+                                <% } else if (order.orderStatus==='cancelled' ) { %>
                                     <span
-                                        class="text-orange-600 bg-orange-100 px-2 py-1 rounded-full text-xs font-semibold">On
-                                        Delivery</span>
-                                   <% } else if (order.orderStatus==='shipped' ) { %>
-                                    <span
-                                        class="text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs font-semibold">Shipped</span>
-                                    <% } %>
-                    </td>
+                                        class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Cancelled</span>
+                                    <% } else if (order.orderStatus==='placed' ) { %>
+                                        <span
+                                            class="text-orange-600 bg-orange-100 px-2 py-1 rounded-full text-xs font-semibold">On
+                                            Delivery</span>
+                                        <% } else if (order.orderStatus==='shipped' ) { %>
+                                            <span
+                                                class="text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs font-semibold">Shipped</span>
+                                            <% } %>
+                        </td>
 
-                    <!-- Quantity -->
-                    <td class="py-3 px-4">
-                        <% let totalQuantity=0; order.products.forEach(p=> totalQuantity += p.quantity); %>
-                            <%= totalQuantity %>
-                    </td>
+                        <!-- Quantity -->
+                        <td class="py-3 px-4">
+                            <% let totalQuantity=0; order.products.forEach(p=> totalQuantity += p.quantity); %>
+                                <%= totalQuantity %>
+                        </td>
 
-                    <!-- Total Price -->
-                    <td class="py-3 px-4 font-semibold">₹ <%= order.totalPrice %>
-                    </td>
-                </tr>
-                <% }) %>
+                        <!-- Total Price -->
+                        <td class="py-3 px-4 font-semibold">₹ <%= order.totalPrice %>
+                        </td>
+                    </tr>
+                    <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-gray-500">No orders</td>
+                            </tr>
+                            <% } %>
         </tbody>
 
     </table>
@@ -148,3 +154,20 @@
                             class="px-3 py-1 bg-gray-200 rounded">Next</a>
                         <% } %>
 </div>
+<script>
+  const searchInput = document.getElementById('search-input-order');
+  const form = searchInput.closest('form');
+
+  let debounceTimer;
+
+  searchInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+
+    debounceTimer = setTimeout(() => {
+      form.submit();
+    }, 600);
+  });
+</script>
+
+
+

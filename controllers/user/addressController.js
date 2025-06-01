@@ -165,44 +165,47 @@ export const deleteAddress = async (req, res) => {
 
 //@route GET /select-address/:id
 export const getSelectAddress = async (req, res) => {
-    try {
-        const userId = decodeUserId(req.cookies?.token);
-        const cartId = req.params.id;
-        const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
+  try {
+    const userId = decodeUserId(req.cookies?.token);
+    const cartId = req.params.id;
+    const cart = await Cart.findById(cartId).populate('cartItems.productId');
 
-        if (cartId === cart._id) {
-            res.redirect('/cart');
-        }
-
-        if (cart) {
-            const activeItems = cart.cartItems.filter(item => item.productId && item.productId.isActive);
-
-            if (activeItems.length !== cart.cartItems.length) {
-                await Cart.updateOne(
-                    { userId },
-                    { $set: { cartItems: activeItems } }
-                );
-                cart.cartItems = activeItems;
-            }
-        }
-
-        if (!cart && cart.cartItems.length < 1) {
-            res.redirect('/cart');
-        }
-        const addresses = await Address.find({ userId }).sort({ isDefault: -1 });
-
-
-        const items = cart?.cartItems || [];
-        const { cartItems, grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(items);
-        res.render('user/selectAddress', {
-            layout: 'checkOutLayout', grandTotal, deliveryCharge,
-            total, totalTax, totalWithoutTax, addresses, cart,
-        });
-    } catch (error) {
-        console.log(error);
-        res.redirect('/cart');
+    if (!cart || cart.cartItems.length < 1) {
+      return res.redirect('/cart');
     }
+
+    const activeItems = cart.cartItems.filter(item => item.productId && item.productId.isActive);
+
+    if (activeItems.length !== cart.cartItems.length) {
+      await Cart.updateOne(
+        { userId },
+        { $set: { cartItems: activeItems } }
+      );
+      cart.cartItems = activeItems;
+    }
+
+    const addresses = await Address.find({ userId }).sort({ isDefault: -1 });
+
+    const items = cart.cartItems;
+    const { grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(items);
+
+    res.render('user/selectAddress', {
+      layout: 'checkOutLayout',
+      grandTotal,
+      deliveryCharge,
+      total,
+      totalTax,
+      totalWithoutTax,
+      addresses,
+      cart,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.redirect('/cart');
+  }
 };
+
 
 //@route GET /add-new-address
 export const getAddNewAddress = (req, res) => {
@@ -351,10 +354,10 @@ export const handleSelectAddress = async (req, res) => {
 
         const cart = await Cart.findById(cartId).populate('cartItems.productId');
         if (!cart || cart.cartItems.length < 1) {
-            res.redirect('/cart');
+            return res.redirect('/cart');
         }
         const cartItems = cart.cartItems;
-        const { grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(cartItems);
+        const { total } = calculateCart(cartItems);
 
         const shippingAddress = {
             houseNo: address.houseNo,
