@@ -14,13 +14,9 @@ const wishlistSchema = mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'product',
                 required: true
-            },
-
-            size: {
-                type: String,
-                required: true,
             }
         }
+
     ]
 }, {
     timestamps: true

@@ -46,6 +46,12 @@ export const handlePlaceOrder = async (req, res) => {
         order.paymentMethod = paymentMethod;
         order.orderDate = orderDate;
         order.deliveryDate = deliveryDate;
+
+        order.products = order.products.map((item) => ({
+            ...item.toObject?.() || item,
+            productStatus: 'placed',
+        }));
+        
         await order.save();
 
         await Cart.deleteOne({ userId });
@@ -77,6 +83,7 @@ export const getOrderDetails = async (req, res) => {
     try {
         const msg = req.session.err || null;
         const orderId = req.params.id;
+        req.session.err = null;
 
         const order = await Order.findById(orderId)
             .populate('userId')

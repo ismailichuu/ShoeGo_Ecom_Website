@@ -12,7 +12,7 @@ import { deleteAddress, getAddAddress, getAddNewAddress, getAddresses, getEditAd
      handleAddAddress, handleAddNewAddress, handleEditAddress, handleEditAddressCheckout, handleSelectAddress } from '../controllers/user/addressController.js';
 import { deleteCart, deleteCartItem, getCart, getOrderSummary, handleAddToCart, handleDecreaseCount, handleIncreaseCount } from '../controllers/user/cartController.js';
 import { deleteFromWishlist, getWishlist, handleAddToWishlist } from '../controllers/user/wishlistController.js';
-import { getPayment } from '../controllers/user/paymentController.js';
+import { createRazorpayOrder, getPayment, verifyPayment } from '../controllers/user/paymentController.js';
 import { downloadInvoice, getOrderDetails, getOrders, handleCancelProduct, handlePlaceOrder, returnProduct } from '../controllers/user/orderController.js';
 import { getWallet } from '../controllers/user/walletController.js';
 
@@ -96,7 +96,7 @@ router.post('/add-to-wishlist', logger, handleAddToWishlist);
 
 router.post('/delete-from-wishlist', logger, deleteFromWishlist);
 
-router.get('/select-address/:id', logger, getSelectAddress);
+router.get('/select-address/:id', verifyUser, getSelectAddress);
 
 router.get('/add-new-address/:id', logger, getAddNewAddress);
 
@@ -106,11 +106,15 @@ router.get('/edit-address-checkout/:id', logger, getEditAddressCheckout);
 
 router.post('/edit-address-checkout/:id', logger, handleEditAddressCheckout);
 
-router.post('/select-address/:id', logger, handleSelectAddress);
+router.post('/select-address/:id', verifyUser, handleSelectAddress);
 
 router.get('/payment/:id', logger, getPayment);
 
-router.post('/place-order', logger, handlePlaceOrder);
+router.post('/place-razorpay', verifyUser, createRazorpayOrder);
+
+router.post('/verify-payment', logger, verifyPayment);
+
+router.post('/place-order', verifyUser, handlePlaceOrder);
 
 router.get('/orders', logger, getOrders);
 

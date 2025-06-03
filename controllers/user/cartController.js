@@ -17,11 +17,12 @@ export const getCart = async (req, res) => {
             return res.redirect('/login');
         }
 
+        
         // Find cart and populate product details
         const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
 
         if (cart) {
-            const activeItems = cart.cartItems.filter(item => item.productId && item.productId.isActive);
+            const activeItems = cart.cartItems.filter(item => item.productId && item.productId.isActive && item.productId?.stock > 0);
 
             if (activeItems.length !== cart.cartItems.length) {
                 await Cart.updateOne(
@@ -168,7 +169,7 @@ export const handleIncreaseCount = async (req, res) => {
         }, 0);
 
         if (totalProductQuantityInCart >= product.stock) {
-            return res.status(400).json({ success: false, message: 'Item is out of stock' });
+            return res.status(400).json({ success: false, message: 'Maximum quantity reached' });
         }
 
         if (item.quantity >= 5) {

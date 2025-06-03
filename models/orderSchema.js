@@ -41,7 +41,7 @@ const orderSchema = mongoose.Schema({
             productStatus: {
                 type: String,
                 required: true,
-                default: 'pending',  
+                default: 'failed',  
             },
 
             refundRequest: {

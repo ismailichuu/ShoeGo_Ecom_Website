@@ -103,7 +103,6 @@ function closePasswordModal() {
 
 //change password from profile
 document.addEventListener('DOMContentLoaded', () => {
-
     const form = document.getElementById("changePasswordForm");
     const errorMessage = document.getElementById('errorMessage');
     const successMessage = document.getElementById('successMessage');
@@ -112,20 +111,49 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
 
+            // Get actual input elements
+            const currentPasswordInput = document.getElementById('currentPassword');
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+
             const formData = new FormData(this);
-            const currentPassword = formData.get("currentPassword");
-            const newPassword = formData.get("newPassword");
+            const currentPassword = formData.get("currentPassword")?.trim();
+            const newPassword = formData.get("newPassword")?.trim();
+            const confirmPassword = formData.get("confirmPassword")?.trim();
+
+
+            // Clear previous error styles
+            [currentPasswordInput, newPasswordInput, confirmPasswordInput].forEach(input => {
+                input.classList.remove('border-red-500');
+            });
 
             // Frontend validation for strong password
             const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
             if (!strongPasswordRegex.test(newPassword)) {
                 errorMessage.textContent = "New password must include uppercase, lowercase, number, and symbol (min 8 characters).";
                 successMessage.textContent = "";
-                newPassword.classList.add('border-red-500');
+                newPasswordInput.classList.add('border-red-500');
                 setTimeout(() => (errorMessage.textContent = ""), 4000);
                 return;
             }
 
+            if (confirmPassword !== newPassword) {
+                errorMessage.textContent = "Confirm password does not match the new password.";
+                successMessage.textContent = "";
+                confirmPasswordInput.classList.add('border-red-500');
+                setTimeout(() => (errorMessage.textContent = ""), 4000);
+                return;
+            }
+
+            if (currentPassword === newPassword) {
+                errorMessage.textContent = "New password and current password cannot be the same.";
+                successMessage.textContent = "";
+                newPasswordInput.classList.add('border-red-500');
+                setTimeout(() => (errorMessage.textContent = ""), 4000);
+                return;
+            }
+
+            // Send request to server
             const response = await fetch("/profile/change-password", {
                 method: "POST",
                 headers: {
@@ -137,10 +165,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (!response.ok) {
-                document.getElementById("errorMessage").textContent = result.error || "Something went wrong.";
-                setTimeout(() => {
-                    errorMessage.textContent = "";
-                }, 4000);
+                errorMessage.textContent = result.error || "Something went wrong.";
+                successMessage.textContent = "";
+                setTimeout(() => (errorMessage.textContent = ""), 4000);
             } else {
                 errorMessage.textContent = "";
                 successMessage.textContent = result.message || "Password updated successfully!";
@@ -150,9 +177,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     successMessage.textContent = "";
                 }, 2000);
             }
-        })
+        });
     }
-})
+});
+
 
 //delete user address
 document.addEventListener('DOMContentLoaded', () => {
@@ -401,7 +429,6 @@ if (deleteConfirmationBtn) {
 }
 
 //delete from cart
-
 async function deleteCartItem(productId, size) {
     try {
         const res = await fetch(`/cart/delete-item?productId=${productId}&size=${size}`, {
@@ -435,13 +462,10 @@ async function clearCart() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    let selectedSize = null;
-    const sizeButtons = document.querySelectorAll('.product-size-btn');
-    const sizeError = document.getElementById('sizeError');
-    const addToCartBtn = document.getElementById('addToWishlistBtn');
+    const addToWishlistBtn = document.getElementById('addToWishlistBtn');
     const cartMessage = document.getElementById('cartMessage');
 
-    // Utility function to show message
+    // Show success or error messages
     function showMessage(message, isSuccess = true) {
         if (!cartMessage) return;
 
@@ -449,63 +473,27 @@ document.addEventListener('DOMContentLoaded', () => {
         cartMessage.classList.remove('hidden', 'text-green-500', 'text-red-500');
         cartMessage.classList.add(isSuccess ? 'text-green-500' : 'text-red-500');
 
-        // Optional auto-hide after 3 seconds
         setTimeout(() => {
             cartMessage.classList.add('hidden');
         }, 3000);
     }
 
-    // Handle size selection
-    sizeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            sizeButtons.forEach(btn => btn.classList.remove('bg-black', 'text-white'));
-            button.classList.add('bg-black', 'text-white');
-            selectedSize = button.dataset.size;
-
-            if (sizeError) sizeError.classList.add('hidden');
-        });
-    });
-
-    // Handle Add to Cart
-    if (addToCartBtn) {
-
-        addToCartBtn.addEventListener('click', () => {
-            if (!selectedSize) {
-                if (sizeError) sizeError.classList.remove('hidden');
-                showMessage('Please select a size.', false);
-                return;
-            }
-
+    // Add to Wishlist (no size)
+    if (addToWishlistBtn) {
+        addToWishlistBtn.addEventListener('click', () => {
             fetch('/add-to-wishlist', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    productId: addToCartBtn.dataset.productId,
-                    selectedSize
+                    productId: addToWishlistBtn.dataset.productId
                 })
             })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        showMessage(' Added to Wishlist!', true);
-                        const stockDisplay = document.getElementById('stockDisplay');
-                        const stockMessage = document.getElementById('stockMessage');
-
-                        if (stockDisplay && data.updatedStock !== undefined) {
-                            stockDisplay.textContent = `Stock: ${data.updatedStock}`;
-
-                            if (stockMessage) {
-                                if (data.updatedStock === 0) {
-                                    stockMessage.innerHTML = `<p class="text-sm font-semibold text-red-500 mb-6">Out of Stock!</p>`;
-                                } else if (data.updatedStock < 7) {
-                                    stockMessage.innerHTML = `<p class="text-sm font-semibold text-red-500 mb-6">Hurry up! Only ${data.updatedStock} left</p>`;
-                                } else {
-                                    stockMessage.innerHTML = '';
-                                }
-                            }
-                        }
+                        showMessage('Added to Wishlist!', true);
                     } else {
-                        showMessage(data.message || 'Error adding to wishlist.', false);
+                        showMessage(data.message || 'Failed to add to Wishlist.', false);
                     }
                 })
                 .catch(err => {
@@ -515,6 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
 //add to cart from wishlist 
 
@@ -577,38 +566,110 @@ document.addEventListener('DOMContentLoaded', () => {
             const orderId = document.querySelector('input[name="orderId"]').value;
             const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
 
-            const payload = {
-                orderId,
-                paymentMethod
-            };
+            if (paymentMethod === 'razorpay') {
 
+                try {
+                    const response = await fetch('/place-razorpay', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ orderId })
+                    });
+
+                    const result = await response.json();
+
+                    if (result && result.razorpayOrder) {
+                        openRazorpayCheckout(result.razorpayOrder, result.razorpayId, result.order);
+                    } else {
+                        alert('Failed to initiate Razorpay payment');
+                        location.href = '/cart';
+                    }
+                } catch (err) {
+                    console.error('Error creating Razorpay order:', err);
+                    location.href = '/cart';
+                }
+
+            } else {
+                const payload = { orderId, paymentMethod };
+
+                try {
+                    const response = await fetch('/place-order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        setTimeout(() => showSuccessModal(), 2000);
+                    } else {
+                        window.location.href = '/cart';
+                    }
+                } catch (err) {
+                    console.error("Error placing order:", err);
+                    location.href = '/cart';
+                }
+            }
+
+        });
+
+    }
+});
+
+function openRazorpayCheckout(order, id, orderDetails) {
+
+    const options = {
+        key: id,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'ShoeGo Private Limited',
+        description: 'Order Payment',
+        order_id: order.id,
+        handler: async function (response) {
             try {
-                const response = await fetch('/place-order', {
+                const payload = {
+                    ...response,
+                    originalOrderId: orderDetails._id
+                };
+                const verifyResponse = await fetch('/verify-payment', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
-                const result = await response.json();
-                if (result.success) {
-                    setTimeout(() => {
-
-                        showSuccessModal();
-
-                    }, 2000)
+                const verifyResult = await verifyResponse.json();
+                console.log(verifyResult)
+                if (verifyResult.success) {
+                    showSuccessModal();
                 } else {
-                    location.href('/cart');
+                    document.getElementById('paymentFailedModal').classList.remove('hidden');
                 }
 
             } catch (err) {
-                console.error("Error placing order:", err);
+                console.error('Payment verification error:', err);
                 location.href = '/cart';
             }
-        });
-    }
-});
+        },
+        modal: {
+            ondismiss: function () {
+                document.getElementById('paymentFailedModal').classList.remove('hidden');
+            },
+        },
+        prefill: {
+            name: orderDetails.userId?.name,
+            email: orderDetails.userId?.email,
+            contact: orderDetails.userId?.mobileNumber || order.shippingAddress?.mobileNumber,
+        },
+        theme: {
+            color: '#3399cc',
+        },
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+}
+
+function closeFailModal() {
+    document.getElementById('paymentFailedModal').classList.add('hidden');
+}
 
 
 
@@ -632,9 +693,6 @@ function openReturnModal(productId) {
 function closeReturnModal(productId) {
     document.getElementById(`returnModal-${productId}`).classList.add('hidden');
 }
-
-
-
 
 // Enhanced interactivity with modern animations
 document.addEventListener('DOMContentLoaded', function () {
