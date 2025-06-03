@@ -319,7 +319,7 @@ export const handleEditAddressCheckout = async (req, res) => {
         const address = await Address.findById(addressId);
 
         address.mobileNumber = phone,
-            address.pincode = pincode;
+        address.pincode = pincode;
         address.locality = locality;
         address.houseNo = houseNo;
         address.city = city;
@@ -355,7 +355,7 @@ export const handleSelectAddress = async (req, res) => {
             return res.redirect('/cart');
         }
         const cartItems = cart.cartItems;
-        const { total } = calculateCart(cartItems);
+        const { total, grandTotal } = calculateCart(cartItems);
 
         const shippingAddress = {
             houseNo: address.houseNo,
@@ -383,6 +383,7 @@ export const handleSelectAddress = async (req, res) => {
             products,
             shippingAddress,
             totalPrice: total,
+            grandTotal,
         });
 
         // Redirect to payment page

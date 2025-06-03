@@ -114,6 +114,11 @@ const orderSchema = mongoose.Schema({
     deliveryDate: {
         type: Date,
         required: false,
+    },
+
+    grandTotal: {
+        type: Number,
+        required: true,
     }
 
 }, {

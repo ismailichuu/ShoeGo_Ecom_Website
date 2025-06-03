@@ -13,7 +13,7 @@ import { deleteAddress, getAddAddress, getAddNewAddress, getAddresses, getEditAd
 import { deleteCart, deleteCartItem, getCart, getOrderSummary, handleAddToCart, handleDecreaseCount, handleIncreaseCount } from '../controllers/user/cartController.js';
 import { deleteFromWishlist, getWishlist, handleAddToWishlist } from '../controllers/user/wishlistController.js';
 import { createRazorpayOrder, getPayment, verifyPayment } from '../controllers/user/paymentController.js';
-import { downloadInvoice, getOrderDetails, getOrders, handleCancelProduct, handlePlaceOrder, returnProduct } from '../controllers/user/orderController.js';
+import { downloadInvoice, getOrderDetails, getOrders, handleCancelAll, handleCancelProduct, handlePlaceOrder, handleReturnAll, returnProduct } from '../controllers/user/orderController.js';
 import { getWallet } from '../controllers/user/walletController.js';
 
 const router = express.Router();
@@ -125,6 +125,10 @@ router.post('/orders/cancel-product', logger, handleCancelProduct);
 router.get('/download-invoice/:orderId', logger, downloadInvoice);
 
 router.post('/orders/return-product', logger, returnProduct);
+
+router.post('/order/return-all', logger, handleReturnAll);
+
+router.post('/orders/cancel-all', logger, handleCancelAll);
 
 router.get('/wallet', logger, getWallet);
 

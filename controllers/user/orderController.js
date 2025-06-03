@@ -5,6 +5,7 @@ import Cart from "../../models/cartSchema.js";
 import Order from "../../models/orderSchema.js";
 import PDFDocument from 'pdfkit';
 import { Buffer } from 'buffer';
+import { logger } from "../../util/logger.js";
 
 //@route POST /place-order
 export const handlePlaceOrder = async (req, res) => {
@@ -51,7 +52,7 @@ export const handlePlaceOrder = async (req, res) => {
             ...item.toObject?.() || item,
             productStatus: 'placed',
         }));
-        
+
         await order.save();
 
         await Cart.deleteOne({ userId });
@@ -136,7 +137,7 @@ export const getOrderDetails = async (req, res) => {
 
         res.render("user/orderDetails", { order, layout: 'profile-layout', msg });
     } catch (error) {
-        console.error("Error fetching order details:", error);
+        logger.error('from orderDetails', error.toString());
         res.status(500).send('Internal Server Error');
     }
 };
@@ -156,7 +157,6 @@ export const handleCancelProduct = async (req, res) => {
         const product = order.products.find(p => p.productId.toString() === productId && p.size === size);
         const quantity = product.quantity;
 
-        console.log(product)
         if (!product) {
             return res.status(404).send('Product with specified size not found in order');
         }
@@ -183,12 +183,13 @@ export const handleCancelProduct = async (req, res) => {
         );
 
         res.redirect(`/order-details/${orderId}`);
-    } catch (err) {
-        console.error(err);
+    } catch (error) {
+        logger.error('from cancelProcuct', error.toString());
         res.status(500).send('Something went wrong');
     }
 };
 
+//@route GET /download-invoice/:orderId
 export const downloadInvoice = async (req, res) => {
     const { orderId } = req.params;
 
@@ -293,12 +294,13 @@ export const downloadInvoice = async (req, res) => {
         doc.text('Address: Shoego Pvt. Ltd., New Delhi, India', 50, doc.y);
 
         doc.end();
-    } catch (err) {
-        console.error('Invoice Error:', err);
+    } catch (error) {
+        logger.error('from invoice', error.toString());
         res.status(500).send('Failed to generate invoice');
     }
 };
 
+//@route POST /order/return-product
 export const returnProduct = async (req, res) => {
     const { orderId, productId, returnReason, size } = req.body;
 
@@ -324,7 +326,49 @@ export const returnProduct = async (req, res) => {
 
         res.redirect(`/order-details/${orderId}`);
     } catch (error) {
-        console.error('Return Request Error:', error);
+        logger.error('from return product', error.toString());
         res.status(500).send('Failed to process return request');
+    }
+};
+
+//@route POST /return-all
+export const handleReturnAll = async (req, res) => {
+    try {
+        const { orderId, returnReason } = req.body;
+        const order = await Order.findById(orderId);
+        if (!order) return res.redirect(`/order-details/${orderId}`);
+
+        for (let product of order.products) {
+            if (product.productStatus === 'delivered') {
+                product.productStatus = 'return-requested';
+                product.returnRequest = 'pending';
+                product.returnReason = returnReason;
+            }
+        }
+        await order.save();
+        res.redirect(`/order-details/${orderId}`);
+
+    } catch (error) {
+        logger.error('from return All', error.toString());
+    }
+};
+
+export const handleCancelAll = async (req, res) => {
+    try {
+        const { orderId, cancelReason } = req.body;
+        const order = await Order.findById(orderId);
+        if (!order) return res.redirect(`/order-details/${orderId}`);
+
+        for (let product of order.products) {
+            product.productStatus = 'cancelled';
+            product.cancelReason = cancelReason;
+            order.totalPrice = 0;
+        }
+
+        await order.save();
+        res.redirect(`/order-details/${orderId}`);
+
+    } catch (error) {
+        logger.error('from return All', error.toString());
     }
 };

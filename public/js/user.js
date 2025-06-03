@@ -682,8 +682,21 @@ function openCancelModal(productId) {
     document.getElementById(`cancelModal-${productId}`).classList.remove('hidden');
 }
 
+function cancelAllModal() {
+    document.getElementById(`cancelAllModal`).classList.remove('hidden');
+}
+
+
 function closeCancelModal(productId) {
     document.getElementById(`cancelModal-${productId}`).classList.add('hidden');
+}
+
+function closeCancelAllModal() {
+    document.getElementById(`cancelAllModal`).classList.add('hidden');
+}
+
+function returnAllModal() {
+    document.getElementById(`returnAllModal`).classList.remove('hidden');
 }
 
 function openReturnModal(productId) {
@@ -692,6 +705,10 @@ function openReturnModal(productId) {
 
 function closeReturnModal(productId) {
     document.getElementById(`returnModal-${productId}`).classList.add('hidden');
+}
+
+function closeReturnAllModal() {
+    document.getElementById(`returnAllModal`).classList.add('hidden');
 }
 
 // Enhanced interactivity with modern animations

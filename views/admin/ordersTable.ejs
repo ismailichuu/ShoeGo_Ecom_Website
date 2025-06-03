@@ -104,6 +104,9 @@
                                 <% } else if (order.orderStatus==='cancelled' ) { %>
                                     <span
                                         class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Cancelled</span>
+                                    <% } else if (order.orderStatus==='failed' ) { %>
+                                    <span
+                                        class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Failed</span>
                                     <% } else if (order.orderStatus==='placed' ) { %>
                                         <span
                                             class="text-orange-600 bg-orange-100 px-2 py-1 rounded-full text-xs font-semibold">On
