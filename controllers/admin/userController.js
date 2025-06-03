@@ -106,8 +106,10 @@ export const getCustomerDetails = async (req, res) => {
     });
 
     const wallet = await Wallet.findOne({userId});
-    const walletBalance = wallet.balance;
-
+    let walletBalance = 0;
+    if(wallet) {
+        walletBalance = wallet.balance;
+    }
     const balanceNote = monthlyOrders > 0 ? 'Growing this month' : 'No recent activity';
 
     res.render('admin/customerDetails', {

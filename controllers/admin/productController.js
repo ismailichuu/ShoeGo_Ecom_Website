@@ -3,7 +3,6 @@ import Category from '../../models/categorySchema.js';
 import Product from '../../models/productSchema.js';
 import { v2 as cloudinary } from 'cloudinary';
 import { getCloudinaryPublicId } from '../../util/cloudinary.js';
-import upload from '../../config/multer.js';
 
 //@route GET /products
 export const getProducts = async (req, res) => {

@@ -1,50 +1,89 @@
 <div class="container mx-auto px-4 py-6">
-  <h2 class="text-2xl font-bold mb-6">My Orders</h2>
-
+  <h2 class="text-2xl font-bold mb-6 text-gray-800">My Orders</h2>
 
   <% orders.forEach(order=> { %>
-    <% order.products.forEach(product=> { %>
-      <div
-        class="bg-white shadow-md rounded-xl p-4 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between">
+    <!-- Order Container -->
+    <div class="bg-white border rounded-lg shadow-sm p-6 mb-6">
 
-        <!-- Product Info -->
-        <div class="flex items-start gap-4">
-          <a href="/product/<%= product.productId._id %>">
-            <img src="<%= product.image %>" alt="Product" class="w-20 h-20 object-cover rounded-lg">
-          </a>
-          <div>
-            <h3 class="font-semibold text-lg">
-              <%= product.productId.name %>
-            </h3>
-            <p class="text-sm text-blue-600">Order ID: <%= order.orderId %>
-            </p>
-            <p class="text-pink-600 font-bold mt-1">₹ <%= product.priceAtPurchase %>
-            </p>
-          </div>
+      <!-- Order Header -->
+      <div class="flex justify-between items-start mb-4 pb-3 border-b">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-700">Order ID: <%= order.orderId %>
+          </h3>
+          <p class="text-sm text-gray-500">Placed on: <%= order.orderDate?.toDateString() || 'Unknown' %>
+          </p>
         </div>
-
-        <!-- Order Status & Actions -->
-        <div class="mt-4 md:mt-0 text-sm md:text-right gap-4">
-          <% if (product.productStatus==='placed' || product.productStatus==='shipped' ||
-            product.productStatus==='pending' ) { %>
-            <p class="text-green-600 font-medium">🟢 Expected on <%= order.deliveryDate?.toDateString() || 'TBD' %>
-            </p>
-            <% } else if (product.productStatus==='cancelled' ) { %>
-              <p class="text-red-600 font-medium">🔴 Canceled on <%= order.orderDate?.toDateString() %>
-              </p>
-              <% } else if (product.productStatus==='delivered' ) { %>
-                <p class="text-green-600 font-medium">🟢 Delivered on <%= order.deliveryDate?.toDateString() %>
-                </p>
-                <% } else if (product.productStatus==='refunded' ) { %>
-                  <p class="text-yellow-600 font-medium">🟡 Refund completed</p>
-                    <% } else if (product.productStatus==='return-requested' ) { %>
-                    <p class="text-yellow-600 font-medium">🟡 Ready to return</p>
-                    <% } %>
-
-                      <a class=" text-sm text-blue-600 underline cursor-pointer"
-                        href="/order-details/<%= order._id %>">View Details</a>
-        </div>
+        <span class="text-sm bg-gray-100 px-3 py-1 rounded-full">
+          <%= order.products.length %> item<%= order.products.length> 1 ? 's' : '' %>
+          <div class="pt-2">
+              <a href="/order-details/<%= order._id %>" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                View Details
+              </a>
+            </div>
+        </span>
       </div>
-      <% }) %>
-        <% }) %>
+
+      <!-- Products List -->
+      <div class="space-y-4">
+        <% order.products.forEach(product=> { %>
+          <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+
+            <!-- Product Image & Info -->
+            <div class="flex items-center gap-4 flex-1">
+              <a href="/product/<%= product.productId._id %>">
+                <img src="<%= product.image %>" alt="Product" class="w-16 h-16 object-cover rounded-lg border">
+              </a>
+              <div>
+                <h4 class="font-medium text-gray-900">
+                  <%= product.productId.name %>
+                </h4>
+                <p class="text-lg font-semibold text-gray-800">₹ <%= product.priceAtPurchase %>
+                </p>
+              </div>
+            </div>
+
+            <!-- Status & Actions -->
+            <div class="text-right">
+              <% if (product.productStatus==='placed' || product.productStatus==='shipped' ||
+                product.productStatus==='pending' ) { %>
+                <span class="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full mb-2">
+                  Expected: <%= order.deliveryDate?.toDateString() || 'TBD' %>
+                </span>
+                <% } else if (product.productStatus==='cancelled' ) { %>
+                  <span class="inline-block bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full mb-2">
+                    Cancelled: <%= order.orderDate?.toDateString() %>
+                  </span>
+                  <% } else if (product.productStatus==='failed' ) { %>
+                  <span class="inline-block bg-red-100 text-red-500 text-sm px-3 py-1 rounded-full mb-2">
+                    Failed: <%= order.orderDate?.toDateString() %>
+                  </span>
+                  <% } else if (product.productStatus==='delivered' ) { %>
+                    <span class="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full mb-2">
+                      Delivered: <%= order.deliveryDate?.toDateString() %>
+                    </span>
+                    <% } else if (product.productStatus==='refunded' ) { %>
+                      <span class="inline-block bg-yellow-100 text-yellow-800 text-sm px-3 py-1 rounded-full mb-2">
+                        Refunded
+                      </span>
+                      <% } else if (product.productStatus==='return-requested' ) { %>
+                        <span class="inline-block bg-orange-100 text-orange-800 text-sm px-3 py-1 rounded-full mb-2">
+                          Return Ready
+                        </span>
+                        <% } %>
+            </div>
+          </div>
+          <% }) %>
+      </div>
+    </div>
+    <% }) %>
+
+      <!-- Empty State -->
+      <% if (!orders || orders.length===0) { %>
+        <div class="text-center py-12">
+          <p class="text-gray-500 text-lg mb-4">No orders found</p>
+          <a href="/products" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+            Start Shopping
+          </a>
+        </div>
+        <% } %>
 </div>

@@ -350,8 +350,6 @@ export const handleSelectAddress = async (req, res) => {
         const address = await Address.findOne({ _id: addressId, userId });
         if (!address) return res.status(400).send("Invalid address");
 
-        await Order.deleteMany({ userId, orderStatus: 'failed' });
-
         const cart = await Cart.findById(cartId).populate('cartItems.productId');
         if (!cart || cart.cartItems.length < 1) {
             return res.redirect('/cart');
