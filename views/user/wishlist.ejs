@@ -140,14 +140,14 @@
                          style="animation-delay: <%= index * 0.1 %>s">
                         
                         <!-- Product Image -->
+                        <a href="/product/<%= item.productId._id %>">
                         <div class="relative overflow-hidden">
-                            <a href="/product/<%= item.productId._id %>">
                                 <img src="<%= item.productId.images[0] %>"
                                      alt="<%= item.productId.name %>" 
                                      class="w-full h-60 object-cover transition-transform duration-500 group-hover:scale-110" />
-                            </a>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        </div>
+                                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    </div>
+                                </a>
 
                         <!-- Product Info -->
                         <div class="p-6">
@@ -165,7 +165,7 @@
 
                             <!-- Action Buttons -->
                             <div class="flex gap-3">
-                                <button onclick="addToCart('<%= item.productId._id %>')"
+                                <button  onclick="openSizeModal('<%= item.productId._id %>', <%- JSON.stringify(item.productId.availableSizes) %>)"
                                     class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 hover:shadow-lg transform hover:scale-105 flex items-center justify-center gap-2">
                                     Move to Cart <i class="fa-solid fa-cart-shopping"></i>
                                 </button>
@@ -205,15 +205,15 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             <% if(related.length > 0) { %>
                 <% related.forEach((product, index) => { %>
+                    <div class="bg-white/90 backdrop-blur-lg rounded-3xl overflow-hidden shadow-xl border border-white/30 h-96 flex flex-col transition-all duration-500 hover:shadow-2xl hover:-translate-y-3 hover:bg-white animate-slide-up"
+                    style="animation-delay: <%= index * 0.1 %>s">
+                    
+                    <!-- Wishlist Button -->
+                    <button class="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/80 backdrop-blur-sm border border-white/30 transition-all duration-300 hover:bg-white hover:scale-110 group-hover:shadow-lg" onclick="addToWishlist('<%= product._id %>')">
+                        <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors"></i>
+                    </button>
+                    
                     <a href="/product/<%=product._id %>" class="group">
-                        <div class="bg-white/90 backdrop-blur-lg rounded-3xl overflow-hidden shadow-xl border border-white/30 h-96 flex flex-col transition-all duration-500 hover:shadow-2xl hover:-translate-y-3 hover:bg-white animate-slide-up"
-                             style="animation-delay: <%= index * 0.1 %>s">
-                            
-                            <!-- Wishlist Button -->
-                            <button class="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/80 backdrop-blur-sm border border-white/30 transition-all duration-300 hover:bg-white hover:scale-110 group-hover:shadow-lg">
-                                <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors"></i>
-                            </button>
-
                             <!-- Product Image -->
                             <div class="relative overflow-hidden rounded-t-3xl">
                                 <img src="<%= product.images[0] %>" alt="<%= product.name %>"
@@ -240,8 +240,8 @@
                                     </p>
                                 </div>
                             </div>
+                        </a>
                         </div>
-                    </a>
                 <% }) %>
             <% } %>
         </div>
@@ -283,7 +283,19 @@
             </div>
         </div>
     </footer>
-
+    
+<!-- Size Selection Modal -->
+<div id="sizeModal" class="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center hidden z-50">
+  <div class="bg-white rounded-xl p-6 w-80 shadow-xl text-center">
+    <h2 class="text-lg font-semibold mb-4">Select Size</h2>
+    <div id="sizeOptions" class="grid grid-cols-3 gap-3 mb-4">
+      <!-- Sizes will be dynamically added here -->
+    </div>
+    <p id="size-err" class="text-red-500"></p>
+    <button onclick="confirmSize()" class="bg-indigo-600 text-white px-4 py-2 rounded-md">Confirm</button>
+    <button onclick="closeSizeModal()" class="mt-2 text-sm text-gray-500 hover:underline">Cancel</button>
+  </div>
+</div>
     <script src="/js/user.js"></script>
 </body>
 

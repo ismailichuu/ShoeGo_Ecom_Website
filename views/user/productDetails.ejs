@@ -115,7 +115,7 @@
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                             <%= product.categoryId[0]?.name %>
                         </span>
-                        <button class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                        <button class="p-2 rounded-full hover:bg-gray-100 transition-colors" onclick="addToWishlist('<%= product._id %>')">
                             <i class="fas fa-heart text-gray-400 hover:text-red-500 text-lg"></i>
                         </button>
                     </div>

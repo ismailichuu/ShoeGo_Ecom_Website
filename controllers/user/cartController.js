@@ -121,7 +121,7 @@ export const handleAddToCart = async (req, res) => {
         }
         await Wishlist.updateOne(
             { userId },
-            { $pull: { items: { productId, size: selectedSize } } }
+            { $pull: { items: { productId } } }
         );
 
         await product.save();

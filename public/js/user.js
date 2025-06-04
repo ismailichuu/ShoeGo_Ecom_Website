@@ -461,6 +461,15 @@ async function clearCart() {
     }
 }
 
+//add to wishlist function
+function addToWishlist(productId) {
+    fetch('/add-to-wishlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId })
+    })
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const addToWishlistBtn = document.getElementById('addToWishlistBtn');
     const cartMessage = document.getElementById('cartMessage');
@@ -539,6 +548,53 @@ const addToCart = (productId, selectedSize) => {
             }, 5000);
         });
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+  let selectedProductId = null;
+  let selectedSize = null;
+
+  window.openSizeModal = function (productId, sizes) {
+    selectedProductId = productId;
+    selectedSize = null;
+
+    const sizeOptionsContainer = document.getElementById('sizeOptions');
+    sizeOptionsContainer.innerHTML = ''; 
+    document.getElementById('size-err').textContent = '';
+
+    sizes.forEach(size => {
+      const btn = document.createElement('button');
+      btn.textContent = size;
+      btn.className = 'border border-gray-300 rounded-lg px-3 py-2 hover:bg-indigo-100';
+      btn.onclick = () => {
+        selectedSize = size;
+        document.querySelectorAll('#sizeOptions button').forEach(b => b.classList.remove('bg-indigo-600', 'text-white'));
+        btn.classList.add('bg-indigo-600', 'text-white');
+      };
+      sizeOptionsContainer.appendChild(btn);
+    });
+
+    document.getElementById('sizeModal').classList.remove('hidden');
+  };
+
+  window.closeSizeModal = function () {
+    document.getElementById('sizeModal').classList.add('hidden');
+  };
+
+  window.confirmSize = function () {
+    const errorBox = document.getElementById('size-err');
+
+    if (!selectedSize) {
+      errorBox.textContent = 'Please select a size';
+      return;
+    }
+
+    errorBox.textContent = '';
+    window.closeSizeModal();
+    addToCart(selectedProductId, selectedSize);
+  };
+});
+
+
 
 const removeFromWishlist = (productId, selectedSize) => {
     fetch('/delete-from-wishlist', {
