@@ -53,6 +53,7 @@ export const createRazorpayOrder = async (req, res) => {
         const razorpayId = process.env.RAZORPAY_KEY_ID;
 
         const razorpayOrder = await razorpayInstance.orders.create(options);
+        await Order.updateOne({_id: orderId},{paymentMethod: 'razorpay', paymentStatus: 'failed'});
         res.json({ success: true, razorpayOrder, razorpayId, order });
     } catch (err) {
         console.error("Razorpay order creation error:", err);
@@ -110,7 +111,6 @@ export const verifyPayment = async (req, res) => {
 
             order.orderStatus = 'placed';
             order.paymentStatus = 'completed';
-            order.paymentMethod = 'razorpay';
             order.orderDate = orderDate;
             order.deliveryDate = deliveryDate;
 
@@ -130,6 +130,7 @@ export const verifyPayment = async (req, res) => {
                 razorpayOrderId: razorpay_order_id,
                 razorpayPaymentId: razorpay_payment_id,
                 razorpaySignature: razorpay_signature,
+                status: 'success',
                 amount: order.totalPrice,
                 paymentMethod: 'razorpay'
             });

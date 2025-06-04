@@ -8,22 +8,38 @@ export const getWishlist = async (req, res) => {
     try {
         const userId = decodeUserId(req.cookies?.token);
         const wishlist = await Wishlist.findOne({ userId }).populate('items.productId');
+
+        const wishlistProductIds = wishlist?.items?.map(item => item.productId?._id).filter(Boolean) || [];
         const firstProduct = wishlist?.items?.[0]?.productId;
         const categoryId = firstProduct?.categoryId;
+
         let related = [];
 
-        if (categoryId && firstProduct?._id) {
+        if (categoryId && wishlistProductIds.length > 0) {
             related = await Product.find({
                 categoryId,
                 isActive: true,
-                _id: { $ne: firstProduct._id }
-            }).limit(4).populate('categoryId');
+                _id: { $nin: wishlistProductIds } 
+            })
+            .limit(4)
+            .populate('categoryId');
         }
-        res.render('user/wishlist', { wishlist: wishlist || { wishlist: [] }, related });
+
+        res.render('user/wishlist', {
+            wishlist: wishlist || { items: [] },
+            related
+        });
+
     } catch (error) {
-        console.log('getting wishlist:' + error);
+        console.error('Error getting wishlist:', error);
+        res.status(500).render('user/wishlist', {
+            wishlist: { items: [] },
+            related: [],
+            error: 'Something went wrong while loading your wishlist.'
+        });
     }
 };
+
 
 //@route POST /add-to-wishlist
 export const handleAddToWishlist = async (req, res) => {
@@ -47,7 +63,6 @@ export const handleAddToWishlist = async (req, res) => {
             cartItems: {
                 $elemMatch: {
                     productId,
-                    size: selectedSize
                 }
             }
         });
@@ -55,7 +70,7 @@ export const handleAddToWishlist = async (req, res) => {
         if (cart) {
             return res.status(400).json({
                 success: false,
-                message: 'Product already in cart with the selected size'
+                message: 'Product already in the cart'
             });
         }
 
@@ -83,7 +98,7 @@ export const handleAddToWishlist = async (req, res) => {
             if (exists) {
                 return res.status(200).json({
                     success: false,
-                    message: 'Item with selected size already exists in wishlist'
+                    message: 'Item is already exists in wishlist'
                 });
             }
 
