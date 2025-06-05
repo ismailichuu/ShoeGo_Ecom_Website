@@ -198,6 +198,7 @@ export const getSelectAddress = async (req, res) => {
       totalWithoutTax,
       addresses,
       cart,
+      couponApplied: false,
     });
 
   } catch (error) {

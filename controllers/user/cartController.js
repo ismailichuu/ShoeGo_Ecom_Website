@@ -47,7 +47,8 @@ export const getCart = async (req, res) => {
 
         const items = cart?.cartItems || [];
         const { cartItems, grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(items);
-        res.render('user/cart', { cart: cart || { cartItems }, related, grandTotal, deliveryCharge, total, totalTax, totalWithoutTax, layout: 'checkOutLayout' });
+        res.render('user/cart', { cart: cart || { cartItems }, related, grandTotal, deliveryCharge,
+             total, totalTax, totalWithoutTax, layout: 'checkOutLayout', couponApplied: false });
     } catch (error) {
         console.log('Get Cart Error:', error);
         res.status(500).send('Failed to load cart.');
@@ -211,7 +212,8 @@ export const getOrderSummary = async (req, res) => {
             total,
             totalTax,
             totalWithoutTax,
-            layout: false
+            layout: false,
+            couponApplied: false,
         }, (err, html) => {
             if (err) {
                 console.error('Render error:', err);

@@ -550,48 +550,48 @@ const addToCart = (productId, selectedSize) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  let selectedProductId = null;
-  let selectedSize = null;
+    let selectedProductId = null;
+    let selectedSize = null;
 
-  window.openSizeModal = function (productId, sizes) {
-    selectedProductId = productId;
-    selectedSize = null;
+    window.openSizeModal = function (productId, sizes) {
+        selectedProductId = productId;
+        selectedSize = null;
 
-    const sizeOptionsContainer = document.getElementById('sizeOptions');
-    sizeOptionsContainer.innerHTML = ''; 
-    document.getElementById('size-err').textContent = '';
+        const sizeOptionsContainer = document.getElementById('sizeOptions');
+        sizeOptionsContainer.innerHTML = '';
+        document.getElementById('size-err').textContent = '';
 
-    sizes.forEach(size => {
-      const btn = document.createElement('button');
-      btn.textContent = size;
-      btn.className = 'border border-gray-300 rounded-lg px-3 py-2 hover:bg-indigo-100';
-      btn.onclick = () => {
-        selectedSize = size;
-        document.querySelectorAll('#sizeOptions button').forEach(b => b.classList.remove('bg-indigo-600', 'text-white'));
-        btn.classList.add('bg-indigo-600', 'text-white');
-      };
-      sizeOptionsContainer.appendChild(btn);
-    });
+        sizes.forEach(size => {
+            const btn = document.createElement('button');
+            btn.textContent = size;
+            btn.className = 'border border-gray-300 rounded-lg px-3 py-2 hover:bg-indigo-100';
+            btn.onclick = () => {
+                selectedSize = size;
+                document.querySelectorAll('#sizeOptions button').forEach(b => b.classList.remove('bg-indigo-600', 'text-white'));
+                btn.classList.add('bg-indigo-600', 'text-white');
+            };
+            sizeOptionsContainer.appendChild(btn);
+        });
 
-    document.getElementById('sizeModal').classList.remove('hidden');
-  };
+        document.getElementById('sizeModal').classList.remove('hidden');
+    };
 
-  window.closeSizeModal = function () {
-    document.getElementById('sizeModal').classList.add('hidden');
-  };
+    window.closeSizeModal = function () {
+        document.getElementById('sizeModal').classList.add('hidden');
+    };
 
-  window.confirmSize = function () {
-    const errorBox = document.getElementById('size-err');
+    window.confirmSize = function () {
+        const errorBox = document.getElementById('size-err');
 
-    if (!selectedSize) {
-      errorBox.textContent = 'Please select a size';
-      return;
-    }
+        if (!selectedSize) {
+            errorBox.textContent = 'Please select a size';
+            return;
+        }
 
-    errorBox.textContent = '';
-    window.closeSizeModal();
-    addToCart(selectedProductId, selectedSize);
-  };
+        errorBox.textContent = '';
+        window.closeSizeModal();
+        addToCart(selectedProductId, selectedSize);
+    };
 });
 
 
@@ -887,3 +887,75 @@ style.textContent = `
       }
     `;
 document.head.appendChild(style);
+
+
+function openCouponsModal() {
+    document.getElementById('couponsModal').classList.remove('hidden');
+}
+
+function closeCouponsModal() {
+    document.getElementById('couponsModal').classList.add('hidden');
+}
+
+function applyCoupon(couponId, orderId) {
+    fetch('/payment/apply-coupon', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ couponId, orderId }),
+    })
+    .then(res => res.json())
+    .then(data => {
+        const messageEl = document.getElementById('couponMessage');
+
+        if (data.success) {
+            messageEl.textContent = 'Coupon applied successfully!';
+            messageEl.classList.remove('hidden', 'text-red-600');
+            messageEl.classList.add('text-green-600');
+
+            closeCouponsModal();
+            location.reload();
+        } else {
+            messageEl.textContent = data.message || 'Coupon could not be applied.';
+            messageEl.classList.remove('hidden', 'text-green-600');
+            messageEl.classList.add('text-red-600');
+        }
+
+        setTimeout(() => {
+            messageEl.classList.add('hidden');
+        }, 3000);
+    })
+    .catch(err => {
+        console.error('Error applying coupon:', err);
+        const messageEl = document.getElementById('couponMessage');
+        messageEl.textContent = 'Something went wrong.';
+        messageEl.classList.remove('hidden', 'text-green-600');
+        messageEl.classList.add('text-red-600');
+
+        setTimeout(() => {
+            messageEl.classList.add('hidden');
+        }, 3000);
+    });
+}
+
+//remove coupon checkout
+function removeCoupon(orderId) {
+  fetch('/coupon/remove', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ orderId })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert(data.message);
+      }
+    });
+}
+
+

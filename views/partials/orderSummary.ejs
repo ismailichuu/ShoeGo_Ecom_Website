@@ -28,6 +28,12 @@
             <span>Grand Total</span>
             <span>₹<%= grandTotal %></span>
         </div>
+        <% if(couponApplied) {%>
+        <div class="flex justify-between">
+            <span class="text-gray-600">Coupon Applied <span class="text-green-500"><%= order.couponId.code %></span></span>
+            <span class="text-green-500"> - <%= order.couponId.discount %></span>
+        </div>
+        <% } %>
         <div class="flex justify-between font-bold text-lg">
             <span>Total</span>
             <span>₹<%= Math.round(total) %></span>

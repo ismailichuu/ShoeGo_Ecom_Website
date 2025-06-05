@@ -8,29 +8,36 @@ import process from 'process';
 import Product from "../../models/productSchema.js";
 import Transaction from "../../models/transactionSchema.js";
 import crypto from 'crypto';
+import Coupon from "../../models/couponSchema.js";
 
 //@route GET /payment/:id
 export const getPayment = async (req, res) => {
     try {
+        let couponApplied = false;
         const userId = decodeUserId(req.cookies?.token);
         const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
         if (!cart || cart.cartItems.length < 1) {
             return res.redirect('/cart');
         }
         const orderId = req.params.id;
-        const order = await Order.findById(orderId);
+        const order = await Order.findById(orderId).populate('couponId');
         if (!order) {
             return res.redirect('/cart');
         }
+        const coupons = await Coupon.find();
         const orderDate = new Date();
         const deliveryDate = new Date();
         deliveryDate.setDate(orderDate.getDate() + 7);
         const options = { day: 'numeric', month: 'long', year: 'numeric' };
         const formattedDeliveryDate = deliveryDate.toLocaleDateString('en-US', options);
-        const { grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(cart.cartItems);
+        let { grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(cart.cartItems);
+        if (order.couponApplied) {
+            couponApplied = true;
+            total -= order.discount;
+        }
         res.render('user/payment', {
-            layout: 'checkOutLayout', cart, deliveryDate: formattedDeliveryDate,
-            grandTotal, deliveryCharge, total, totalWithoutTax, totalTax, orderId
+            layout: 'checkOutLayout', cart, deliveryDate: formattedDeliveryDate, order,
+            grandTotal, deliveryCharge, total, totalWithoutTax, totalTax, orderId, coupons, couponApplied,
         });
     } catch (error) {
         console.error("Order creation failed:", error);
@@ -53,7 +60,7 @@ export const createRazorpayOrder = async (req, res) => {
         const razorpayId = process.env.RAZORPAY_KEY_ID;
 
         const razorpayOrder = await razorpayInstance.orders.create(options);
-        await Order.updateOne({_id: orderId},{paymentMethod: 'razorpay', paymentStatus: 'failed'});
+        await Order.updateOne({ _id: orderId }, { paymentMethod: 'razorpay', paymentStatus: 'failed' });
         res.json({ success: true, razorpayOrder, razorpayId, order });
     } catch (err) {
         console.error("Razorpay order creation error:", err);
@@ -106,6 +113,18 @@ export const verifyPayment = async (req, res) => {
 
                 product.stock -= item.quantity;
                 await product.save();
+            }
+            
+            if (order.couponApplied) {
+                const couponId = order.couponId;
+                await Coupon.updateOne(
+                    { _id: couponId },
+                    {
+                        $push: { usedUsers: userId },
+                        $inc: { used: 1 }
+                    }
+                );
+
             }
 
 

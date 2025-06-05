@@ -40,3 +40,26 @@
        if (!isValid) e.preventDefault(); 
      });
  })
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('add-coupon');
+    const fromInput = document.getElementById('activeFrom');
+    const toInput = document.getElementById('activeTo');
+    const errorMsg = document.getElementById('dateError');
+
+    form.addEventListener('submit', function (e) {
+      const fromDate = new Date(fromInput.value);
+      const toDate = new Date(toInput.value);
+
+      if (fromDate >= toDate) {
+        e.preventDefault();
+        errorMsg.classList.remove('hidden');
+        errorMsg.classList.add('block');
+      } else {
+        errorMsg.classList.add('hidden');
+      }
+    });
+
+    fromInput.addEventListener('input', () => errorMsg.classList.add('hidden'));
+    toInput.addEventListener('input', () => errorMsg.classList.add('hidden'));
+  });

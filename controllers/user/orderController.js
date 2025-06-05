@@ -7,6 +7,7 @@ import PDFDocument from 'pdfkit';
 import { Buffer } from 'buffer';
 import { logger } from "../../util/logger.js";
 import Wallet from "../../models/walletSchema.js";
+import Coupon from "../../models/couponSchema.js";
 
 //@route POST /place-order
 export const handlePlaceOrder = async (req, res) => {
@@ -26,6 +27,17 @@ export const handlePlaceOrder = async (req, res) => {
         const order = await Order.findById(orderId);
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+        if (order.couponApplied) {
+            const couponId = order.couponId;
+            await Coupon.updateOne(
+                { _id: couponId },
+                {
+                    $push: { usedUsers: userId },
+                    $inc: { used: 1 }
+                }
+            );
+
         }
 
         for (const item of order.products) {
@@ -413,7 +425,7 @@ export const handleCancelAll = async (req, res) => {
             await wallet.save();
         }
 
-        
+
         order.totalPrice = 0;
 
         await order.save();

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 
 //otp input auto changing
 const inputs = document.querySelectorAll('.otp');
@@ -225,5 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Start timer when page loads
   window.onload = startTimer;
 })
+
 
 

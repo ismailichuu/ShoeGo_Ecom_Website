@@ -41,7 +41,7 @@ const orderSchema = mongoose.Schema({
             productStatus: {
                 type: String,
                 required: true,
-                default: 'failed',  
+                default: 'failed',
             },
 
             refundRequest: {
@@ -53,7 +53,7 @@ const orderSchema = mongoose.Schema({
                 type: String,
                 required: false,
             },
-            
+
             returnRequest: {
                 type: String,
                 required: false,
@@ -86,7 +86,7 @@ const orderSchema = mongoose.Schema({
     orderStatus: {
         type: String,
         required: true,
-        default: 'failed', 
+        default: 'failed',
     },
 
     paymentMethod: {
@@ -113,6 +113,17 @@ const orderSchema = mongoose.Schema({
 
     deliveryDate: {
         type: Date,
+        required: false,
+    },
+
+    couponApplied: {
+        type: Boolean,
+        default: false,
+    },
+
+    couponId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Coupon',
         required: false,
     },
 

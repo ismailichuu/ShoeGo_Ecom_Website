@@ -652,3 +652,44 @@ function handleRefundRequest(orderId, productId, size, action) {
     });
 }
 
+//load Coupons
+document.addEventListener('DOMContentLoaded', () => {
+    const contentArea = document.getElementById('mainContent');
+    const sidebarLinks = document.querySelectorAll('aside a');
+    const loadBtn = document.getElementById('loadCoupons');
+
+    loadBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        sidebarLinks.forEach(link => link.classList.remove('bg-purple-200'));
+        loadBtn.classList.add('bg-purple-200');
+
+        fetch('/admin/coupons').then(response => response.text())
+            .then(html => {
+                contentArea.innerHTML = html;
+            }).catch(error => {
+                console.error('Failed to load coupons:', error);
+                contentArea.innerHTML = "<p class='text-red-500'>Failed to load coupons.</p>";
+            })
+    })
+});
+
+//deleteCoupon
+function deleteCoupon(id) {
+    if (!confirm('Are you sure you want to delete this Coupon?')) return;
+
+    fetch('/admin/coupons', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ couponId: id }),
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('Coupon deleted');
+                location.href = '/admin/coupons?req=new';
+            } else {
+                alert('Failed to delete');
+            }
+        });
+}
+
