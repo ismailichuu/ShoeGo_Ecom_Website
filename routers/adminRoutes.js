@@ -7,6 +7,7 @@ import { getCustomerDetails, getCustomers, getOrders, handleBlockUser } from '..
 import { deleteCategory, getAddCategory, getCategory, getEditCategory, handleAddCategory, handleEditCategory } from '../controllers/admin/categoryController.js';
 import { getOrderDetails, handleRefundRequest, handleReturnRequest, updateProductStatus } from '../controllers/admin/orderController.js';
 import { deleteCoupon, getAddCoupons, getCoupons, getEditCoupon, handleAddCoupons, handleEditCoupon } from '../controllers/admin/couponController.js';
+import { generateSalesExcel, generateSalesPDF, getSalesReport } from '../controllers/admin/salesController.js';
 
 const router = express.Router();
 
@@ -67,6 +68,12 @@ router.get('/coupons/edit/:id', logger, getEditCoupon);
 router.post('/coupons/edit/:id', logger, handleEditCoupon);
 
 router.delete('/coupons', logger, deleteCoupon);
+
+router.get('/sales-report', logger, getSalesReport);
+
+router.get('/sales-report/download/pdf', logger, generateSalesPDF);
+
+router.get('/sales-report/download/excel', logger, generateSalesExcel);
 
 router.get('/signout', handleSignout);
 

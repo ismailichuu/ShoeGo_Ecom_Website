@@ -693,3 +693,23 @@ function deleteCoupon(id) {
         });
 }
 
+//laodSalesReport
+document.addEventListener('DOMContentLoaded', () => {
+    const contentArea = document.getElementById('mainContent');
+    const sidebarLinks = document.querySelectorAll('aside a');
+    const loadBtn = document.getElementById('loadSalesReport');
+
+    loadBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        sidebarLinks.forEach(link => link.classList.remove('bg-purple-200'));
+        loadBtn.classList.add('bg-purple-200');
+
+        fetch('/admin/sales-report').then(response => response.text())
+            .then(html => {
+                contentArea.innerHTML = html;
+            }).catch(error => {
+                console.error('Failed to load sale report:', error);
+                contentArea.innerHTML = "<p class='text-red-500'>Failed to load sales report.</p>";
+            })
+    })
+});

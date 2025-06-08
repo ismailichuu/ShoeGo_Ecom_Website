@@ -223,7 +223,7 @@ export const getOrderSummary = async (req, res) => {
         const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
 
         const items = cart?.cartItems || [];
-        const { cartItems, grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(items);
+        const { cartItems, grandTotal, deliveryCharge, total, totalWithoutTax, totalTax, totalDiscount } = calculateCart(items);
 
         // Render the partial view and return only the HTML of the summary
         res.render('partials/orderSummary', {
@@ -233,6 +233,7 @@ export const getOrderSummary = async (req, res) => {
             total,
             totalTax,
             totalWithoutTax,
+            totalDiscount,
             layout: false,
             couponApplied: false,
         }, (err, html) => {
