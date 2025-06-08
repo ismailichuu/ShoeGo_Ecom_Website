@@ -261,9 +261,13 @@
               <div class="flex items-center gap-2">
                 <span class="text-sm line-through text-gray-400">₹<%= product.basePrice %></span>
                 <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  ₹<%= product.discountPrice %>
+                  ₹<%= product.finalPrice %>
+                </span>
+                <span class="text-sm text-green-600 font-semibold">
+                  (<%= product.discountLabel %>)
                 </span>
               </div>
+
             </div>
           </a>
         </div>

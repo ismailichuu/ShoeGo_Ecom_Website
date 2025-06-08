@@ -53,22 +53,42 @@ export const handleChangePassword = async (req, res) => {
 //@route GET /profile
 export const getProfile = async (req, res) => {
     try {
-        //token checking
+        // Token check
         const token = req.cookies?.token;
-        if (!token) res.redirect('/login');
+        if (!token) return res.redirect('/login');
+
         const decoded = verifyToken(token);
         const userId = decoded.userId;
-        //fetching user
+
+        // Fetch user
         const user = await User.findById(userId);
         const joinedDate = new Date(user.createdAt).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
         });
+
         const address = await Address.findOne({ userId, isDefault: true });
-        res.render('user/profile', { layout: 'profile-layout', user, joinedDate, address });
+
+        const referralPayload = {
+            refCode: user.referralCode,    
+            refId: user._id
+        };
+
+        const referralToken = jwt.sign(referralPayload, process.env.JWT_SECRET); 
+
+        const referralLink = `${req.protocol}://${req.get('host')}/signup?ref=${referralToken}`;
+
+        res.render('user/profile', {
+            layout: 'profile-layout',
+            user,
+            joinedDate,
+            address,
+            referralLink 
+        });
+
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         res.status(500).send('Server Error');
     }
 };
@@ -77,6 +97,7 @@ export const getProfile = async (req, res) => {
 export const getEditProfile = async (req, res) => {
     try {
         const msg = req.session.err || null;
+        req.session.err = null;
         const token = req.cookies?.token;
         if (!token) return res.redirect('/');
         const decoded = verifyToken(token);

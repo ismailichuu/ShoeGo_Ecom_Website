@@ -59,7 +59,7 @@ export const handleApplyCoupon = async (req, res) => {
 
     order.couponApplied = true;
     order.couponId = coupon._id;
-    order.discount = discount;
+    order.discount += discount;
     order.grandTotal = totalAmount - discount;
     order.totalPrice -= discount;
 

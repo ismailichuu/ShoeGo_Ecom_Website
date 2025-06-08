@@ -102,7 +102,7 @@ const orderSchema = mongoose.Schema({
     },
 
     discount: {
-        type: String,
+        type: Number,
         required: false,
     },
 

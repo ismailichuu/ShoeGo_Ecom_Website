@@ -18,7 +18,7 @@
     <!-- Sign Up Card -->
     <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full mx-auto space-y-6 border border-gray-200">
       <!-- Google Login Button -->
-      <a href="/auth/google"
+      <a href="/auth/google?ref=<%= referralToken %>"
         class="flex items-center justify-center w-full gap-3 bg-white text-gray-800 font-semibold py-2 px-8 rounded-full hover:bg-gray-400 transition shadow">
         <img src="images/glogo.png" alt="Google" class="w-5 h-5">
         Continue with Google
@@ -61,6 +61,7 @@
             required>
           <p id="password2-error" class="text-sm text-red-600 mt-1 hidden"></p>
         </div>
+        <input type="hidden" name="referralToken" value="<%= referralToken || '' %>">
 
 
         <% if(msg) { %>
@@ -81,6 +82,17 @@
                 Sign Up
               </button>
             </div>
+            <!-- Optional Manual Referral Code Input -->
+<div class="form-group">
+  <label for="manualReferral">Referral Code (optional)</label>
+  <input
+    type="text"
+    id="manualReferral"
+    name="manualReferral"
+    class="form-control w-full rounded-lg bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-700"
+    placeholder="Enter referral code if you have one"
+  />
+</div>
       </form>
 
       <!-- Sign In Link (outside the form) -->
