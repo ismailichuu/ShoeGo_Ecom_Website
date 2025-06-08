@@ -58,11 +58,6 @@ const signUpSchema = new mongoose.Schema({
         required: false,
     },
 
-    referral: {
-        type: String,
-        required: false,
-    },
-
     newsLetter: {
         type: Boolean,
         required: true,
@@ -80,7 +75,28 @@ const signUpSchema = new mongoose.Schema({
         enum: ['Male', 'Female', 'Other'],
         required: false,
     },
-    
+
+    referralCode: {
+        type: String, 
+        unique: true 
+    },
+
+    referrerId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'user', 
+        default: null 
+    },
+
+    referralsCount: {
+        type: Number,
+        default: 0,
+    },
+
+    successfulReferrals: { 
+        type: Number, 
+        default: 0 
+    },
+
 }, {
     timestamps: true,
 });

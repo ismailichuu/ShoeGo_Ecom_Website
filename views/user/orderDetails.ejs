@@ -307,6 +307,19 @@
             </div>
 
             <div class="flex justify-between items-center py-2">
+              <span class="text-gray-600 font-medium">Total Discount</span>
+              <span class="font-bold text-gray-800 bg-blue-50 px-3 py-1 rounded-full">
+               ₹ <%= order.discount %></span>
+            </div>
+
+            <% if(order.couponApplied) {%>
+          <div class="flex justify-between items-center py-2">
+              <span class="text-gray-600">Coupon Applied </span>
+              <span class="text-green-500"><%= order.couponId.code %></span>
+          </div>
+          <% } %>
+
+            <div class="flex justify-between items-center py-2">
               <span class="text-gray-600 font-medium">Payment Status</span>
               <span class="font-bold text-gray-800 bg-purple-50 px-3 py-1 rounded-full">
                 <%= order.paymentStatus %>

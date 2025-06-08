@@ -3,9 +3,12 @@ import process from 'process';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-export const generateToken = (userId, expiry) => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: expiry });
+export const generateToken = (userId, expiry = null) => {
+  const payload = { userId };
+  const options = expiry ? { expiresIn: expiry } : {};
+  return jwt.sign(payload, JWT_SECRET, options);
 };
+
 
 export const verifyToken = (token) => {
   return jwt.verify(token, JWT_SECRET);

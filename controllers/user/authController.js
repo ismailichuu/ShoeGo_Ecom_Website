@@ -8,6 +8,8 @@ import sendOTPEmail from "../../config/nodemailer.transporter.js";
 import { generateToken } from "../../util/jwt.js";
 import process from 'process';
 import { logger } from "../../util/logger.js";
+import { generateReferralCode } from "../../util/generateReferralCode.js";
+import Coupon from "../../models/couponSchema.js";
 
 //@route GET /login
 export const getLogin = (req, res) => {
@@ -112,10 +114,10 @@ export const handleVerify = async (req, res) => {
         const email = decoded.email;
         const { num1, num2, num3, num4 } = req.body;
         const otp = [num1, num2, num3, num4].join('');
-        //userExist
+
         const user = await User.findOne({ email });
         if (!user) {
-            req.session.err = 'User not found Signup again';
+            req.session.err = 'User not found. Signup again';
             return res.redirect('/signup');
         }
 
@@ -127,6 +129,25 @@ export const handleVerify = async (req, res) => {
         user.otpExpiry = undefined;
         await user.save();
 
+        if (user.referrerId) {
+            const referrer = await User.findById(user.referrerId);
+            referrer.successfulReferrals += 1;
+            if (referrer) {
+                const couponCode = `REF-${referrer._id.toString().slice(-5).toUpperCase()}-${Date.now().toString().slice(-4)}`;
+                const coupon = new Coupon({
+                    name: 'Referral Bonus',
+                    code: couponCode,
+                    discount: 400,
+                    referrerId: referrer._id,
+                    minAmount: 1400,
+                    limit: 1,
+                    activeFrom: new Date(),
+                    activeTo: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                });
+                await referrer.save();
+                await coupon.save();
+            }
+        }
         return res.redirect('/');
     } catch (error) {
         console.log(error);
@@ -134,7 +155,7 @@ export const handleVerify = async (req, res) => {
         req.session.signup = true;
         res.redirect(`/verify?token=${req.session.token}`);
     }
-}
+};
 
 //@route POST /verifyPassword
 export const handleVerifyPassword = async (req, res) => {
@@ -170,48 +191,73 @@ export const handleVerifyPassword = async (req, res) => {
 }
 
 //@route GET /signup
-export const getSignup = (req, res) => {
+export const getSignup = async (req, res) => {
     try {
         const signupErr = req.session.err || null;
+        const referral = req.query.ref || null;
+
         req.session.err = null;
-        res.render('user/signup', { msg: signupErr, admin: false });
+
+        res.render('user/signup', {
+            msg: signupErr,
+            referralToken: referral
+        });
     } catch (error) {
-        console.log('Signup', error);
+        console.error('Signup Error:', error);
+        res.status(500).send('Server Error');
     }
-}
+};
+
+
+
 
 //@route POST /signup
 export const handleSignup = async (req, res) => {
-
     try {
+        const { name, email, password1, password2, referralToken } = req.body;
 
-        const { name, email, password1, password2 } = req.body;
-        if (password1 !== password2) throw new Error('Password not Match');
+        if (password1 !== password2) throw new Error('Password does not match');
+        if (password1.length < 6) throw new Error('Password must be at least 6 characters');
 
-        if (password1.length < 6) throw new Error('Password Must be 6 Characters');
-
-        //Checking user exist or not
         const userExist = await User.findOne({ email });
         if (userExist && !userExist.isVerified) {
             const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '2h' });
             req.session.signup = true;
+
             const otp = generateOtp();
             const otpExpiry = Date.now() + 2 * 60 * 60 * 1000;
             userExist.otp = otp;
             userExist.otpExpiry = otpExpiry;
-            userExist.save();
+            await userExist.save();
             await sendOTPEmail(email, otp, 'signup', '2 hour');
+
             return res.redirect(`/verify?token=${token}`);
         }
+        if (userExist) throw new Error('User is already registered');
 
-        if (userExist) throw ('User is already registered');
-
-        //password hashing
         const hashPassword = await hashingPassword(password1);
-
         const otp = generateOtp();
         const otpExpiry = Date.now() + 2 * 60 * 60 * 1000;
-        await sendOTPEmail(email, otp, 'signup', '2 hour');
+
+        let referrer = null;
+        if (referralToken) {
+            try {
+                const decoded = jwt.verify(referralToken, process.env.JWT_SECRET);
+                referrer = await User.findById(decoded.refId);
+                if (!referrer) {
+                    req.session.err = 'Invalid referral link.';
+                    return res.redirect('/signup');
+                }
+            } catch (err) {
+                req.session.err = 'Invalid or expired referral link.'+err.toString();
+                return res.redirect('/signup');
+            }
+        }
+
+        const newReferralCode = generateReferralCode(email).toUpperCase();
+
+        // await sendOTPEmail(email, otp, 'signup', '2 hour');
+
         const newUser = new User({
             name,
             email,
@@ -219,27 +265,34 @@ export const handleSignup = async (req, res) => {
             otp,
             otpExpiry,
             isVerified: false,
-            createdAt: Date(),
+            referralCode: newReferralCode,
+            referrerId: referrer ? referrer._id : null,
         });
 
         const response = await newUser.save();
+
+        if (referrer) {
+            await User.findByIdAndUpdate(referrer._id, { $inc: { referralsCount: 1 } });
+        }
+
         const token = generateToken(response._id, '1d');
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
-            maxAge: 24 * 60 * 60 * 1000 // 1 day
+            maxAge: 24 * 60 * 60 * 1000,
         });
 
         const tokenEmail = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '2h' });
         req.session.signup = true;
         res.redirect(`/verify?token=${tokenEmail}`);
     } catch (error) {
-        console.log(error);
+        console.log('Signup error:', error);
         req.session.err = error.toString();
         res.redirect('/signup');
-    };
+    }
 };
+
 
 //@route GET /auth/google 
 export const handleGoogle = (req, res) => {
@@ -251,6 +304,11 @@ export const handleGoogle = (req, res) => {
         req.session.oauth_state = state;
         req.session.code_verifier = codeVerifier;
 
+        const referralCode = req.query.ref || null;
+        if (referralCode) {
+            req.session.referralCode = referralCode;
+        }
+
         const url = google.createAuthorizationURL(state, codeVerifier, scope);
 
         res.redirect(url.toString());
@@ -260,50 +318,87 @@ export const handleGoogle = (req, res) => {
     }
 };
 
+
 //@route GET /auth/google/callback
 export const handleGoogleCallback = async (req, res) => {
-    try {
-        const { code, state } = req.query;
-        const storedState = req.session.oauth_state;
-        const codeVerifier = req.session.code_verifier;
+  try {
+    const { code, state } = req.query;
+    const storedState = req.session.oauth_state;
+    const codeVerifier = req.session.code_verifier;
+    const referralCode = req.session.referralCode;
 
-        if (!code || state !== storedState || !codeVerifier) {
-            return res.status(400).send("Invalid request.");
-        }
-
-        const tokens = await google.validateAuthorizationCode(code, codeVerifier);
-        const idToken = tokens.idToken();
-        const claims = decodeIdToken(idToken);
-
-        const email = claims.email;
-        const name = claims.name;
-        const profile = claims.picture;
-
-        let user = await User.findOne({ email });
-
-        if (!user) {
-            user = await User.create({
-                name,
-                email,
-                isVerified: true,
-                provider: "google",
-                profile
-            });
-        }
-        const token = generateToken(user._id, '1d');
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 24 * 60 * 60 * 1000 // 1 day
-        });
-
-        res.redirect("/");
-    } catch (error) {
-        console.error("Error during Google OAuth callback:", error);
-        res.status(500).send("Google authentication failed.");
+    if (!code || state !== storedState || !codeVerifier) {
+      return res.status(400).send("Invalid request.");
     }
+
+    const tokens = await google.validateAuthorizationCode(code, codeVerifier);
+    const idToken = tokens.idToken();
+    const claims = decodeIdToken(idToken);
+
+    const email = claims.email;
+    const name = claims.name;
+    const profile = claims.picture;
+
+    let user = await User.findOne({ email });
+
+    console.log(user);
+
+    if (!user) {
+      let referrer = null;
+        
+      if (referralCode) {
+        const decoded = jwt.verify(referralCode, process.env.JWT_SECRET);
+        referrer = await User.findById(decoded.refId);
+      }
+
+      user = await User.create({
+        name,
+        email,
+        isVerified: true,
+        provider: "google",
+        profile,
+        referralCode: generateReferralCode(email),
+        referrerId: referrer ? referrer._id : undefined,
+      });
+
+      if (referrer) {
+        referrer.successfulReferrals = (referrer.successfulReferrals || 0) + 1;
+        referrer.referralCount += 1;
+        await referrer.save();
+
+        const couponCode = `REF-${referrer._id.toString().slice(-5).toUpperCase()}-${Date.now().toString().slice(-4)}`;
+        const coupon = new Coupon({
+          name: 'Referral Bonus',
+          code: couponCode,
+          discount: 400,
+          referrerId: referrer._id,
+          minAmount: 1400,
+          limit: 1,
+          activeFrom: new Date(),
+          activeTo: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        });
+        await coupon.save();
+      }
+    }
+
+    req.session.referralCode = null;
+
+    const token = generateToken(user._id, '1d');
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.redirect("/");
+  } catch (error) {
+    console.error("Error during Google OAuth callback:", error);
+    res.status(500).send("Google authentication failed.");
+  }
 };
+
+
 
 
 //@route POST /resendOtp

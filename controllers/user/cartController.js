@@ -17,7 +17,7 @@ export const getCart = async (req, res) => {
             return res.redirect('/login');
         }
 
-        
+
         // Find cart and populate product details
         const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
 
@@ -46,9 +46,30 @@ export const getCart = async (req, res) => {
         }
 
         const items = cart?.cartItems || [];
-        const { cartItems, grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(items);
-        res.render('user/cart', { cart: cart || { cartItems }, related, grandTotal, deliveryCharge,
-             total, totalTax, totalWithoutTax, layout: 'checkOutLayout', couponApplied: false });
+        const {
+            cartItems,
+            grandTotal,
+            deliveryCharge,
+            total,
+            totalWithoutTax,
+            totalTax,
+            totalDiscount
+        } = calculateCart(items);
+
+        res.render('user/cart', {
+            cart: cart || { cartItems },
+            related,
+            cartItems,
+            grandTotal,
+            deliveryCharge,
+            total,
+            totalTax,
+            totalWithoutTax,
+            totalDiscount,
+            layout: 'checkOutLayout',
+            couponApplied: false
+        });
+
     } catch (error) {
         console.log('Get Cart Error:', error);
         res.status(500).send('Failed to load cart.');

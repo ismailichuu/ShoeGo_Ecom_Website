@@ -1,0 +1,87 @@
+
+<div class="bg-gray-50 p-6 text-gray-800">
+
+  <h1 class="text-2xl font-bold mb-4">Sales Report</h1>
+
+  <!-- Filter Form -->
+  <form class="flex gap-4 mb-6" method="GET" action="/admin/sales-report">
+    <div>
+      <label class="block text-sm">Start Date</label>
+      <input type="date" name="startDate" value="<%= startDate || '' %>" class="border px-3 py-1 rounded" />
+    </div>
+    <div>
+      <label class="block text-sm">End Date</label>
+      <input type="date" name="endDate" value="<%= endDate || '' %>" class="border px-3 py-1 rounded" />
+    </div>
+    <div>
+      <label class="block text-sm">Quick Filter</label>
+      <select name="filterType" class="border px-3 py-1 rounded">
+        <option value="">Custom</option>
+        <option value="day" <%= filterType === 'day' ? 'selected' : '' %>>Last 1 Day</option>
+        <option value="week" <%= filterType === 'week' ? 'selected' : '' %>>Last 7 Days</option>
+        <option value="month" <%= filterType === 'month' ? 'selected' : '' %>>Last 30 Days</option>
+      </select>
+    </div>
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded self-end">Apply</button>
+  </form>
+
+  <!-- Summary -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white shadow p-4 rounded">
+      <h2 class="text-sm text-gray-500">Total Orders</h2>
+      <p class="text-xl font-bold"><%= totalOrders %></p>
+    </div>
+    <div class="bg-white shadow p-4 rounded">
+      <h2 class="text-sm text-gray-500">Total Sales</h2>
+      <p class="text-xl font-bold">₹<%= totalSales.toFixed(2) %></p>
+    </div>
+    <div class="bg-white shadow p-4 rounded">
+      <h2 class="text-sm text-gray-500">Product Discounts</h2>
+      <p class="text-xl font-bold">₹<%= totalDiscount.toFixed(2) %></p>
+    </div>
+    <div class="bg-white shadow p-4 rounded">
+      <h2 class="text-sm text-gray-500">Coupon Deductions</h2>
+      <p class="text-xl font-bold">₹<%= couponDeduction.toFixed(2) %></p>
+    </div>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="overflow-x-auto bg-white rounded shadow">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="text-left p-3">Order ID</th>
+          <th class="text-left p-3">Date</th>
+          <th class="text-right p-3">Amount</th>
+          <th class="text-right p-3">Discount</th>
+          <th class="text-right p-3">Coupon</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (orders.length === 0) { %>
+          <tr>
+            <td colspan="5" class="text-center py-4">No orders found for this period.</td>
+          </tr>
+        <% } else { %>
+          <% orders.forEach(order => { %>
+            <tr class="border-t">
+              <td class="p-3"><%= order._id %></td>
+              <td class="p-3"><%= order.createdAt.toISOString().split('T')[0] %></td>
+              <td class="p-3 text-right">₹<%= order.totalAmount.toFixed(2) %></td>
+              <td class="p-3 text-right">₹<%= (order.totalDiscount || 0).toFixed(2) %></td>
+              <td class="p-3 text-right">₹<%= (order.couponDiscount || 0).toFixed(2) %></td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Download Links -->
+  <div class="mt-6 flex gap-4">
+    <a href="/admin/sales-report/download/pdf?<%= `startDate=${startDate || ''}&endDate=${endDate || ''}&filterType=${filterType || ''}` %>" 
+       class="bg-red-600 text-white px-4 py-2 rounded">Download PDF</a>
+    <a href="/admin/sales-report/download/excel?<%= `startDate=${startDate || ''}&endDate=${endDate || ''}&filterType=${filterType || ''}` %>" 
+       class="bg-green-600 text-white px-4 py-2 rounded">Download Excel</a>
+  </div>
+</div>

@@ -46,6 +46,12 @@ const couponSchema = new mongoose.Schema({
         default: 0,
     },
 
+    referrerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        default: null,
+    },
+
     isActive: {
         type: Boolean,
         default: true,

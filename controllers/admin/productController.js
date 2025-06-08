@@ -20,7 +20,7 @@ export const getProducts = async (req, res) => {
       .find(searchFilter)
       .skip((page - 1) * limit)
       .limit(limit)
-      .sort({ updatedAt: -1 });
+      .sort({ updatedAt: -1 }).populate('categoryId');
 
     const totalPages = Math.ceil(totalDocs / limit);
     const layout = req.query.req ? 'layout' : false;

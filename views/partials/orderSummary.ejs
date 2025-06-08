@@ -6,16 +6,12 @@
         <% cart.cartItems.forEach(item => { %>
         <div class="flex justify-between text-sm mb-2">
             <span class="text-gray-600"><%= item.quantity %> x <%= item.productId.name %></span>
-            <span class="font-medium">₹<%= item.productId.discountPrice * item.quantity %></span>
+            <span class="font-medium">₹<%= item.productId.basePrice * item.quantity %></span>
         </div>
         <% }) %>
     </div>
     
     <div class="space-y-3 pt-4 border-t border-gray-200">
-        <div class="flex justify-between">
-            <span class="text-gray-600">Total Amount</span>
-            <span>₹<%= totalWithoutTax %></span>
-        </div>
         <div class="flex justify-between">
             <span class="text-gray-600">+5% GST</span>
             <span>+ <%= totalTax %></span>
@@ -23,6 +19,14 @@
         <div class="flex justify-between">
             <span class="text-gray-600">Delivery Charges</span>
             <span class="text-green-500"><%= deliveryCharge || 'Free' %></span>
+        </div>
+        <div class="flex justify-between">
+            <span class="text-gray-600">Total Discount</span>
+            <span class="text-green-500">₹<%= totalDiscount %></span>
+        </div>
+        <div class="flex justify-between">
+            <span class="text-gray-600">Total Amount Without Tax</span>
+            <span>₹<%= totalWithoutTax %></span>
         </div>
         <div class="flex justify-between pt-3 border-t border-gray-200 font-medium">
             <span>Grand Total</span>

@@ -24,19 +24,29 @@ export const getPayment = async (req, res) => {
         if (!order) {
             return res.redirect('/cart');
         }
-        const coupons = await Coupon.find();
+
+        const coupons = await Coupon.find({
+            $or: [
+                { referrerId: userId }, 
+                { referrerId: null }    
+            ],
+            activeFrom: { $lte: new Date() },
+            activeTo: { $gte: new Date() },
+            limit: { $gt: 0 }
+        });
+
         const orderDate = new Date();
         const deliveryDate = new Date();
         deliveryDate.setDate(orderDate.getDate() + 7);
         const options = { day: 'numeric', month: 'long', year: 'numeric' };
         const formattedDeliveryDate = deliveryDate.toLocaleDateString('en-US', options);
-        let { grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(cart.cartItems);
+        let { grandTotal, deliveryCharge, total, totalWithoutTax, totalTax, totalDiscount } = calculateCart(cart.cartItems);
         if (order.couponApplied) {
             couponApplied = true;
-            total -= order.discount;
+            total -= order.couponId.discount;
         }
         res.render('user/payment', {
-            layout: 'checkOutLayout', cart, deliveryDate: formattedDeliveryDate, order,
+            layout: 'checkOutLayout', cart, deliveryDate: formattedDeliveryDate, order, totalDiscount,
             grandTotal, deliveryCharge, total, totalWithoutTax, totalTax, orderId, coupons, couponApplied,
         });
     } catch (error) {
@@ -114,7 +124,7 @@ export const verifyPayment = async (req, res) => {
                 product.stock -= item.quantity;
                 await product.save();
             }
-            
+
             if (order.couponApplied) {
                 const couponId = order.couponId;
                 await Coupon.updateOne(

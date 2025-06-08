@@ -1,66 +1,71 @@
-<% title='ShoeGo | Checkout' %>
+<% title = 'ShoeGo | Checkout' %>
 
-  <main class="px-10 py-8">
-    <h1 class="text-3xl font-bold mb-6">Select Delivery Address</h1>
+<main class="px-10 py-8">
+  <h1 class="text-3xl font-bold mb-6">Select Delivery Address</h1>
 
-    <div class="flex items-center mb-8 text-sm text-gray-600 font-medium space-x-4">
-      <div>🛒 Cart</div>
-      <div>➜</div>
-      <div class="text-black">🚚 Shipping</div>
-      <div>➜</div>
-      <div>💳 Payment</div>
-    </div>
-    <!-- Form to handle address selection -->
-    <form action="/select-address/<%= cart._id %>" method="POST">
-      <div class="grid grid-cols-3 gap-10">
-        <!-- Address List -->
-        <div class="col-span-2 space-y-5">
+  <div class="flex items-center mb-8 text-sm text-gray-600 font-medium space-x-4">
+    <div>🛒 Cart</div>
+    <div>➜</div>
+    <div class="text-black">🚚 Shipping</div>
+    <div>➜</div>
+    <div>💳 Payment</div>
+  </div>
 
-          <% if (addresses && addresses.length> 0) { %>
-            <% addresses.forEach(address=> { %>
-              <div class="bg-gray-200 p-4 rounded shadow-md flex items-center gap-4">
-                <input type="radio" name="addressId" value="<%= address._id %>" <%=address.isDefault ? 'checked' : '' %>
-                class="form-radio text-purple-600">
-                <div>
-                  <p class="font-semibold">
-                    <%= address.mobileNumber %>
-                  </p>
-                  <p>
-                    <%= address.houseNo + ', ' + address.locality + ', ' + address.city + ', ' + address.state + ' - ' +
-                      address.pincode %>
-                      <% if (address.landmark) { %>, Landmark: <%= address.landmark %>
-                          <% } %>
-                            <% if (address.alternatePhone) { %>, Alternate Phone: <%= address.alternatePhone %>
-                                <% } %>
-                  </p>
-                  <span class="bg-gray-200 text-xs px-2 py-1 rounded mt-1 inline-block">
-                    <%= address.addressType %>
-                  </span>
-                </div>
-                <a href="/edit-address-checkout/<%= address._id %>" class="ms-auto">
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </a>
+  <!-- Form to handle address selection -->
+  <form action="/select-address/<%= cart._id %>" method="POST">
+    <div class="grid grid-cols-3 gap-10">
+      <!-- Address List -->
+      <div class="col-span-2 space-y-5">
+        <% if (addresses && addresses.length > 0) { %>
+          <% addresses.forEach(address => { %>
+            <div class="bg-gray-200 p-4 rounded shadow-md flex items-center gap-4">
+              <input type="radio" name="addressId" value="<%= address._id %>" 
+                     class="form-radio text-purple-600"
+                     <%= address.isDefault ? 'checked' : '' %>>
+              <div>
+                <p class="font-semibold">
+                  <%= address.mobileNumber %>
+                </p>
+                <p>
+                  <%= address.houseNo + ', ' + address.locality + ', ' + address.city + ', ' + address.state + ' - ' + address.pincode %>
+                  <% if (address.landmark) { %>, Landmark: <%= address.landmark %> <% } %>
+                  <% if (address.alternatePhone) { %>, Alternate Phone: <%= address.alternatePhone %> <% } %>
+                </p>
+                <span class="bg-gray-200 text-xs px-2 py-1 rounded mt-1 inline-block">
+                  <%= address.addressType %>
+                </span>
               </div>
-              <% }) %>
-                <% } else { %>
-                  <p class="text-sm text-gray-600">No addresses found. Please add a new address below.</p>
-                  <% } %>
+              <a href="/edit-address-checkout/<%= address._id %>" class="ms-auto">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </a>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <!-- Empty Address State -->
+          <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded">
+            <p>No addresses found. Please add new address to continue with checkout.
+            </p>
+          </div>
+        <% } %>
 
-                    <!-- Add new address link -->
-                    <a class="text-purple-600 font-semibold" href="/add-new-address/<%= cart._id %>">+ Add a new
-                      address</a>
-
-        </div>
-
-        <!-- Order Summary -->
-        <div>
-          <%- include('../partials/orderSummary') %>
-
-            <!-- Continue Button -->
-            <button type="submit" class="w-full bg-black text-white py-2 rounded-2xl mt-4 hover:bg-gray-800">
-              Continue
-            </button>
-        </div>
+        <!-- Add new address link -->
+        <a class="text-purple-600 font-semibold inline-block mt-4" href="/add-new-address/<%= cart._id %>">+ Add a new address</a>
       </div>
-    </form>
-  </main>
+
+      <!-- Order Summary + Continue Button -->
+      <div>
+        <%- include('../partials/orderSummary') %>
+
+        <% if (addresses && addresses.length > 0) { %>
+          <button type="submit" class="w-full bg-black text-white py-2 rounded-2xl mt-4 hover:bg-gray-800">
+            Continue
+          </button>
+        <% } else { %>
+          <button type="button" disabled class="w-full bg-gray-400 text-white py-2 rounded-2xl mt-4 cursor-not-allowed">
+            Please add an address to continue
+          </button>
+        <% } %>
+      </div>
+    </div>
+  </form>
+</main>

@@ -958,4 +958,16 @@ function removeCoupon(orderId) {
     });
 }
 
+//generate link
+function copyReferralLink() {
+  const input = document.getElementById('refLink');
+  input.select();
+  input.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+
+  const msg = document.getElementById('copyMessage');
+  msg.classList.remove('hidden');
+  setTimeout(() => msg.classList.add('hidden'), 2000);
+}
+
 

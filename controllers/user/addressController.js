@@ -184,10 +184,11 @@ export const getSelectAddress = async (req, res) => {
       cart.cartItems = activeItems;
     }
 
-    const addresses = await Address.find({ userId }).sort({ isDefault: -1 });
+    
+    let addresses = await Address.find({ userId }).sort({ isDefault: -1 });
 
     const items = cart.cartItems;
-    const { grandTotal, deliveryCharge, total, totalWithoutTax, totalTax } = calculateCart(items);
+    const { grandTotal, deliveryCharge, total, totalWithoutTax, totalTax, totalDiscount } = calculateCart(items);
 
     res.render('user/selectAddress', {
       layout: 'checkOutLayout',
@@ -196,6 +197,7 @@ export const getSelectAddress = async (req, res) => {
       total,
       totalTax,
       totalWithoutTax,
+      totalDiscount,
       addresses,
       cart,
       couponApplied: false,
@@ -356,7 +358,7 @@ export const handleSelectAddress = async (req, res) => {
             return res.redirect('/cart');
         }
         const cartItems = cart.cartItems;
-        const { total, grandTotal } = calculateCart(cartItems);
+        const { total, grandTotal, totalDiscount } = calculateCart(cartItems);
 
         const shippingAddress = {
             houseNo: address.houseNo,
@@ -384,6 +386,7 @@ export const handleSelectAddress = async (req, res) => {
             products,
             shippingAddress,
             totalPrice: total,
+            discount: totalDiscount,
             grandTotal,
         });
 
