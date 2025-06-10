@@ -3,103 +3,97 @@
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-    <!-- Left Section: Products + Status -->
-    <div class="md:col-span-2 flex flex-col gap-6">
+  <!-- Left Section: Products + Status -->
+  <div class="md:col-span-2 flex flex-col gap-6">
 
-        <% order.products.forEach((product, index)=> { %>
-            <div class="bg-white p-6 rounded-lg shadow flex flex-col md:flex-row gap-4">
-                <img src="<%= product.image %>" alt="Product Image"
-                    class="w-40 h-40 object-cover rounded">
+    <% order.products.forEach((product, index)=> { %>
+    <div class="bg-white p-6 rounded-lg shadow flex flex-col md:flex-row gap-4">
+      <img src="<%= product.image %>" alt="Product Image" class="w-40 h-40 object-cover rounded">
 
-                <div class="flex flex-col justify-between flex-1">
-                    <div>
-                        <h3 class="text-lg font-semibold mb-1">
-                            <%= product.productId.name %>
-                        </h3>
-                        <p class="text-sm text-gray-500 mb-2">
-                            <%= product.productId.description || '' %>
-                        </p>
-                        <p><span class="font-medium">Quantity</span>: <%= product.quantity %>
-                        </p>
-                        <p class="text-2xl font-bold mt-1">₹ <%= product.priceAtPurchase %>
-                        </p>
-                        <p class="mt-1">Size: <%= product.size %>
-                        </p>
-                        <p class="mt-1 font-medium">Current Status: <%= product.status %>
-                        </p>
-                    </div>
+      <div class="flex flex-col justify-between flex-1">
+        <div>
+          <h3 class="text-lg font-semibold mb-1">
+            <%= product.productId.name %>
+          </h3>
+          <p class="text-sm text-gray-500 mb-2">
+            <%= product.productId.description || '' %>
+          </p>
+          <p><span class="font-medium">Quantity</span>: <%= product.quantity %>
+          </p>
+          <p class="text-2xl font-bold mt-1">₹ <%= product.priceAtPurchase %>
+          </p>
+          <p class="mt-1">Size: <%= product.size %>
+          </p>
+          <p id="product-status-<%= product.productId._id %>-<%= product.size %>" class="mt-1 font-medium">
+            Current Status: <%= product.productStatus %>
+          </p>
 
-                    <!-- Individual Product Status Dropdown (Simplified Logic) -->
-                    <select class="product-status-btn px-4 py-2 rounded bg-gray-300 text-white hover:bg-gray-400 mb-2"
-                        onchange="updateProductStatus('<%= order._id %>', '<%= product.productId._id %>','<%= product.size %>', this.value)">
+        </div>
 
-                        <option selected disabled>
-                            <%= product.productStatus ? product.productStatus.charAt(0).toUpperCase() +
+        <!-- Individual Product Status Dropdown (Simplified Logic) -->
+        <select class="product-status-btn px-4 py-2 rounded bg-gray-300 text-white hover:bg-gray-400 mb-2" onchange="updateProductStatus('<%= order._id %>', '<%= product.productId._id %>','<%= product.size %>', this.value)">
+
+          <option selected disabled>
+            <%= product.productStatus ? product.productStatus.charAt(0).toUpperCase() +
                                 product.productStatus.slice(1) : 'Status' %>
-                        </option>
+          </option>
 
-                        <% if (product.productStatus==='placed' || product.productStatus==='pending' ) { %>
-                            <option value="shipped">Shipped</option>
-                            <option value="cancelled">Cancelled</option>
-                            <% } else if (product.productStatus==='shipped' ) { %>
-                                <option value="out for delivery">Out for Delivery</option>
-                                <% } else if (product.productStatus==='out for delivery' ) { %>
-                                    <option value="delivered">Delivered</option>
-                                    <% } %>
-                    </select>
-                       <% if (product.cancelReason) { %>
-                                        <div class="text-sm text-red-600">
-                                            Cancel Reason: <%= product.cancelReason %>
-                                        </div>
-                                        <% } %>
-                    <% if (product.returnRequest) { %>
-                        <div class="mt-4 flex gap-4">
-                            <% if (product.returnRequest) { %>
-                                <div class="text-sm text-yellow-600">
-                                    Return Request: <%= product.returnReason %>
-                                </div>
-                                <% } %>
+          <% if (product.productStatus==='placed' || product.productStatus==='pending' ) { %>
+          <option value="shipped">Shipped</option>
+          <option value="cancelled">Cancelled</option>
+          <% } else if (product.productStatus==='shipped' ) { %>
+          <option value="out for delivery">Out for Delivery</option>
+          <% } else if (product.productStatus==='out for delivery' ) { %>
+          <option value="delivered">Delivered</option>
+          <% } %>
+        </select>
+        <% if (product.cancelReason) { %>
+        <div class="text-sm text-red-600">
+          Cancel Reason: <%= product.cancelReason %>
+        </div>
+        <% } %>
+        <% if (product.returnRequest) { %>
+        <div class="mt-4 flex gap-4">
+          <% if (product.returnRequest) { %>
+          <div class="text-sm text-yellow-600">
+            Return Request: <%= product.returnReason %>
+          </div>
+          <% } %>
 
 
-                                    <button
-                                        class="approve-btn px-4 py-1 bg-green-500 hover:bg-green-600 text-white rounded"
-                                        onclick="handleRequestDecision('<%= order._id %>', '<%= product.productId._id %>', '<%= product.size %>', 'approve')">
-                                        Approve
-                                    </button>
+          <button class="approve-btn px-4 py-1 bg-green-500 hover:bg-green-600 text-white rounded" onclick="handleRequestDecision('<%= order._id %>', '<%= product.productId._id %>', '<%= product.size %>', 'approve')">
+            Approve
+          </button>
 
-                                    <button class="reject-btn px-4 py-1 bg-red-500 hover:bg-red-600 text-white rounded"
-                                        onclick="handleRequestDecision('<%= order._id %>', '<%= product.productId._id %>', '<%= product.size %>', 'reject')">
-                                        Reject
-                                    </button>
-                        </div>
-                        <% } %>
-                        <% if(product.refundRequest) { %>
-                            <div class="text-sm text-yellow-600">
-                                    Refund Request: Approve Amount to user Wallet
-                                </div>
-                            <button
-                                        class="approve-btn px-4 py-1 bg-green-500 hover:bg-green-600 text-white rounded"
-                                        onclick="handleRefundRequest('<%= order._id %>', '<%= product.productId._id %>', '<%= product.size %>', 'approve')">
-                                        Approve
-                                    </button>
+          <button class="reject-btn px-4 py-1 bg-red-500 hover:bg-red-600 text-white rounded" onclick="handleRequestDecision('<%= order._id %>', '<%= product.productId._id %>', '<%= product.size %>', 'reject')">
+            Reject
+          </button>
+        </div>
+        <% } %>
+        <% if(product.refundRequest) { %>
+        <div class="text-sm text-yellow-600">
+          Refund Request: Approve Amount to user Wallet
+        </div>
+        <button class="approve-btn px-4 py-1 bg-green-500 hover:bg-green-600 text-white rounded" onclick="handleRefundRequest('<%= order._id %>', '<%= product.productId._id %>', '<%= product.size %>', 'approve')">
+          Approve
+        </button>
 
-                                    <button class="reject-btn px-4 py-1 bg-red-500 hover:bg-red-600 text-white rounded"
-                                        onclick="handleRefundRequest('<%= order._id %>', '<%= product.productId._id %>', '<%= product.size %>', 'reject')">
-                                        Reject
-                                    </button>
-                            <% } %>
-                        <div id="message-<%= product.productId._id %>-<%= product.size %>" class="text-sm mt-2"></div>
+        <button class="reject-btn px-4 py-1 bg-red-500 hover:bg-red-600 text-white rounded" onclick="handleRefundRequest('<%= order._id %>', '<%= product.productId._id %>', '<%= product.size %>', 'reject')">
+          Reject
+        </button>
+        <% } %>
+        <div id="message-<%= product.productId._id %>-<%= product.size %>" class="text-sm mt-2"></div>
 
-                </div>
-            </div>
-            <% }) %>
+      </div>
+    </div>
+    <% }) %>
 
-                <!-- Change Overall Order Status -->
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <h4 class="text-md font-semibold mb-4">Order Status:</h4>
-                    <div class="flex gap-4 flex-wrap">
+    <!-- Change Overall Order Status -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h4 class="text-md font-semibold mb-4">Order Status:</h4>
+      <div class="flex gap-4 flex-wrap">
 
-                        <% let btnClass='bg-gray-300 text-gray-700 hover:bg-gray-400' ; if
+        <% let btnClass='bg-gray-300 text-gray-700 hover:bg-gray-400' ; if
                             (order.orderStatus==='shipped' || order.orderStatus==='placed' ) {
                             btnClass='bg-orange-200 text-orange-700 hover:bg-orange-300' ; } else if
                             (order.orderStatus==='out for delivery' ) {
@@ -109,68 +103,70 @@
                             (order.orderStatus==='cancelled' ) { btnClass='bg-red-200 text-red-700 hover:bg-red-300' ; }
                             %>
 
-                            <button type="submit" class="px-4 py-2 rounded <%= btnClass %>">
-                                <%= order.orderStatus %>
-                            </button>
+        <p><strong>Status:</strong>
+  <span id="order-status-<%= order._id %>"><%= order.orderStatus %></span>
+</p>
 
-                    </div>
-                </div>
+
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Section: Shipping, Price, and Meta Info -->
+  <div class="flex flex-col gap-4">
+
+    <!-- Shipping Details -->
+    <div class="bg-white p-4 rounded-lg shadow border">
+      <h4 class="text-sm font-medium mb-2">Shipping Details</h4>
+      <p class="font-semibold">
+        <%= order.userId.name %>
+      </p>
+      <p class="text-sm text-gray-600 leading-6">
+        <%= order.shippingAddress.houseNo %>, <%= order.shippingAddress.street %><br>
+        <%= order.shippingAddress.city %> - <%= order.shippingAddress.pincode %><br>
+        <%= order.shippingAddress.state %><br>
+        <%= order.shippingAddress.landmark || '' %><br>
+        Mobile: <%= order.shippingAddress.mobileNumber %><br>
+        Alternate: <%= order.shippingAddress.alternatePhone || 'N/A' %>
+      </p>
     </div>
 
-    <!-- Right Section: Shipping, Price, and Meta Info -->
-    <div class="flex flex-col gap-4">
-
-        <!-- Shipping Details -->
-        <div class="bg-white p-4 rounded-lg shadow border">
-            <h4 class="text-sm font-medium mb-2">Shipping Details</h4>
-            <p class="font-semibold">
-                <%= order.userId.name %>
-            </p>
-            <p class="text-sm text-gray-600 leading-6">
-                <%= order.shippingAddress.houseNo %>, <%= order.shippingAddress.street %><br>
-                        <%= order.shippingAddress.city %> - <%= order.shippingAddress.pincode %><br>
-                                <%= order.shippingAddress.state %><br>
-                                    <%= order.shippingAddress.landmark || '' %><br>
-                                        Mobile: <%= order.shippingAddress.mobileNumber %><br>
-                                            Alternate: <%= order.shippingAddress.alternatePhone || 'N/A' %>
-            </p>
-        </div>
-
-        <!-- Price Details -->
-        <div class="bg-white p-4 rounded-lg shadow border border-blue-500">
-            <h4 class="text-sm font-medium mb-2">Price Details</h4>
-            <div class="text-sm text-gray-700 space-y-1">
-                <p>
-                    Price (<%= order.products.reduce((sum, p)=> sum + p.quantity, 0) %> items): ₹
-                        <%= order.products.reduce((sum, p)=> sum + p.quantity * p.priceAtPurchase, 0) %>
-                </p>
-                <p>Discount: ₹ <%= order.discount || '0' %>
-                </p>
-                <p>Total: ₹ <%= order.totalPrice %>
-                </p>
-            </div>
-        </div>
-
-        <!-- Order Info -->
-        <div class="bg-white p-4 rounded-lg shadow border">
-            <h4 class="text-sm font-medium mb-2">Order Info</h4>
-            <p><strong>Order ID:</strong>
-                <%= order.orderId %>
-            </p>
-            <p><strong>Status:</strong>
-                <%= order.orderStatus %>
-            </p>
-            <p><strong>Payment:</strong>
-                <%= order.paymentMethod %> - <%= order.paymentStatus %>
-            </p>
-            <p><strong>Order Date:</strong>
-                <%= order.orderDate.toDateString() %>
-            </p>
-            <% if (order.deliveryDate) { %>
-                <p><strong>Delivery Date:</strong>
-                    <%= order.deliveryDate.toDateString() %>
-                </p>
-                <% } %>
-        </div>
+    <!-- Price Details -->
+    <div class="bg-white p-4 rounded-lg shadow border border-blue-500">
+      <h4 class="text-sm font-medium mb-2">Price Details</h4>
+      <div class="text-sm text-gray-700 space-y-1">
+        <p>
+          Price (<%= order.products.reduce((sum, p)=> sum + p.quantity, 0) %> items): ₹
+          <%= order.products.reduce((sum, p)=> sum + p.quantity * p.priceAtPurchase, 0) %>
+        </p>
+        <p>Discount: ₹ <%= order.discount || '0' %>
+        </p>
+        <p>Total: ₹ <%= order.totalPrice %>
+        </p>
+      </div>
     </div>
+
+    <!-- Order Info -->
+    <div class="bg-white p-4 rounded-lg shadow border">
+      <h4 class="text-sm font-medium mb-2">Order Info</h4>
+      <p><strong>Order ID:</strong>
+        <%= order.orderId %>
+      </p>
+      <p><strong>Status:</strong>
+        <%= order.orderStatus %>
+      </p>
+      <p><strong>Payment:</strong>
+        <%= order.paymentMethod %> - <%= order.paymentStatus %>
+      </p>
+      <p><strong>Order Date:</strong>
+        <%= order.orderDate.toDateString() %>
+      </p>
+      <% if (order.deliveryDate) { %>
+      <p><strong>Delivery Date:</strong>
+        <%= order.deliveryDate.toDateString() %>
+      </p>
+      <% } %>
+    </div>
+  </div>
 </div>

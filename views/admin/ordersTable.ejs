@@ -93,7 +93,7 @@
 
                         <!-- Customer -->
                         <td class="py-3 px-4">
-                            <%= order.userId.name %>
+                            <%= order.userId?.name || '--------' %>
                         </td>
 
                         <!-- Status -->
@@ -157,20 +157,7 @@
                             class="px-3 py-1 bg-gray-200 rounded">Next</a>
                         <% } %>
 </div>
-<script>
-  const searchInput = document.getElementById('search-input-order');
-  const form = searchInput.closest('form');
 
-  let debounceTimer;
-
-  searchInput.addEventListener('input', () => {
-    clearTimeout(debounceTimer);
-
-    debounceTimer = setTimeout(() => {
-      form.submit();
-    }, 600);
-  });
-</script>
 
 
 

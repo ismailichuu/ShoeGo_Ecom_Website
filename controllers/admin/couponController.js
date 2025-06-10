@@ -3,14 +3,38 @@ import { logger } from "../../util/logger.js";
 
 //@route GET /coupons
 export const getCoupons = async (req, res) => {
-    try {
-        const layout = req.query.req ? 'layout' : false;
-        const coupons = await Coupon.find();
-        res.render('admin/coupon-table', { coupons, layout });
-    } catch (error) {
-        logger.error('from getCoupons', error.toString());
-    }
+  try {
+    const layout = req.query.req ? 'layout' : false;
+
+    const search = req.query.search || '';
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const query = search
+      ? { name: { $regex: search, $options: 'i' } }
+      : {};
+
+    const totalCoupons = await Coupon.countDocuments(query);
+    const totalPages = Math.ceil(totalCoupons / limit);
+
+    const coupons = await Coupon.find(query)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.render('admin/coupon-table', {
+      coupons,
+      currentPage: page,
+      totalPages,
+      search,
+      layout,
+    });
+  } catch (error) {
+    logger.error('from getCoupons', error.toString());
+    res.status(500).send('Server error');
+  }
 };
+
 
 //@route GET /coupons/add
 export const getAddCoupons = async (req, res) => {

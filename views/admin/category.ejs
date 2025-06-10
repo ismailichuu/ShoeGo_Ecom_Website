@@ -6,7 +6,7 @@
     <div class="flex gap-3">
       <div class="relative">
         <!-- Search Input Form -->
-        <form method="get" actions="/admin/categories" class="flex items-center space-x-2">
+        <form method="get" action="/admin/categories" class="flex items-center space-x-2">
           <% if (from) { %>
             <input type="hidden" name="from" value="<%= from %>">
             <% } %>

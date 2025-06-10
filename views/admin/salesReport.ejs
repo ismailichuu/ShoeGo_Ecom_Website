@@ -73,7 +73,7 @@
               <td class="p-3 capitalize"><%= order.orderStatus %></td>
               <td class="p-3 text-right">₹<%= order.totalPrice.toFixed(2) %></td>
               <td class="p-3 text-right">₹<%= (order.discount || 0).toFixed(2) %></td>
-              <td class="p-3 text-right">₹<%= (order.couponId.discount || 0).toFixed(2) %></td>
+              <td class="p-3 text-right">₹<%= (order.couponId?.discount || 0).toFixed(2) || 'nil'%></td>
             </tr>
           <% }) %>
         <% } %>

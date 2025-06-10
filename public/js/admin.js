@@ -574,29 +574,73 @@ function getOrderDetails(id) {
         });
 };
 
-async function updateProductStatus(orderId, productId, size, status) {    
-    try {
-        const res = await fetch('/admin/updateProductStatus', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ orderId, productId, size, status }),
+async function updateProductStatus(orderId, productId, size, newStatus) {
+  try {
+    const response = await fetch('/admin/updateProductStatus', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId, productId, size, status: newStatus })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      const statusEl = document.getElementById(`product-status-${productId}-${size}`);
+      if (statusEl) {
+        statusEl.textContent = `Current Status: ${newStatus}`;
+      }
+
+      const orderStatusEl = document.getElementById(`order-status-${orderId}`);
+      if (orderStatusEl) {
+        orderStatusEl.textContent = result.orderStatus;
+      }
+
+      const dropdown = document.querySelector(
+        `select[onchange*="${orderId}"][onchange*="${productId}"][onchange*="${size}"]`
+      );
+
+      if (dropdown) {
+        const statusOptionsMap = {
+          placed: ['shipped', 'cancelled'],
+          pending: ['shipped', 'cancelled'],
+          shipped: ['out for delivery'],
+          'out for delivery': ['delivered'],
+        };
+
+        const nextOptions = statusOptionsMap[newStatus] || [];
+
+        dropdown.innerHTML = '';
+
+        const defaultOption = document.createElement('option');
+        defaultOption.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+        defaultOption.selected = true;
+        defaultOption.disabled = true;
+        dropdown.appendChild(defaultOption);
+
+        nextOptions.forEach(status => {
+          const option = document.createElement('option');
+          option.value = status;
+          option.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+          dropdown.appendChild(option);
         });
-    
-        const data = await res.json();
-    
-        if (res.ok) {
-            location.href = `/admin/order-details/${orderId}?req=new`;
-        } else {
-            alert(data.message || 'Failed to update status');
-        }
-    } catch (err) {
-        console.error('Error updating status:', err);
-        alert('Something went wrong');
+      }
+
+      const messageEl = document.getElementById(`message-${productId}-${size}`);
+      if (messageEl) {
+        messageEl.textContent = 'Status updated successfully.';
+        messageEl.style.color = 'green';
+      }
+
+    } else {
+      alert('Update failed');
     }
 
-};
+  } catch (err) {
+    console.error('Error:', err);
+  }
+}
+
+
 
 function handleRequestDecision(orderId, productId, size, action) {
     const messageDiv = document.getElementById(`message-${productId}-${size}`);

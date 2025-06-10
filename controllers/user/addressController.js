@@ -40,7 +40,8 @@ export const handleAddAddress = async (req, res) => {
             landmark,
             alternatePhone,
             type,
-            isDefault
+            isDefault,
+            name
         } = req.body;
         if (!phone || !pincode || !locality || !houseNo || !city || !state || !type) {
             req.session.err = 'Please fill all required fields.';
@@ -57,6 +58,7 @@ export const handleAddAddress = async (req, res) => {
 
         const newAddress = new Address({
             userId,
+            name,
             mobileNumber: phone,
             pincode,
             locality,
@@ -105,7 +107,8 @@ export const handleEditAddress = async (req, res) => {
             landmark,
             alternatePhone,
             type,
-            isDefault
+            isDefault,
+            name,
         } = req.body;
         if (!phone || !pincode || !locality || !houseNo || !city || !state || !type) {
             req.session.err = 'Please fill all required fields.';
@@ -122,8 +125,9 @@ export const handleEditAddress = async (req, res) => {
 
         const address = await Address.findById(addressId);
 
-        address.mobileNumber = phone,
-            address.pincode = pincode;
+        address.name = name;
+        address.mobileNumber = phone;
+        address.pincode = pincode;
         address.locality = locality;
         address.houseNo = houseNo;
         address.city = city;
@@ -234,7 +238,8 @@ export const handleAddNewAddress = async (req, res) => {
             landmark,
             alternatePhone,
             type,
-            isDefault
+            isDefault,
+            name,
         } = req.body;
         if (!phone || !pincode || !locality || !houseNo || !city || !state || !type) {
             req.session.err = 'Please fill all required fields.';
@@ -263,7 +268,8 @@ export const handleAddNewAddress = async (req, res) => {
             landmark,
             alternatePhone,
             addressType: type,
-            isDefault: isDefault || false
+            isDefault: isDefault || false,
+            name,
         });
 
         await newAddress.save();
@@ -304,7 +310,8 @@ export const handleEditAddressCheckout = async (req, res) => {
             landmark,
             alternatePhone,
             type,
-            isDefault
+            isDefault,
+            name,
         } = req.body;
         if (!phone || !pincode || !locality || !houseNo || !city || !state || !type) {
             req.session.err = 'Please fill all required fields.';
@@ -331,6 +338,7 @@ export const handleEditAddressCheckout = async (req, res) => {
         address.alternatePhone = alternatePhone;
         address.addressType = type;
         address.isDefault = isDefault || false;
+        address.name = name;
 
         const cart = await Cart.findOne({ userId });
 

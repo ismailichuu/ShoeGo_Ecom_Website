@@ -208,13 +208,10 @@ export const getSignup = async (req, res) => {
     }
 };
 
-
-
-
 //@route POST /signup
 export const handleSignup = async (req, res) => {
     try {
-        const { name, email, password1, password2, referralToken } = req.body;
+        const { name, email, password1, password2, referralToken, manualReferral } = req.body;
 
         if (password1 !== password2) throw new Error('Password does not match');
         if (password1.length < 6) throw new Error('Password must be at least 6 characters');
@@ -249,14 +246,20 @@ export const handleSignup = async (req, res) => {
                     return res.redirect('/signup');
                 }
             } catch (err) {
-                req.session.err = 'Invalid or expired referral link.'+err.toString();
+                req.session.err = 'Invalid or expired referral link.' + err.toString();
                 return res.redirect('/signup');
             }
-        }
+        }else if(!referralToken && manualReferral) {
+            referrer = await User.findOne({ referralCode: manualReferral });
+            if (!referrer) {
+                req.session.err = 'Invalid referral code.';
+                return res.redirect('/signup');
+            }
+        };
 
         const newReferralCode = generateReferralCode(email).toUpperCase();
 
-        // await sendOTPEmail(email, otp, 'signup', '2 hour');
+        await sendOTPEmail(email, otp, 'signup', '2 hour');
 
         const newUser = new User({
             name,
@@ -321,81 +324,81 @@ export const handleGoogle = (req, res) => {
 
 //@route GET /auth/google/callback
 export const handleGoogleCallback = async (req, res) => {
-  try {
-    const { code, state } = req.query;
-    const storedState = req.session.oauth_state;
-    const codeVerifier = req.session.code_verifier;
-    const referralCode = req.session.referralCode;
+    try {
+        const { code, state } = req.query;
+        const storedState = req.session.oauth_state;
+        const codeVerifier = req.session.code_verifier;
+        const referralCode = req.session.referralCode;
 
-    if (!code || state !== storedState || !codeVerifier) {
-      return res.status(400).send("Invalid request.");
-    }
+        if (!code || state !== storedState || !codeVerifier) {
+            return res.status(400).send("Invalid request.");
+        }
 
-    const tokens = await google.validateAuthorizationCode(code, codeVerifier);
-    const idToken = tokens.idToken();
-    const claims = decodeIdToken(idToken);
+        const tokens = await google.validateAuthorizationCode(code, codeVerifier);
+        const idToken = tokens.idToken();
+        const claims = decodeIdToken(idToken);
 
-    const email = claims.email;
-    const name = claims.name;
-    const profile = claims.picture;
+        const email = claims.email;
+        const name = claims.name;
+        const profile = claims.picture;
 
-    let user = await User.findOne({ email });
+        let user = await User.findOne({ email });
 
-    console.log(user);
+        console.log(user);
 
-    if (!user) {
-      let referrer = null;
-        
-      if (referralCode) {
-        const decoded = jwt.verify(referralCode, process.env.JWT_SECRET);
-        referrer = await User.findById(decoded.refId);
-      }
+        if (!user) {
+            let referrer = null;
 
-      user = await User.create({
-        name,
-        email,
-        isVerified: true,
-        provider: "google",
-        profile,
-        referralCode: generateReferralCode(email),
-        referrerId: referrer ? referrer._id : undefined,
-      });
+            if (referralCode) {
+                const decoded = jwt.verify(referralCode, process.env.JWT_SECRET);
+                referrer = await User.findById(decoded.refId);
+            }
 
-      if (referrer) {
-        referrer.successfulReferrals = (referrer.successfulReferrals || 0) + 1;
-        referrer.referralCount += 1;
-        await referrer.save();
+            user = await User.create({
+                name,
+                email,
+                isVerified: true,
+                provider: "google",
+                profile,
+                referralCode: generateReferralCode(email),
+                referrerId: referrer ? referrer._id : undefined,
+            });
 
-        const couponCode = `REF-${referrer._id.toString().slice(-5).toUpperCase()}-${Date.now().toString().slice(-4)}`;
-        const coupon = new Coupon({
-          name: 'Referral Bonus',
-          code: couponCode,
-          discount: 400,
-          referrerId: referrer._id,
-          minAmount: 1400,
-          limit: 1,
-          activeFrom: new Date(),
-          activeTo: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            if (referrer) {
+                referrer.successfulReferrals = (referrer.successfulReferrals || 0) + 1;
+                referrer.referralCount += 1;
+                await referrer.save();
+
+                const couponCode = `REF-${referrer._id.toString().slice(-5).toUpperCase()}-${Date.now().toString().slice(-4)}`;
+                const coupon = new Coupon({
+                    name: 'Referral Bonus',
+                    code: couponCode,
+                    discount: 400,
+                    referrerId: referrer._id,
+                    minAmount: 1400,
+                    limit: 1,
+                    activeFrom: new Date(),
+                    activeTo: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                });
+                await coupon.save();
+            }
+        }
+
+        req.session.referralCode = null;
+
+        const token = generateToken(user._id, '1d');
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 24 * 60 * 60 * 1000,
         });
-        await coupon.save();
-      }
+
+        res.redirect("/");
+    } catch (error) {
+        console.error("Error during Google OAuth callback:", error);
+        res.status(500).send("Google authentication failed.");
     }
-
-    req.session.referralCode = null;
-
-    const token = generateToken(user._id, '1d');
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
-    res.redirect("/");
-  } catch (error) {
-    console.error("Error during Google OAuth callback:", error);
-    res.status(500).send("Google authentication failed.");
-  }
 };
 
 
