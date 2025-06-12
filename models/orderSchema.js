@@ -21,18 +21,22 @@ const orderSchema = mongoose.Schema({
                 ref: 'product',
                 required: true
             },
+
             quantity: {
                 type: Number,
                 required: true
             },
+
             priceAtPurchase: {
                 type: Number,
                 required: true
             },
+
             size: {
                 type: String,
                 required: true
             },
+            
             image: {
                 type: String,
                 required: true,
@@ -104,6 +108,7 @@ const orderSchema = mongoose.Schema({
     discount: {
         type: Number,
         required: false,
+        default: 0,
     },
 
     orderDate: {

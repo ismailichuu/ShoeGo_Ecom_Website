@@ -2,12 +2,28 @@ import Product from "../../models/productSchema.js";
 import { decodeUserId } from "../../util/jwt.js";
 import Cart from "../../models/cartSchema.js";
 import Wishlist from "../../models/wishlistSchema.js";
+import getFinalPriceWithLabel from "../../util/bestPriceProduct.js";
 
 //@route GET /wishlist
 export const getWishlist = async (req, res) => {
     try {
         const userId = decodeUserId(req.cookies?.token);
-        const wishlist = await Wishlist.findOne({ userId }).populate('items.productId');
+        const wishlist = await Wishlist.findOne({ userId }).populate({
+            path: 'items.productId',
+            populate:{path: 'categoryId'}
+        });
+
+        const updatedWishlist = wishlist.items.map(item => {
+            const { finalPrice, discountLabel } = getFinalPriceWithLabel(item.productId);
+            return {
+                ...item._doc,
+                productId: {
+                    ...item.productId._doc,
+                    finalPrice,
+                    discountLabel
+                }
+            };
+        });
 
         const wishlistProductIds = wishlist?.items?.map(item => item.productId?._id).filter(Boolean) || [];
         const firstProduct = wishlist?.items?.[0]?.productId;
@@ -19,14 +35,24 @@ export const getWishlist = async (req, res) => {
             related = await Product.find({
                 categoryId,
                 isActive: true,
-                _id: { $nin: wishlistProductIds } 
+                _id: { $nin: wishlistProductIds }
             })
-            .limit(4)
-            .populate('categoryId');
+                .limit(4)
+                .populate('categoryId');
         }
 
+        related = related.map(product => {
+            const { finalPrice, discountLabel } = getFinalPriceWithLabel(product);
+            return {
+                ...product._doc,
+                finalPrice,
+                discountLabel
+            };
+        });
+
+
         res.render('user/wishlist', {
-            wishlist: wishlist || { items: [] },
+            wishlist: updatedWishlist || { items: [] },
             related
         });
 

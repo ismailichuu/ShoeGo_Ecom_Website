@@ -24,9 +24,9 @@ export const buildSalesData = async (startDate, endDate, filterType) => {
     .populate('couponId');
 
   const salesData = orders.map(order => {
-    const totalAmount = order.totalAmount;
-    const discount = order.discount || 0;
-    const coupon = order.couponId.discount || 0;
+    const totalAmount = order.totalPrice;
+    const discount = order?.discount || 0;
+    const coupon = order.couponId?.discount || 0;
     const customer = order.userId?.name || "N/A";
     const statuses = order.products.map(p => p.productStatus).join(", ");
 

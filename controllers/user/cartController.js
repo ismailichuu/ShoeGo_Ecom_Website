@@ -5,6 +5,7 @@ import Cart from "../../models/cartSchema.js";
 import { calculateCart } from "../../util/priceCalc.js";
 import Wishlist from "../../models/wishlistSchema.js";
 import mongoose from "mongoose";
+import getFinalPriceWithLabel from "../../util/bestPriceProduct.js";
 
 //@route GET /cart
 export const getCart = async (req, res) => {
@@ -19,7 +20,14 @@ export const getCart = async (req, res) => {
 
 
         // Find cart and populate product details
-        const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
+        const cart = await Cart.findOne({ userId })
+            .populate({
+                path: 'cartItems.productId',
+                populate: {
+                    path: 'categoryId'
+                }
+            });
+
 
         if (cart) {
             const activeItems = cart.cartItems.filter(item => item.productId && item.productId.isActive && item.productId?.stock > 0);
@@ -31,7 +39,17 @@ export const getCart = async (req, res) => {
                 );
                 cart.cartItems = activeItems;
             }
+            cart.cartItems.forEach(item => {
+                const product = item.productId;
+                const { finalPrice, discountLabel } = getFinalPriceWithLabel(product);
+                console.log(finalPrice, discountLabel)
+                item.finalPrice = finalPrice;
+                item.discountLabel = discountLabel;
+            });
         }
+
+
+
 
         const firstProduct = cart?.cartItems?.[0]?.productId;
         const categoryId = firstProduct?.categoryId;
@@ -44,6 +62,16 @@ export const getCart = async (req, res) => {
                 _id: { $ne: firstProduct._id }
             }).limit(4).populate('categoryId');
         }
+
+        related = related.map(product => {
+            const { finalPrice, discountLabel } = getFinalPriceWithLabel(product);
+
+            return {
+                ...product._doc,
+                finalPrice,
+                discountLabel,
+            };
+        })
 
         const items = cart?.cartItems || [];
         const {

@@ -134,8 +134,8 @@
         <div id="error-wishlist" class="text-red-600 font-medium mt-2 hidden bg-red-50 border border-red-200 rounded-lg p-3"></div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            <% if (wishlist && wishlist.items && wishlist.items.length > 0) { %>
-                <% wishlist.items.forEach((item, index) => { %>
+            <% if (wishlist && wishlist.length > 0) { %>
+                <% wishlist.forEach((item, index) => { %>
                     <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-xl border border-white/30 overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 animate-slide-up group"
                          style="animation-delay: <%= index * 0.1 %>s">
                         
@@ -159,8 +159,9 @@
                             <div class="mb-6">
                                 <span class="text-gray-500 line-through text-lg">₹<%= item.productId.basePrice %></span>
                                 <span class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent ml-2">
-                                    ₹<%= item.productId.discountPrice %>
+                                    ₹<%= item.productId.finalPrice %>
                                 </span>
+                                 <span class="text-green-500 text-sm ps-2"><%= item.productId.discountLabel %> off</span>
                             </div>
 
                             <!-- Action Buttons -->
@@ -177,19 +178,6 @@
                         </div>
                     </div>
                 <% }) %>
-            <% } else { %>
-                <div class="col-span-full text-center py-20">
-                    <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-xl border border-white/30 p-12 max-w-md mx-auto">
-                        <i class="fas fa-heart-broken text-6xl text-gray-300 mb-6"></i>
-                        <h3 class="text-2xl font-bold text-gray-700 mb-4">Your Wishlist is Empty</h3>
-                        <p class="text-gray-500 mb-6">Start adding shoes you love to see them here!</p>
-                        <a href="/allProducts" 
-                           class="inline-block bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium py-3 px-8 rounded-xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 hover:shadow-lg transform hover:scale-105">
-                            Explore Shoes
-                        </a>
-                    </div>
-                </div>
-            <% } %>
         </div>
     </section>
 
@@ -236,13 +224,26 @@
                                 <div class="mt-4 space-y-1">
                                     <p class="text-sm line-through text-gray-400">₹<%= product.basePrice %></p>
                                     <p class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                                        ₹<%= product.discountPrice %>
+                                        ₹<%= product.finalPrice %>
                                     </p>
                                 </div>
                             </div>
                         </a>
                         </div>
                 <% }) %>
+            <% } %>
+            <% } else { %>
+                <div class="col-span-full text-center py-20">
+                    <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-xl border border-white/30 p-12 max-w-md mx-auto">
+                        <i class="fas fa-heart-broken text-6xl text-gray-300 mb-6"></i>
+                        <h3 class="text-2xl font-bold text-gray-700 mb-4">Your Wishlist is Empty</h3>
+                        <p class="text-gray-500 mb-6">Start adding shoes you love to see them here!</p>
+                        <a href="/allProducts" 
+                           class="inline-block bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium py-3 px-8 rounded-xl transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 hover:shadow-lg transform hover:scale-105">
+                            Explore Shoes
+                        </a>
+                    </div>
+                </div>
             <% } %>
         </div>
     </section>

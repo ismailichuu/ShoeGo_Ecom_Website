@@ -9,12 +9,16 @@ import Product from "../../models/productSchema.js";
 import Transaction from "../../models/transactionSchema.js";
 import crypto from 'crypto';
 import Coupon from "../../models/couponSchema.js";
+import Wallet from "../../models/walletSchema.js";
+import { logger } from "../../util/logger.js";
 
 //@route GET /payment/:id
 export const getPayment = async (req, res) => {
     try {
         let couponApplied = false;
         const userId = decodeUserId(req.cookies?.token);
+        const wallet = await Wallet.findOne({ userId });
+        const walletBalance = wallet?.balance || 0;
         const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
         if (!cart || cart.cartItems.length < 1) {
             return res.redirect('/cart');
@@ -27,8 +31,8 @@ export const getPayment = async (req, res) => {
 
         const coupons = await Coupon.find({
             $or: [
-                { referrerId: userId }, 
-                { referrerId: null }    
+                { referrerId: userId },
+                { referrerId: null }
             ],
             activeFrom: { $lte: new Date() },
             activeTo: { $gte: new Date() },
@@ -48,6 +52,7 @@ export const getPayment = async (req, res) => {
         res.render('user/payment', {
             layout: 'checkOutLayout', cart, deliveryDate: formattedDeliveryDate, order, totalDiscount,
             grandTotal, deliveryCharge, total, totalWithoutTax, totalTax, orderId, coupons, couponApplied,
+            walletBalance,
         });
     } catch (error) {
         console.error("Order creation failed:", error);
@@ -176,3 +181,38 @@ export const verifyPayment = async (req, res) => {
     }
 };
 
+//@route GET /retry-payment
+export const handleRetryPayment = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const userId = decodeUserId(req.cookies?.token);
+
+        const order = await Order.findById(orderId).populate('products.productId');
+        if (!order || order.userId.toString() !== userId.toString()) {
+            req.session.err = 'Invalid order or unauthorized access.';
+            return res.redirect('/orders');
+        }
+
+        await Cart.findOneAndUpdate(
+            { userId },
+            { $set: { cartItems: [] } }
+        );
+
+        const newCartItems = order.products.map(product => ({
+            productId: product.productId._id,
+            quantity: product.quantity,
+            size: product.size,
+        }));
+
+        await Cart.findOneAndUpdate(
+            { userId },
+            { $push: { cartItems: { $each: newCartItems } } },
+            { upsert: true, new: true }
+        );
+
+        res.status(200).json({success: true});
+
+    } catch (error) {
+        logger.error('Retry payment:', error.toString());
+    }
+};  

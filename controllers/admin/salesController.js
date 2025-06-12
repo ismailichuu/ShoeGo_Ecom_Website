@@ -75,24 +75,57 @@ export const generateSalesPDF = async (req, res) => {
     const { startDate, endDate, filterType } = req.query;
     const salesData = await buildSalesData(startDate, endDate, filterType);
 
-    const doc = new PDFDocument();
+    const doc = new PDFDocument({ margin: 30, size: 'A4' });
+
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename=sales-report.pdf');
 
     doc.pipe(res);
-    doc.fontSize(20).text('Sales Report', { align: 'center' }).moveDown();
-    doc.fontSize(12);
+
+    // Title
+    doc.fontSize(20).text('Sales Report', { align: 'center' }).moveDown(1.5);
+
+    // Define table headers
+    const tableTop = 100;
+    const itemSpacing = 20;
+    let y = tableTop;
+
+    const columns = [
+      { label: 'Order ID', x: 30 },       
+      { label: 'Date', x: 120 },         
+      { label: 'Customer', x: 200 },      
+      { label: 'Status', x: 300 },        
+      { label: 'Amount (₹)', x: 370 }, 
+      { label: 'Discount (₹)', x: 450 }, 
+      { label: 'Coupon (₹)', x: 530 },    
+    ];
+
+
+    doc.fontSize(12).font('Helvetica-Bold');
+    columns.forEach(col => {
+      doc.text(col.label, col.x, y);
+    });
+
+    y += 20;
+    doc.font('Helvetica');
 
     salesData.forEach(order => {
-      doc.text(`Order ID: ${order.orderId}`);
-      doc.text(`Date: ${order.date}`);
-      doc.text(`Customer: ${order.customer}`);
-      doc.text(`Status: ${order.status}`);
-      doc.text(`Amount: ₹${order.totalAmount}`);
-      doc.text(`Discount: ₹${order.discount}`);
-      doc.text(`Coupon: ₹${order.coupon}`);
-      doc.moveDown();
+      if (y > 750) {
+        doc.addPage();
+        y = tableTop;
+      }
+
+      doc.text(order.orderId.slice(-6), columns[0].x, y, { width: 80, ellipsis: true }); 
+      doc.text(new Date(order.date).toLocaleDateString(), columns[1].x, y, { width: 70 });
+      doc.text(order.customer.split(' ')[0], columns[2].x, y, { width: 90, ellipsis: true });
+      doc.text(order.status, columns[3].x, y, { width: 60 });
+      doc.text(`₹${order.totalAmount}`, columns[4].x, y, { width: 60 });
+      doc.text(`₹${order.discount}`, columns[5].x, y, { width: 60 });
+      doc.text(`₹${order.coupon}`, columns[6].x, y, { width: 60 });
+
+      y += itemSpacing;
     });
+
 
     doc.end();
   } catch (error) {
@@ -100,6 +133,7 @@ export const generateSalesPDF = async (req, res) => {
     res.status(500).send('PDF generation failed');
   }
 };
+
 
 //@route GET /sales-report/download/excel
 export const generateSalesExcel = async (req, res) => {

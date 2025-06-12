@@ -1,6 +1,7 @@
 
 import Product from "../../models/productSchema.js";
 import Category from "../../models/categorySchema.js";
+import getFinalPriceWithLabel from "../../util/bestPriceProduct.js";
 
 //@route GET /allProducts
 export const getAllProducts = async (req, res) => {
@@ -10,7 +11,7 @@ export const getAllProducts = async (req, res) => {
         const page = parseInt(Array.isArray(req.query.page) ? req.query.page[0] : req.query.page || '1', 10);
 
         const minPrice = parseInt(req.query.minPrice || '0', 10);
-        const maxPrice = parseInt(req.query.maxPrice || '0', 10); // 0 means no max limit
+        const maxPrice = parseInt(req.query.maxPrice || '0', 10); 
 
         const limit = 8;
         const skip = (page - 1) * limit;
@@ -36,29 +37,7 @@ export const getAllProducts = async (req, res) => {
 
         // Calculate finalPrice and discountLabel for each product
         const enrichedProducts = allProducts.map(product => {
-            const basePrice = product.basePrice;
-            const productDiscountPrice = product.discountPrice;
-            let categoryDiscount = 0;
-
-            if (product.categoryId?.[0]?.discount) {
-                categoryDiscount = parseFloat(product.categoryId[0].discount.replace('%', '')) || 0;
-            }
-
-            const categoryDiscountPrice = Math.round(basePrice - (basePrice * categoryDiscount / 100));
-
-            let finalPrice, discountLabel;
-
-            if (productDiscountPrice && productDiscountPrice < categoryDiscountPrice) {
-                finalPrice = productDiscountPrice;
-                discountLabel = `₹${basePrice - productDiscountPrice} off`;
-            } else if (categoryDiscount > 0) {
-                finalPrice = categoryDiscountPrice;
-                discountLabel = product.categoryId[0].discount; // e.g., "10%"
-            } else {
-                finalPrice = basePrice;
-                discountLabel = 'No discount';
-            }
-
+            const { finalPrice, discountLabel } = getFinalPriceWithLabel(product);
             return {
                 ...product,
                 finalPrice,
@@ -126,27 +105,7 @@ export const getProductDetails = async (req, res) => {
 
         if (!product || !product.isActive) return res.redirect('/');
 
-        let categoryDiscount = 0;
-        if (product.categoryId?.[0]?.discount) {
-            categoryDiscount = parseFloat(product.categoryId[0].discount.replace('%', '')) || 0;
-        }
-
-        const basePrice = product.basePrice;
-        const productDiscountedPrice = product.discountPrice;
-        const categoryDiscountPrice = Math.round(basePrice - (basePrice * categoryDiscount / 100));
-
-        let finalPrice, discountLabel;
-
-        if (productDiscountedPrice && productDiscountedPrice < categoryDiscountPrice) {
-            finalPrice = productDiscountedPrice;
-            discountLabel = `₹${basePrice - productDiscountedPrice} off`;
-        } else if (categoryDiscount > 0) {
-            finalPrice = categoryDiscountPrice;
-            discountLabel = product.categoryId[0].discount; 
-        } else {
-            finalPrice = basePrice;
-            discountLabel = "No discount";
-        }
+        const {finalPrice, discountLabel} = getFinalPriceWithLabel(product);
 
         const related = await Product.find({
             categoryId: product.categoryId,
@@ -157,30 +116,12 @@ export const getProductDetails = async (req, res) => {
         .populate('categoryId');
 
         const updatedRelated = related.map(p => {
-            const base = p.basePrice;
-            const prodDisc = p.discountedPrice;
-            let catDisc = 0;
-            if (p.categoryId?.[0]?.discount) {
-                catDisc = parseFloat(p.categoryId[0].discount.replace('%', '')) || 0;
-            }
-            const catDiscPrice = Math.round(base - (base * catDisc / 100));
-
-            let final, label;
-            if (prodDisc && prodDisc < catDiscPrice) {
-                final = prodDisc;
-                label = `₹${base - prodDisc} off`;
-            } else if (catDisc > 0) {
-                final = catDiscPrice;
-                label = p.categoryId[0].discount;
-            } else {
-                final = base;
-                label = 'No discount';
-            }
+            const {finalPrice, discountLabel} = getFinalPriceWithLabel(p);
 
             return {
                 ...p._doc,
-                finalPrice: final,
-                discountLabel: label
+                finalPrice,
+                discountLabel
             };
         });
 

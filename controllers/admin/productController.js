@@ -65,7 +65,8 @@ export const handleAddProduct = async (req, res) => {
       name,
       description,
       basePrice,
-      discountPrice,
+      discount,
+      brand,
       stock,
       category
     } = req.body;
@@ -87,7 +88,8 @@ export const handleAddProduct = async (req, res) => {
       availableSizes,
       images,
       basePrice,
-      discountPrice,
+      discount,
+      brand,
       categoryId,
       stock
     });
@@ -154,7 +156,8 @@ export const handleEditProduct = async (req, res) => {
       name,
       description,
       basePrice,
-      discountPrice,
+      discount,
+      brand,
       stock,
       status,
       category
@@ -199,7 +202,8 @@ export const handleEditProduct = async (req, res) => {
     product.images = finalImages;
     product.isActive = isActive;
     product.basePrice = basePrice;
-    product.discountPrice = discountPrice;
+    product.discount = discount;
+    product.brand = brand;
     product.categoryId = categoryId;
     product.stock = stock;
 

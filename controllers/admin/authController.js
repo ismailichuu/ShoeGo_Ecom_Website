@@ -25,6 +25,8 @@ export const handleLogin = async (req, res) => {
         //password comapre
         const checkPassword = await bcrypt.compare(password, admin.password);
         if (!checkPassword) throw new Error('Invalid credentials');
+        //password strong check
+        
         const token = generateToken(admin._id, '1d');
         res.cookie('token', token, {
             httpOnly: true,

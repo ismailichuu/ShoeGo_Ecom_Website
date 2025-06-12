@@ -6,6 +6,12 @@
     <input type="text" name="name" placeholder="Enter product name" class="w-full p-3 border rounded"
       value="<%= product.name %>" required />
   </div>
+  
+  <div>
+    <label class="block mb-1 font-medium">Brand Name</label>
+    <input type="text" name="brand" placeholder="Enter brand name" class="w-full p-3 border rounded"
+      value="<%= product.brand %>" required />
+  </div>
 
   <div>
   <label class="block mb-1 font-medium">Product Description</label>
@@ -63,10 +69,21 @@
             required />
         </div>
         <div>
-          <label class="block mb-1 font-medium">Discount Price</label>
-          <input type="text" name="discountPrice" class="w-full p-3 border rounded" value="<%= product.discountPrice %>"
-            placeholder="Enter discount price" required />
-        </div>
+        <label class="block mb-2 font-medium">Discounts/Offers</label>
+        <select name="discount" class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none" required>
+          <option value="0%" <%=product.discount==='0%' ? 'selected' : '' %>>0%</option>
+          <option value="5%" <%=product.discount==='5%' ? 'selected' : '' %>>5%</option>
+          <option value="7%" <%=product.discount==='7%' ? 'selected' : '' %>>7%</option>
+          <option value="10%" <%=product.discount==='10%' ? 'selected' : '' %>>10%</option>
+          <option value="15%" <%=product.discount==='15%' ? 'selected' : '' %>>15%</option>
+          <option value="17%" <%=product.discount==='17%' ? 'selected' : '' %>>17%</option>
+          <option value="20%" <%=product.discount==='20%' ? 'selected' : '' %>>20%</option>
+          <option value="25%" <%=product.discount==='25%' ? 'selected' : '' %>>25%</option>
+          <option value="30%" <%=product.discount==='30%' ? 'selected' : '' %>>30%</option>
+          <option value="50%" <%=product.discount==='50%' ? 'selected' : '' %>>50%</option>
+          <option value="70%" <%=product.discount==='70%' ? 'selected' : '' %>>70%</option>
+        </select>
+      </div>
         <div>
           <label class="block mb-1 font-medium">Category Name</label>
           <select name="category" class="w-full p-3 border rounded">

@@ -28,6 +28,13 @@ export const handlePlaceOrder = async (req, res) => {
         if (!order) {
             return res.status(404).json({ success: false, message: 'Order not found' });
         }
+        if (order.totalPrice > 1000) {
+            return res.status(400).json({
+                success: false,
+                message: 'Orders above ₹1000 are not eligible for Cash on Delivery. Please choose another payment method.'
+            });
+
+        }
         if (order.couponApplied) {
             const couponId = order.couponId;
             await Coupon.updateOne(

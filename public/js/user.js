@@ -532,7 +532,6 @@ const addToCart = (productId, selectedSize) => {
                 errorBox.textContent = data.message || 'Something went wrong';
                 errorBox.classList.remove('hidden');
 
-                // Optional: Hide after 5 seconds
                 setTimeout(() => {
                     errorBox.classList.add('hidden');
                 }, 5000);
@@ -643,9 +642,39 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Error creating Razorpay order:', err);
                     location.href = '/cart';
                 }
+            } else if (paymentMethod === 'wallet') {
+                const errorMsg = document.getElementById('wallet-error');
+
+                try {
+                    const response = await fetch('/place-wallet-order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ orderId })
+                    });
+
+                    const result = await response.json();
+
+                    if (result && result.success) {
+                        setTimeout(() => showSuccessModal(), 2000);
+                    } else {
+                        errorMsg.textContent = result.message;
+                        errorMsg.classList.remove('hidden');
+                        setTimeout(() => {
+                            errorMsg.classList.add('hidden');
+                        }, 4000);
+                    }
+                } catch (err) {
+                    console.error('Error creating Razorpay order:', err);
+                    errorMsg.textContent = 'Something went wrong with wallet payment';
+                    errorMsg.classList.remove('hidden');
+                    setTimeout(() => {
+                        location.href = '/cart';
+                    }, 2000);
+                }
 
             } else {
                 const payload = { orderId, paymentMethod };
+                const errorMsg = document.getElementById('cod-error');
 
                 try {
                     const response = await fetch('/place-order', {
@@ -658,7 +687,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (result.success) {
                         setTimeout(() => showSuccessModal(), 2000);
                     } else {
-                        window.location.href = '/cart';
+                        errorMsg.textContent = result.message;
+                        errorMsg.classList.remove('hidden');
+                        setTimeout(() => {
+                            errorMsg.classList.add('hidden');
+                        }, 5000);
                     }
                 } catch (err) {
                     console.error("Error placing order:", err);
@@ -802,21 +835,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 cancelbutton.addEventListener('click', function () {
 
                     const form = this.closest('form');
-                    if (form) {
-                        form.submit();
+                    const reasonInput = form.querySelector('textarea[name="cancelReason"]');
+
+                    if (!reasonInput || reasonInput.value.trim() === '') {
+                        e.preventDefault();
+                        showNotification('Please provide a cancel reason', 'error');
+                        return;
                     }
+
+                    form.submit();
                     showNotification('Item Cancelled', 'success');
                 });
             }
             const confirmReturn = document.getElementById('confirm-return-btn');
+
             if (confirmReturn) {
-
-                confirmReturn.addEventListener('click', function () {
-
+                confirmReturn.addEventListener('click', function (e) {
                     const form = this.closest('form');
-                    if (form) {
-                        form.submit();
+                    const reasonInput = form.querySelector('textarea[name="returnReason"]');
+
+                    if (!reasonInput || reasonInput.value.trim() === '') {
+                        e.preventDefault();
+                        showNotification('Please provide a return reason', 'error');
+                        return;
                     }
+
+                    form.submit();
                     showNotification('Return request submitted', 'success');
                 });
             }
@@ -905,69 +949,87 @@ function applyCoupon(couponId, orderId) {
         },
         body: JSON.stringify({ couponId, orderId }),
     })
-    .then(res => res.json())
-    .then(data => {
-        const messageEl = document.getElementById('couponMessage');
+        .then(res => res.json())
+        .then(data => {
+            const messageEl = document.getElementById('couponMessage');
 
-        if (data.success) {
-            messageEl.textContent = 'Coupon applied successfully!';
-            messageEl.classList.remove('hidden', 'text-red-600');
-            messageEl.classList.add('text-green-600');
+            if (data.success) {
+                messageEl.textContent = 'Coupon applied successfully!';
+                messageEl.classList.remove('hidden', 'text-red-600');
+                messageEl.classList.add('text-green-600');
 
-            closeCouponsModal();
-            location.reload();
-        } else {
-            messageEl.textContent = data.message || 'Coupon could not be applied.';
+                closeCouponsModal();
+                location.reload();
+            } else {
+                messageEl.textContent = data.message || 'Coupon could not be applied.';
+                messageEl.classList.remove('hidden', 'text-green-600');
+                messageEl.classList.add('text-red-600');
+            }
+
+            setTimeout(() => {
+                messageEl.classList.add('hidden');
+            }, 3000);
+        })
+        .catch(err => {
+            console.error('Error applying coupon:', err);
+            const messageEl = document.getElementById('couponMessage');
+            messageEl.textContent = 'Something went wrong.';
             messageEl.classList.remove('hidden', 'text-green-600');
             messageEl.classList.add('text-red-600');
-        }
 
-        setTimeout(() => {
-            messageEl.classList.add('hidden');
-        }, 3000);
-    })
-    .catch(err => {
-        console.error('Error applying coupon:', err);
-        const messageEl = document.getElementById('couponMessage');
-        messageEl.textContent = 'Something went wrong.';
-        messageEl.classList.remove('hidden', 'text-green-600');
-        messageEl.classList.add('text-red-600');
-
-        setTimeout(() => {
-            messageEl.classList.add('hidden');
-        }, 3000);
-    });
+            setTimeout(() => {
+                messageEl.classList.add('hidden');
+            }, 3000);
+        });
 }
 
 //remove coupon checkout
 function removeCoupon(orderId) {
-  fetch('/coupon/remove', {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ orderId })
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        window.location.reload();
-      } else {
-        alert(data.message);
-      }
-    });
+    fetch('/coupon/remove', {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ orderId })
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert(data.message);
+            }
+        });
 }
 
 //generate link
 function copyReferralLink() {
-  const input = document.getElementById('refLink');
-  input.select();
-  input.setSelectionRange(0, 99999);
-  document.execCommand("copy");
+    const input = document.getElementById('refLink');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    document.execCommand("copy");
 
-  const msg = document.getElementById('copyMessage');
-  msg.classList.remove('hidden');
-  setTimeout(() => msg.classList.add('hidden'), 2000);
+    const msg = document.getElementById('copyMessage');
+    msg.classList.remove('hidden');
+    setTimeout(() => msg.classList.add('hidden'), 2000);
 }
 
+//retry razorpay payment
+function retryPayment(id) {
+    const orderId = id;
+    fetch(`/retry-payment/${orderId}`,{
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                location.href = `/payment/${orderId}`;
 
+            } else {
+                alert(data.message);
+            }
+        });
+};

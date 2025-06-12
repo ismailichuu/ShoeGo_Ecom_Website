@@ -122,6 +122,7 @@ export const handleReturnRequest = async (req, res) => {
             product.refundRequest = true;
         } else if (action === 'reject') {
             product.returnRequest = null;
+            product.productStatus = 'return-rejected';
         }
 
 

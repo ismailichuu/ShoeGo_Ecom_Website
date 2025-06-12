@@ -102,9 +102,14 @@
         <!-- Header -->
         <div class="space-y-4">
           <div class="flex items-center justify-between">
+            <div>
             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
               <%= product.categoryId[0]?.name %>
             </span>
+             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+              <%= product.brand %>
+            </span>
+            </div>
             <button class="p-2 rounded-full hover:bg-gray-100 transition-colors" onclick="addToWishlist('<%= product._id %>')">
               <i class="fas fa-heart text-gray-400 hover:text-red-500 text-lg"></i>
             </button>
@@ -265,8 +270,9 @@
               </h3>
 
               <div class="flex items-center space-x-2">
-                <span class="text-lg font-bold text-gray-900">₹<%= product.discountPrice %></span>
+                <span class="text-lg font-bold text-gray-900">₹<%= product.finalPrice %></span>
                 <span class="text-sm text-gray-500 line-through">₹<%= product.basePrice %></span>
+                <span class="text-sm text-green-500"><%= product.discountLabel %></span>
               </div>
             </div>
           </div>

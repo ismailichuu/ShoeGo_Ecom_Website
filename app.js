@@ -45,6 +45,13 @@ app.use((req, res, next) => {
     next();
   });
 
+//no-cache
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
+
+
 //routers
 app.use('/', userRouter);
 app.use('/admin', adminRouter);

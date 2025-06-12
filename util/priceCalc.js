@@ -1,3 +1,5 @@
+import getFinalPriceWithLabel from "./bestPriceProduct.js";
+
 export function calculateCart(cartItems, taxPercent = 5, deliveryCharge = 0) {
     let totalWithoutTax = 0;
     let totalTax = 0;
@@ -8,28 +10,7 @@ export function calculateCart(cartItems, taxPercent = 5, deliveryCharge = 0) {
         const product = item.productId;
         const quantity = item.quantity;
         const basePrice = product.basePrice || 0;
-        const productDiscountPrice = product.discountPrice || basePrice;
-
-        // Extract category discount percentage (e.g., '15%' => 15)
-        let categoryDiscountPercent = 0;
-        if (product.categoryId?.[0]?.discount) {
-            categoryDiscountPercent = parseFloat(product.categoryId[0].discount.replace('%', '')) || 0;
-        }
-
-        // Calculate discounted prices
-        const categoryDiscountPrice = Math.round(basePrice - (basePrice * categoryDiscountPercent / 100));
-
-        // Determine best price
-        let finalPrice = basePrice;
-        let discount = 0;
-        if (productDiscountPrice < categoryDiscountPrice) {
-            finalPrice = productDiscountPrice;
-            discount = basePrice - productDiscountPrice;
-        } else if (categoryDiscountPercent > 0) {
-            finalPrice = categoryDiscountPrice;
-            discount = basePrice - categoryDiscountPrice;
-        }
-
+        const { finalPrice, discountPrice } = getFinalPriceWithLabel(product);
         // Totals
         const itemTotal = +(finalPrice * quantity).toFixed(2);
         const tax = +((finalPrice * taxPercent / 100) * quantity).toFixed(2);
@@ -38,13 +19,13 @@ export function calculateCart(cartItems, taxPercent = 5, deliveryCharge = 0) {
         totalWithoutTax += itemTotal;
         totalTax += tax;
         grandTotal += subtotal;
-        totalDiscount += discount * quantity;
+        totalDiscount += discountPrice * quantity;
 
         return {
             ...item,
             basePrice,
             finalPrice,
-            discount: +(discount * quantity).toFixed(2),
+            discount: +(discountPrice * quantity).toFixed(2),
             unitPrice: finalPrice,
             itemTotal,
             tax,

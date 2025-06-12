@@ -1,5 +1,5 @@
 import express from 'express';
-import { logger, verifyUser } from '../middlewares/userMiddlware.js';
+import { logger, loginCheck, verifyUser } from '../middlewares/userMiddlware.js';
 import upload from '../config/multer.js';
 import { getForgotPassword, getLogin, getSignup, getVerify, handleForgotpassword,
      handleGoogle, handleGoogleCallback, handleLogin, handleLogout, handleSignup,
@@ -12,14 +12,14 @@ import { deleteAddress, getAddAddress, getAddNewAddress, getAddresses, getEditAd
      handleAddAddress, handleAddNewAddress, handleEditAddress, handleEditAddressCheckout, handleSelectAddress } from '../controllers/user/addressController.js';
 import { deleteCart, deleteCartItem, getCart, getOrderSummary, handleAddToCart, handleDecreaseCount, handleIncreaseCount } from '../controllers/user/cartController.js';
 import { deleteFromWishlist, getWishlist, handleAddToWishlist } from '../controllers/user/wishlistController.js';
-import { createRazorpayOrder, getPayment, verifyPayment } from '../controllers/user/paymentController.js';
+import { createRazorpayOrder, getPayment, handleRetryPayment, verifyPayment } from '../controllers/user/paymentController.js';
 import { downloadInvoice, getOrderDetails, getOrders, handleCancelAll, handleCancelProduct, handlePlaceOrder, handleReturnAll, returnProduct } from '../controllers/user/orderController.js';
-import { getWallet } from '../controllers/user/walletController.js';
+import { getWallet, placeOrderByWallet } from '../controllers/user/walletController.js';
 import { handleApplyCoupon, handleRemoveCoupon } from '../controllers/user/couponController.js';
 
 const router = express.Router();
 
-router.get('/login', getLogin);
+router.get('/login', loginCheck, getLogin);
 
 router.post('/login', handleLogin);
 
@@ -115,11 +115,15 @@ router.post('/place-razorpay', verifyUser, createRazorpayOrder);
 
 router.post('/verify-payment', logger, verifyPayment);
 
+router.get('/retry-payment/:id', logger, handleRetryPayment);
+
 router.post('/payment/apply-coupon', logger, handleApplyCoupon);
 
 router.patch('/coupon/remove', logger, handleRemoveCoupon);
 
 router.post('/place-order', verifyUser, handlePlaceOrder);
+
+router.post('/place-wallet-order', verifyUser, placeOrderByWallet);
 
 router.get('/orders', logger, getOrders);
 

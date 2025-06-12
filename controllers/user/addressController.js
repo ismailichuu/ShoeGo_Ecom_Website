@@ -4,6 +4,7 @@ import Address from "../../models/addressSchema.js";
 import Cart from "../../models/cartSchema.js";
 import { calculateCart } from "../../util/priceCalc.js";
 import Order from "../../models/orderSchema.js";
+import { logger } from "../../util/logger.js";
 
 //@route GET /addresses
 export const getAddresses = async (req, res) => {
@@ -383,7 +384,7 @@ export const handleSelectAddress = async (req, res) => {
         const products = cartItems.map(item => ({
             productId: item.productId._id,
             quantity: item.quantity,
-            priceAtPurchase: item.productId.discountPrice,
+            priceAtPurchase: item.productId.basePrice,
             image: item.productId.images[0],
             size: item.size,
         }));
@@ -401,7 +402,7 @@ export const handleSelectAddress = async (req, res) => {
         // Redirect to payment page
         res.redirect(`/payment/${order._id}`);
     } catch (err) {
-        console.error("Order creation failed:", err);
+        logger.error("Order creation failed:", err.toString());
         res.status(500).send("Server error");
     }
 };

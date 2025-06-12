@@ -39,15 +39,22 @@
       </label>
 
       <label class="flex items-center p-4 mb-2 bg-gray-200 rounded cursor-pointer shadow-sm hover:shadow-md">
-        <input type="radio" name="paymentMethod" value="wallet" class="mr-4" disabled>
+        <input type="radio" name="paymentMethod" value="wallet" class="mr-4" >
         <span class="font-medium">Wallets
-          <span class="text-sm text-gray-500 ml-2">Use your ShoeGo wallet</span>
+          <span class="text-sm text-gray-500 ml-2">Use your ShoeGo wallet </span>
+          <div class="flex flex-col">
+          <p class="pt-1"><i class="fa-solid fa-wallet" style="color: #15d14d;"></i> <span class="text-green-500 text-sm font-medium">Balance : ₹<%= walletBalance %></span></p>
+          <p id="wallet-error" class="text-red-600 text-sm font-light mt-2 hidden"></p>
+        </div>
         </span>
       </label>
 
       <label class="flex items-center p-4 mb-2 bg-gray-200 rounded cursor-pointer shadow-sm hover:shadow-md">
         <input type="radio" name="paymentMethod" value="cod" class="mr-4">
+        <div class="flex flex-col">
         <span class="font-medium">Cash on Delivery</span>
+          <p id="cod-error" class="text-red-600 text-sm font-light mt-2 hidden"></p>
+        </div>
       </label>
 
       <input type="hidden" name="orderId" value="<%= orderId %>">

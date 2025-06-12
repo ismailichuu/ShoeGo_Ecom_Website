@@ -38,3 +38,21 @@ export const verifyUser = async (req, res, next) => {
     res.redirect('/login');
   }
 };
+
+//not back to login
+export const loginCheck = (req, res, next) => {
+  try{
+    const token = req.cookies?.token;
+    if (token) {
+      console.log('from middlware');
+      
+      return res.redirect('/');
+    }
+
+    next();
+  }catch(err){
+    logger.error('from logincheck Middlware', err.toString());
+    res.redirect('/login');
+  }
+
+};

@@ -216,6 +216,14 @@ export const handleSignup = async (req, res) => {
         if (password1 !== password2) throw new Error('Password does not match');
         if (password1.length < 6) throw new Error('Password must be at least 6 characters');
 
+        //strong password check
+        const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!strongPasswordRegex.test(password1)) {
+            throw new Error(
+                'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character'
+            );
+        };
+
         const userExist = await User.findOne({ email });
         if (userExist && !userExist.isVerified) {
             const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '2h' });
@@ -249,7 +257,7 @@ export const handleSignup = async (req, res) => {
                 req.session.err = 'Invalid or expired referral link.' + err.toString();
                 return res.redirect('/signup');
             }
-        }else if(!referralToken && manualReferral) {
+        } else if (!referralToken && manualReferral) {
             referrer = await User.findOne({ referralCode: manualReferral });
             if (!referrer) {
                 req.session.err = 'Invalid referral code.';
