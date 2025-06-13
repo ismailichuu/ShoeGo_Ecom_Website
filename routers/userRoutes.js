@@ -14,7 +14,7 @@ import { deleteCart, deleteCartItem, getCart, getOrderSummary, handleAddToCart, 
 import { deleteFromWishlist, getWishlist, handleAddToWishlist } from '../controllers/user/wishlistController.js';
 import { createRazorpayOrder, getPayment, handleRetryPayment, verifyPayment } from '../controllers/user/paymentController.js';
 import { downloadInvoice, getOrderDetails, getOrders, handleCancelAll, handleCancelProduct, handlePlaceOrder, handleReturnAll, returnProduct } from '../controllers/user/orderController.js';
-import { getWallet, placeOrderByWallet } from '../controllers/user/walletController.js';
+import { getWallet, getWalletTransactions, placeOrderByWallet } from '../controllers/user/walletController.js';
 import { handleApplyCoupon, handleRemoveCoupon } from '../controllers/user/couponController.js';
 
 const router = express.Router();
@@ -140,6 +140,8 @@ router.post('/order/return-all', logger, handleReturnAll);
 router.post('/orders/cancel-all', logger, handleCancelAll);
 
 router.get('/wallet', logger, getWallet);
+
+router.get('/wallet/history', logger, getWalletTransactions);
 
 router.get('/logout', handleLogout);
 

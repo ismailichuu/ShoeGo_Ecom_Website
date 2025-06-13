@@ -127,4 +127,4 @@ export const handleEditCategory = async (req, res) => {
         req.session.err = error.toString();
         res.redirect(`/admin/editCategory?id=${_id}&req=new`);
     }
-}
+};

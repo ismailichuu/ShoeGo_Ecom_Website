@@ -19,7 +19,13 @@ export const getPayment = async (req, res) => {
         const userId = decodeUserId(req.cookies?.token);
         const wallet = await Wallet.findOne({ userId });
         const walletBalance = wallet?.balance || 0;
-        const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
+        const cart = await Cart.findOne({ userId })
+            .populate({
+                path: 'cartItems.productId',
+                populate: {
+                    path: 'categoryId'
+                }
+            });
         if (!cart || cart.cartItems.length < 1) {
             return res.redirect('/cart');
         }
@@ -210,7 +216,7 @@ export const handleRetryPayment = async (req, res) => {
             { upsert: true, new: true }
         );
 
-        res.status(200).json({success: true});
+        res.status(200).json({ success: true });
 
     } catch (error) {
         logger.error('Retry payment:', error.toString());

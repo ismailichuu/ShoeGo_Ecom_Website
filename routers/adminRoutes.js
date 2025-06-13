@@ -1,7 +1,7 @@
 import express from 'express';
 import { checkAdmin, logger, validateAddProductImages, validateEditProductImages } from '../middlewares/adminMiddelware.js';
 import { getLogin, handleLogin, handleSignout } from '../controllers/admin/authController.js';
-import { getDashboard } from '../controllers/admin/dashboardController.js';
+import { getDashboard, getTopBrands, getTopCategories, getTopProducts, getTopSellingProducts } from '../controllers/admin/dashboardController.js';
 import { deleteProduct, getAddProduct, getEditProduct, getProducts, handleAddProduct, handleEditProduct } from '../controllers/admin/productController.js';
 import { getCustomerDetails, getCustomers, getOrders, handleBlockUser } from '../controllers/admin/userController.js';
 import { deleteCategory, getAddCategory, getCategory, getEditCategory, handleAddCategory, handleEditCategory } from '../controllers/admin/categoryController.js';
@@ -16,6 +16,14 @@ router.get('/login', checkAdmin, getLogin);
 router.post('/login', handleLogin);
 
 router.get('/dashboard', logger, getDashboard);
+
+router.get('/dashboard/top-products', logger, getTopProducts);
+
+router.get('/dashboard/top-categories', logger, getTopCategories);
+
+router.get('/dashboard/top-brands', logger, getTopBrands);
+
+router.get('/dashboard/top-selling-products', logger, getTopSellingProducts);
 
 router.get('/products',logger, getProducts);
 

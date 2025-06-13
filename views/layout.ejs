@@ -11,23 +11,25 @@
   <title>ShoeGo </title>
 </head>
 
-  <body class="flex min-h-screen bg-gradient-to-r from-white via-slate-50 to-purple-100 text-gray-800">
-
+<body class="flex min-h-screen bg-gradient-to-r from-white via-slate-50 to-purple-100 text-gray-800">
+  
   <!-- Toggle Button for Mobile -->
   <button id="sidebarToggle"
-    class="md:hidden fixed top-4 left-4 z-20 bg-purple-600 text-white p-2 rounded shadow">
-    ☰
-  </button>
+  class="md:hidden fixed top-4 left-4 z-20 bg-purple-600 text-white p-2 rounded shadow">
+  ☰
+</button>
 
-  <!-- Sidebar -->
-  <%- include('partials/adminSidebar') %>
+<!-- Sidebar -->
+<%- include('partials/adminSidebar') %>
 
-  <!-- Main Content -->
-  <main id="mainContent" class= "flex-1 p-6">
-    <%- body %>
-  </main>
+<!-- Main Content -->
+<main id="mainContent" class= "flex-1 p-6">
+  <%- body %>
+</main>
 
-  <script src="/js/script.js"></script>
+<script src="/js/script.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="/js/admin.js"></script>
   <script src="/js/validation.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>

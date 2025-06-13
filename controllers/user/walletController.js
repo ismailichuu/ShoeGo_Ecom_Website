@@ -50,7 +50,7 @@ export const placeOrderByWallet = async (req, res) => {
         if (!order) {
             return res.redirect('/cart');
         };
-        
+
 
         const wallet = await Wallet.findOne({ userId });
         if (!wallet || wallet.balance < order.totalPrice) {
@@ -107,7 +107,6 @@ export const placeOrderByWallet = async (req, res) => {
             await product.save();
         }
 
-        wallet.balance -= order.totalPrice;
         order.orderStatus = 'placed';
         order.paymentStatus = 'completed';
         order.paymentMethod = 'wallet';
@@ -118,6 +117,14 @@ export const placeOrderByWallet = async (req, res) => {
             ...item.toObject?.() || item,
             productStatus: 'placed',
         }));
+
+        wallet.balance -= order.totalPrice;
+        wallet.transactions.push({
+            type: 'debit',
+            amount: order.totalPrice,
+            reason: 'purchase',
+            orderId: order._id,
+        });
 
         await order.save();
         await wallet.save();
@@ -137,4 +144,40 @@ export const placeOrderByWallet = async (req, res) => {
     } catch (error) {
         logger.error('error from walletPayment', error.toString());
     }
+};
+
+export const getWalletTransactions = async (req, res) => {
+  try {
+    const userId = decodeUserId(req.cookies?.token); 
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const wallet = await Wallet.findOne({ userId });
+
+    if (!wallet) {
+      return res.json({
+        transactions: [],
+        currentPage: page,
+        totalPages: 0
+      });
+    }
+
+    const totalTransactions = wallet.transactions.length;
+    const totalPages = Math.ceil(totalTransactions / limit);
+
+    const sortedTransactions = wallet.transactions
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    const paginated = sortedTransactions.slice(skip, skip + limit);
+
+    res.json({
+      transactions: paginated,
+      currentPage: page,
+      totalPages
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to load wallet transactions' });
+  }
 };

@@ -135,7 +135,7 @@ export const handleVerify = async (req, res) => {
             if (referrer) {
                 const couponCode = `REF-${referrer._id.toString().slice(-5).toUpperCase()}-${Date.now().toString().slice(-4)}`;
                 const coupon = new Coupon({
-                    name: 'Referral Bonus',
+                    name: 'Referral Bonus'+ couponCode,
                     code: couponCode,
                     discount: 400,
                     referrerId: referrer._id,
@@ -379,7 +379,7 @@ export const handleGoogleCallback = async (req, res) => {
 
                 const couponCode = `REF-${referrer._id.toString().slice(-5).toUpperCase()}-${Date.now().toString().slice(-4)}`;
                 const coupon = new Coupon({
-                    name: 'Referral Bonus',
+                    name: 'Referral Bonus'+ couponCode,
                     code: couponCode,
                     discount: 400,
                     referrerId: referrer._id,

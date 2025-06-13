@@ -1,163 +1,148 @@
 <div class="p-6 max-w-6xl mx-auto bg-white rounded-lg shadow-md">
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-semibold">All Orders</h2>
-        <div class="flex gap-3">
-            <div class="relative">
-                <!-- Search Input Form -->
-                <form method="get" action="/admin/all-orders" class="relative flex items-center space-x-2">
-                    <% if (from) { %>
-                        <input type="hidden" name="from" value="<%= from %>">
-                        <% } %>
-                            <% if (req.query.page) { %>
-                                <input type="hidden" name="page" value="<%= pagination.page %>">
-                                <% } %>
-                                    <input type="hidden" name="req" value="new">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-semibold">All Orders</h2>
+    <div class="flex gap-3">
+      <div class="relative">
+        <!-- Search Input Form -->
+        <form method="get" action="/admin/all-orders" class="relative flex items-center space-x-2">
+          <% if (from) { %>
+          <input type="hidden" name="from" value="<%= from %>">
+          <% } %>
+          <% if (req.query.page) { %>
+          <input type="hidden" name="page" value="<%= pagination.page %>">
+          <% } %>
+          <input type="hidden" name="req" value="new">
 
-                                    <div class="relative">
-                                        <input type="text" name="search" placeholder="Search here" value="<%= search %>"
-                                            class="pl-10 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none"
-                                            id="search-input-order" />
-                                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
-                                            fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
-                                        </svg>
-                                    </div>
+          <div class="relative">
+            <input type="text" name="search" placeholder="Search here" value="<%= search %>" class="pl-10 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none" id="search-input-order" />
+            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+            </svg>
+          </div>
 
-                                    <button type="submit" class="text-gray-500 hover:text-gray-700 focus:outline-none">
-                                        Search
-                                    </button>
+          <button type="submit" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+            Search
+          </button>
 
 
-                                    <!-- Cancel Button -->
-                                    <% if (search) { %>
-                                        <a href="/admin/all-orders?page=<%= pagination.page %>&limit=<%= pagination.limit %>&req=new"
-                                            class="text-gray-500 hover:text-gray-700 focus:outline-none ml-2">
-                                            × Cancel
-                                        </a>
-                                        <% } %>
-                </form>
-            </div>
-        </div>
+          <!-- Cancel Button -->
+          <% if (search) { %>
+          <a href="/admin/all-orders?page=<%= pagination.page %>&limit=<%= pagination.limit %>&req=new" class="text-gray-500 hover:text-gray-700 focus:outline-none ml-2">
+            × Cancel
+          </a>
+          <% } %>
+        </form>
+      </div>
     </div>
+  </div>
 
-    <!-- <button class="bg-blue-600 text-white px-4 py-2 rounded-md">Export</button>
+  <!-- <button class="bg-blue-600 text-white px-4 py-2 rounded-md">Export</button>
           <button class="bg-gray-200 px-4 py-2 rounded-md">Filters</button> -->
 </div>
 
 <!-- Table -->
 <div class="overflow-x-auto">
-    <table class="min-w-full border-collapse">
-        <thead class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
-            <tr class="text-left text-sm font-medium">
-                <th class="py-3 px-4">Orders</th>
-                <th class="py-3 px-4">Order ID</th>
-                <th class="py-3 px-4">Date</th>
-                <th class="py-3 px-4">Customer</th>
-                <th class="py-3 px-4">Status</th>
-                <th class="py-3 px-4">Quantity</th>
-                <th class="py-3 px-4">Price</th>
-            </tr>
-        </thead>
-        <tbody class="text-sm">
-            <% if(orders && orders.length> 0) { %>
-                <% orders.forEach(order=> { %>
-                    <tr class="border-b hover:bg-gray-50 transition" onclick="getOrderDetails('<%= order._id %>')">
-                        <!-- Products -->
-                        <td class="py-3 px-4">
-                            <div class="flex flex-col gap-2">
-                                <% order.products.forEach(product=> { %>
-                                    <div class="flex items-center gap-2">
-                                        <img src="<%= product.image %>" class="w-8 h-8 rounded object-cover" />
-                                        <span>
-                                            <%= product.productId.name %>
-                                        </span>
-                                        <% if(product.productStatus==='return-requested' ) {%>
-                                            <p class="text-red-600">Return Requested</p>
-                                            <% } %>
-                                    </div>
-                                    <% }) %>
+  <table class="min-w-full border-collapse">
+    <thead class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+      <tr class="text-left text-sm font-medium">
+        <th class="py-3 px-4">Orders</th>
+        <th class="py-3 px-4">Order ID</th>
+        <th class="py-3 px-4">Date</th>
+        <th class="py-3 px-4">Customer</th>
+        <th class="py-3 px-4">Status</th>
+        <th class="py-3 px-4">Quantity</th>
+        <th class="py-3 px-4">Price</th>
+      </tr>
+    </thead>
+    <tbody class="text-sm">
+      <% if(orders && orders.length> 0) { %>
+      <% orders.forEach(order=> { %>
+      <tr class="border-b hover:bg-gray-100 transition transition-transform duration-300 transform hover:-translate-y-0.5 cursor-pointer" onclick="getOrderDetails('<%= order._id %>')">
+        <!-- Products -->
+        <td class="py-3 px-4">
+          <div class="flex flex-col gap-2">
+            <% order.products.forEach(product=> { %>
+            <div class="flex items-center gap-2">
+              <img src="<%= product.image %>" class="w-8 h-8 rounded object-cover" />
+              <span>
+                <%= product.productId.name %>
+              </span>
+              <% if(product.productStatus==='return-requested' ) {%>
+              <p class="text-red-600">Return Requested</p>
+              <% }else if(product.productStatus==='returned' ) {%>
+              <p class="text-purple-600">Refund Requested</p>
+              <% } %>
+            </div>
+            <% }) %>
 
-                            </div>
-                        </td>
+          </div>
+        </td>
 
-                        <!-- Order ID -->
-                        <td class="py-3 px-4">
-                            <%= order.orderId %>
-                        </td>
+        <!-- Order ID -->
+        <td class="py-3 px-4">
+          <%= order.orderId %>
+        </td>
 
-                        <!-- Date -->
-                        <td class="py-3 px-4">
-                            <%= order.orderDate?.toDateString() %>
-                        </td>
+        <!-- Date -->
+        <td class="py-3 px-4">
+          <%= order.orderDate?.toDateString() %>
+        </td>
 
-                        <!-- Customer -->
-                        <td class="py-3 px-4">
-                            <%= order.userId?.name || '--------' %>
-                        </td>
+        <!-- Customer -->
+        <td class="py-3 px-4">
+          <%= order.userId?.name || '--------' %>
+        </td>
 
-                        <!-- Status -->
-                        <td class="py-3 px-4">
-                            <% if (order.orderStatus==='delivered' ) { %>
-                                <span
-                                    class="text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs font-semibold">Delivered</span>
-                                <% } else if (order.orderStatus==='cancelled' ) { %>
-                                    <span
-                                        class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Cancelled</span>
-                                    <% } else if (order.orderStatus==='failed' ) { %>
-                                    <span
-                                        class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Failed</span>
-                                    <% } else if (order.orderStatus==='placed' ) { %>
-                                        <span
-                                            class="text-orange-600 bg-orange-100 px-2 py-1 rounded-full text-xs font-semibold">On
-                                            Delivery</span>
-                                        <% } else if (order.orderStatus==='shipped' ) { %>
-                                            <span
-                                                class="text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs font-semibold">Shipped</span>
-                                            <% } %>
-                        </td>
+        <!-- Status -->
+        <td class="py-3 px-4">
+          <% if (order.orderStatus==='delivered' ) { %>
+          <span class="text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs font-semibold">Delivered</span>
+          <% } else if (order.orderStatus==='cancelled' ) { %>
+          <span class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Cancelled</span>
+          <% } else if (order.orderStatus==='failed' ) { %>
+          <span class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Failed</span>
+          <% } else if (order.orderStatus==='placed' ) { %>
+          <span class="text-orange-600 bg-orange-100 px-2 py-1 rounded-full text-xs font-semibold">On
+            Delivery</span>
+          <% } else if (order.orderStatus==='shipped' ) { %>
+          <span class="text-blue-600 bg-blue-100 px-2 py-1 rounded-full text-xs font-semibold">Shipped</span>
+          <% } %>
+        </td>
 
-                        <!-- Quantity -->
-                        <td class="py-3 px-4">
-                            <% let totalQuantity=0; order.products.forEach(p=> totalQuantity += p.quantity); %>
-                                <%= totalQuantity %>
-                        </td>
+        <!-- Quantity -->
+        <td class="py-3 px-4">
+          <% let totalQuantity=0; order.products.forEach(p=> totalQuantity += p.quantity); %>
+          <%= totalQuantity %>
+        </td>
 
-                        <!-- Total Price -->
-                        <td class="py-3 px-4 font-semibold">₹ <%= order.totalPrice %>
-                        </td>
-                    </tr>
-                    <% }) %>
-                        <% } else { %>
-                            <tr>
-                                <td colspan="7" class="text-center py-4 text-gray-500">No orders</td>
-                            </tr>
-                            <% } %>
-        </tbody>
+        <!-- Total Price -->
+        <td class="py-3 px-4 font-semibold">₹ <%= order.totalPrice %>
+        </td>
+      </tr>
+      <% }) %>
+      <% } else { %>
+      <tr>
+        <td colspan="7" class="text-center py-4 text-gray-500">No orders</td>
+      </tr>
+      <% } %>
+    </tbody>
 
-    </table>
+  </table>
 </div>
 
 <!-- Footer: Pagination & Results per page -->
 <div class="flex items-center space-x-2 mt-4 justify-center">
-    <% if (pagination.hasPrev) { %>
-        <a href="/admin/all-ordres?page=<%= pagination.page - 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new"
-            class="px-3 py-1 bg-gray-200 rounded">Prev</a>
-        <% } %>
+  <% if (pagination.hasPrev) { %>
+  <a href="/admin/all-ordres?page=<%= pagination.page - 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new" class="px-3 py-1 bg-gray-200 rounded">Prev</a>
+  <% } %>
 
-            <% for (let p=1; p <=pagination.totalPages; p++) { %>
-                <a href="/admin/all-orders?page=<%= p %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new"
-                    class="px-2 py-1 rounded <%= p === pagination.page ? 'bg-purple-600 text-white' : 'bg-white border' %>">
-                    <%= p %>
-                </a>
-                <% } %>
+  <% for (let p=1; p <=pagination.totalPages; p++) { %>
+  <a href="/admin/all-orders?page=<%= p %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new" class="px-2 py-1 rounded <%= p === pagination.page ? 'bg-purple-600 text-white' : 'bg-white border' %>">
+    <%= p %>
+  </a>
+  <% } %>
 
-                    <% if (pagination.hasNext) { %>
-                        <a href="/admin/all-orders?page=<%= pagination.page + 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new"
-                            class="px-3 py-1 bg-gray-200 rounded">Next</a>
-                        <% } %>
+  <% if (pagination.hasNext) { %>
+  <a href="/admin/all-orders?page=<%= pagination.page + 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new" class="px-3 py-1 bg-gray-200 rounded">Next</a>
+  <% } %>
 </div>
-
-
-
-

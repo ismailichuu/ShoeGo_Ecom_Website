@@ -173,7 +173,13 @@ export const getSelectAddress = async (req, res) => {
   try {
     const userId = decodeUserId(req.cookies?.token);
     const cartId = req.params.id;
-    const cart = await Cart.findById(cartId).populate('cartItems.productId');
+    const cart = await Cart.findById(cartId)
+            .populate({
+                path: 'cartItems.productId',
+                populate: {
+                    path: 'categoryId'
+                }
+            });
 
     if (!cart || cart.cartItems.length < 1) {
       return res.redirect('/cart');
@@ -362,11 +368,18 @@ export const handleSelectAddress = async (req, res) => {
         const address = await Address.findOne({ _id: addressId, userId });
         if (!address) return res.status(400).send("Invalid address");
 
-        const cart = await Cart.findById(cartId).populate('cartItems.productId');
+        const cart = await Cart.findById(cartId)
+            .populate({
+                path: 'cartItems.productId',
+                populate: {
+                    path: 'categoryId'
+                }
+            });
+
         if (!cart || cart.cartItems.length < 1) {
             return res.redirect('/cart');
         }
-        const cartItems = cart.cartItems;
+        const cartItems = cart?.cartItems || [];
         const { total, grandTotal, totalDiscount } = calculateCart(cartItems);
 
         const shippingAddress = {

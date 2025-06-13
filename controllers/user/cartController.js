@@ -47,10 +47,7 @@ export const getCart = async (req, res) => {
                 item.discountLabel = discountLabel;
             });
         }
-
-
-
-
+        
         const firstProduct = cart?.cartItems?.[0]?.productId;
         const categoryId = firstProduct?.categoryId;
         let related = [];
@@ -248,7 +245,14 @@ export const getOrderSummary = async (req, res) => {
             return res.status(401).send('Unauthorized');
         }
 
-        const cart = await Cart.findOne({ userId }).populate('cartItems.productId');
+        const cart = await Cart.findOne({ userId })
+            .populate({
+                path: 'cartItems.productId',
+                populate: {
+                    path: 'categoryId'
+                }
+            });
+
 
         const items = cart?.cartItems || [];
         const { cartItems, grandTotal, deliveryCharge, total, totalWithoutTax, totalTax, totalDiscount } = calculateCart(items);

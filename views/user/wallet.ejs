@@ -27,7 +27,6 @@
         <ul class="text-sm text-indigo-600 space-y-1">
           <li><a href="#" class="hover:underline">Add gift cards to wallet</a></li>
           <li><a href="#" class="hover:underline">How to add cash to balance</a></li>
-          <li><a href="#" class="hover:underline">Check Wallet transaction history</a></li>
         </ul>
         <hr />
         <div class="text-sm">
@@ -41,6 +40,20 @@
       </div>
     </div>
   </div>
+
+  <!-- Transaction History Section -->
+<div class="mt-10 bg-white shadow rounded-lg p-6">
+  <h3 class="text-md font-semibold mb-4">Transaction History</h3>
+
+  <div id="walletTransactions" class="space-y-4 text-sm">
+    <!-- Transactions will be loaded here -->
+    <p class="text-gray-500 text-center">Loading transactions...</p>
+  </div>
+
+  <!-- Pagination -->
+  <div id="paginationControls" class="flex justify-center mt-6 gap-2 text-sm"></div>
+</div>
+
 
   <!-- Add money section -->
   <div class="bg-gray-100 p-4 rounded-lg mb-6">
@@ -64,3 +77,59 @@
     <a href="#" class="hover:underline">Condition of Use</a>
   </div>
 </div>
+<script>
+  let currentPage = 1;
+
+  async function loadTransactions(page = 1) {
+    try {
+      const res = await fetch(`/wallet/history?page=${page}`);
+      const data = await res.json();
+
+      const container = document.getElementById('walletTransactions');
+      container.innerHTML = '';
+
+      if (data.transactions.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-center">No transactions found.</p>';
+        return;
+      }
+      console.log(data)
+      data.transactions.forEach(tx => {
+        const isCredit = tx.type === 'credit';
+        const color = isCredit ? 'text-green-600' : 'text-red-500';
+        const type = isCredit ? 'Credit' : 'Debit';
+
+        const row = `
+          <div class="border-b pb-2">
+            <div class="flex justify-between">
+              <span>${type} - ₹${tx.amount.toFixed(2)} </span>
+              <span class="${color} font-semibold">${isCredit ? '+' : '-'}₹${tx.amount.toFixed(2)}</span>
+            </div>
+            <div class="text-gray-500 text-xs">${tx.reason.toUpperCase()}</div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', row);
+      });
+
+      renderPagination(data.currentPage, data.totalPages);
+    } catch (error) {
+      console.error(error);
+      document.getElementById('walletTransactions').innerHTML = '<p class="text-red-500">Failed to load transactions.</p>';
+    }
+  }
+
+  function renderPagination(current, total) {
+    const container = document.getElementById('paginationControls');
+    container.innerHTML = '';
+
+    for (let i = 1; i <= total; i++) {
+      const btn = document.createElement('button');
+      btn.innerText = i;
+      btn.className = `px-3 py-1 rounded ${i === current ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'}`;
+      btn.onclick = () => loadTransactions(i);
+      container.appendChild(btn);
+    }
+  }
+
+  // Initial load
+  loadTransactions();
+</script>

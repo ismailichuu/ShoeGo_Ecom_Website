@@ -58,7 +58,7 @@ const transactionSchema = new mongoose.Schema({
         enum: ['razorpay', 'cod', 'wallet'],
         required: true
     },
-
+    
 }, { timestamps: true });
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
