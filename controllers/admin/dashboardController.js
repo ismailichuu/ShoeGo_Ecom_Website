@@ -1,19 +1,26 @@
-import Order from "../../models/orderSchema.js";
-import getDateRange from "../../util/getRangeDashboard.js";
+import Order from '../../models/orderSchema.js';
+import getDateRange from '../../util/getRangeDashboard.js';
 import User from '../../models/userSchema.js';
+import { logger } from '../../util/logger.js';
 
 //@route GET /dashboard
 export const getDashboard = async (req, res) => {
   try {
     const totalSales = await Order.aggregate([
-      { $match: { orderStatus: "delivered" } },
-      { $group: { _id: null, total: { $sum: "$totalPrice" } } }
+      { $match: { orderStatus: 'delivered' } },
+      { $group: { _id: null, total: { $sum: '$totalPrice' } } },
     ]);
     const date = new Date();
     const newDate = date.setDate(date.getDate() - 7);
-    const newOrders = await Order.countDocuments({ createdAt: { $gte: newDate } });
-    const newCustomers = await User.countDocuments({ createdAt: { $gte: newDate } });
-    const totalReturned = await Order.countDocuments({ 'products.productStatus': 'refunded' });
+    const newOrders = await Order.countDocuments({
+      createdAt: { $gte: newDate },
+    });
+    const newCustomers = await User.countDocuments({
+      createdAt: { $gte: newDate },
+    });
+    const totalReturned = await Order.countDocuments({
+      'products.productStatus': 'refunded',
+    });
 
     res.render('admin/dashboard', {
       layout: 'layout',
@@ -21,11 +28,11 @@ export const getDashboard = async (req, res) => {
         totalSales: totalSales[0]?.total || 0,
         newOrders,
         newCustomers,
-        totalReturned
+        totalReturned,
       },
     });
   } catch (error) {
-    console.log(error);
+    logger.error('getDashboard:', error.toString());
     res.status(500).send('Server error');
   }
 };
@@ -37,44 +44,44 @@ export const getTopCategories = async (req, res) => {
   try {
     const result = await Order.aggregate([
       { $match: { orderDate: { $gte: start, $lte: end } } },
-      { $unwind: "$products" },
+      { $unwind: '$products' },
       {
         $lookup: {
-          from: "products",
-          localField: "products.productId",
-          foreignField: "_id",
-          as: "product"
-        }
+          from: 'products',
+          localField: 'products.productId',
+          foreignField: '_id',
+          as: 'product',
+        },
       },
-      { $unwind: "$product" },
+      { $unwind: '$product' },
       {
         $group: {
-          _id: "$product.categoryId",
-          totalSold: { $sum: "$products.quantity" }
-        }
+          _id: '$product.categoryId',
+          totalSold: { $sum: '$products.quantity' },
+        },
       },
       {
         $lookup: {
-          from: "categories",
-          localField: "_id",
-          foreignField: "_id",
-          as: "category"
-        }
+          from: 'categories',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'category',
+        },
       },
-      { $unwind: "$category" },
+      { $unwind: '$category' },
       {
         $project: {
-          name: "$category.name",
-          totalSold: 1
-        }
+          name: '$category.name',
+          totalSold: 1,
+        },
       },
       { $sort: { totalSold: -1 } },
-      { $limit: 10 }
+      { $limit: 10 },
     ]);
 
     res.json(result);
   } catch (err) {
-    console.error(err);
+    logger.error('getTopCategories:', err.toString());
     res.status(500).json({ message: 'Error fetching top categories' });
   }
 };
@@ -87,35 +94,35 @@ export const getTopProducts = async (req, res) => {
   try {
     const result = await Order.aggregate([
       { $match: { orderDate: { $gte: start, $lte: end } } },
-      { $unwind: "$products" },
+      { $unwind: '$products' },
       {
         $group: {
-          _id: "$products.productId",
-          totalSold: { $sum: "$products.quantity" }
-        }
+          _id: '$products.productId',
+          totalSold: { $sum: '$products.quantity' },
+        },
       },
       {
         $lookup: {
-          from: "products",
-          localField: "_id",
-          foreignField: "_id",
-          as: "product"
-        }
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'product',
+        },
       },
-      { $unwind: "$product" },
+      { $unwind: '$product' },
       {
         $project: {
-          name: "$product.name",
-          totalSold: 1
-        }
+          name: '$product.name',
+          totalSold: 1,
+        },
       },
       { $sort: { totalSold: -1 } },
-      { $limit: 10 }
+      { $limit: 10 },
     ]);
 
     res.json(result);
   } catch (err) {
-    console.error(err);
+    logger.error('getTopProducts', err.toString());
     res.status(500).json({ message: 'Error fetching top products' });
   }
 };
@@ -128,36 +135,36 @@ export const getTopBrands = async (req, res) => {
   try {
     const result = await Order.aggregate([
       { $match: { orderDate: { $gte: start, $lte: end } } },
-      { $unwind: "$products" },
+      { $unwind: '$products' },
       {
         $lookup: {
-          from: "products",
-          localField: "products.productId",
-          foreignField: "_id",
-          as: "product"
-        }
+          from: 'products',
+          localField: 'products.productId',
+          foreignField: '_id',
+          as: 'product',
+        },
       },
-      { $unwind: "$product" },
+      { $unwind: '$product' },
       {
         $group: {
-          _id: "$product.brand",
-          totalSold: { $sum: "$products.quantity" }
-        }
+          _id: '$product.brand',
+          totalSold: { $sum: '$products.quantity' },
+        },
       },
       {
         $project: {
-          brand: "$_id",
+          brand: '$_id',
           totalSold: 1,
-          _id: 0
-        }
+          _id: 0,
+        },
       },
       { $sort: { totalSold: -1 } },
-      { $limit: 10 }
+      { $limit: 10 },
     ]);
 
     res.json(result);
   } catch (err) {
-    console.error(err);
+    logger.error('getTopBrands', err.toString());
     res.status(500).json({ message: 'Error fetching top brands' });
   }
 };
@@ -167,65 +174,66 @@ export const getTopSellingProducts = async (req, res) => {
   try {
     const { filter, startDate, endDate } = req.query;
     const { start, end } = getDateRange(filter, startDate, endDate);
-
     const matchStage = {};
     if (start && end) {
       matchStage.orderDate = {
         $gte: new Date(start),
-        $lte: new Date(end)
+        $lte: new Date(end),
       };
     }
 
     const topProducts = await Order.aggregate([
       { $match: matchStage },
-      { $unwind: "$products" },
+      { $unwind: '$products' },
       {
         $group: {
-          _id: "$products.productId",
-          unitsSold: { $sum: "$products.quantity" },
+          _id: '$products.productId',
+          unitsSold: { $sum: '$products.quantity' },
           revenue: {
-            $sum: { $multiply: ["$products.quantity", "$products.priceAtPurchase"] }
-          }
-        }
+            $sum: {
+              $multiply: ['$products.quantity', '$products.priceAtPurchase'],
+            },
+          },
+        },
       },
       {
         $lookup: {
-          from: "products",
-          localField: "_id",
-          foreignField: "_id",
-          as: "productDetails"
-        }
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'productDetails',
+        },
       },
-      { $unwind: "$productDetails" },
+      { $unwind: '$productDetails' },
       {
         $lookup: {
-          from: "categories",
-          localField: "productDetails.categoryId",
-          foreignField: "_id",
-          as: "categoryDetails"
-        }
+          from: 'categories',
+          localField: 'productDetails.categoryId',
+          foreignField: '_id',
+          as: 'categoryDetails',
+        },
       },
       {
         $project: {
-          name: "$productDetails.name",
-          brand: "$productDetails.brand",
+          name: '$productDetails.name',
+          brand: '$productDetails.brand',
           category: {
             $map: {
-              input: "$categoryDetails",
-              as: "cat",
-              in: "$$cat.name"
-            }
+              input: '$categoryDetails',
+              as: 'cat',
+              in: '$$cat.name',
+            },
           },
           unitsSold: 1,
-          revenue: 1
-        }
+          revenue: 1,
+        },
       },
       { $sort: { unitsSold: -1 } },
-      { $limit: 5 }
+      { $limit: 5 },
     ]);
     res.json(topProducts);
   } catch (error) {
-    console.error("Error fetching top selling products:", error);
-    res.status(500).json({ error: "Internal server error" });
+    logger.error('Error fetching top selling products:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };

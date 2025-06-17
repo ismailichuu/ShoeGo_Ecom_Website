@@ -1,5 +1,3 @@
-
-
 <div class="bg-gray-100 font-sans leading-normal tracking-normal">
 
   <nav class="bg-white p-4 shadow-md">
@@ -63,24 +61,33 @@
         <option value="custom">Custom</option>
       </select>
     </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <div class="bg-white p-6 rounded-lg shadow-lg lg:col-span-2 h-96 relative">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Products by Sales</h2>
-        <canvas id="productsChart" class="absolute inset-0 w-full h-full"></canvas>
-      </div>
-      <div class="bg-white p-6 rounded-lg shadow-lg h-96 relative">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Categories by Sales</h2>
-        <canvas id="categoriesChart" class="absolute inset-0 w-full h-full"></canvas>
-      </div>
+   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+  <!-- Top Products Chart -->
+  <div class="lg:col-span-2">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Products by Sales</h2>
+    <div class="bg-white p-6 rounded-lg shadow-lg h-96">
+      <canvas id="productsChart" class="w-full h-full"></canvas>
     </div>
+  </div>
+
+  <!-- Top Categories Chart -->
+  <div>
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Categories by Sales</h2>
+    <div class="bg-white p-6 rounded-lg shadow-lg h-96">
+      <canvas id="categoriesChart" class="w-full h-full"></canvas>
+    </div>
+  </div>
+</div>
+
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div>
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Brands by Sales</h2>
       <div class="bg-white p-6 rounded-lg shadow-lg h-96 relative">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Brands by Sales</h2>
         <canvas id="brandsChart" class="absolute inset-0 w-full h-full"></canvas>
       </div>
-    </div>  
+      </div>
+    </div>
 
     <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Selling Products</h2>
@@ -102,10 +109,10 @@
         </table>
       </div>
     </div>
-<!-- Loader Overlay -->
-<div id="dashboardLoader" class="fixed inset-0 z-50 bg-white bg-opacity-75 flex items-center justify-center hidden">
-  <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-</div>
+    <!-- Loader Overlay -->
+    <div id="dashboardLoader" class="fixed inset-0 z-50 bg-white bg-opacity-75 flex items-center justify-center hidden">
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
 
   </div>
 

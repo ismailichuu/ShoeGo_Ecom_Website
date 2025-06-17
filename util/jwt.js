@@ -9,7 +9,6 @@ export const generateToken = (userId, expiry = null) => {
   return jwt.sign(payload, JWT_SECRET, options);
 };
 
-
 export const verifyToken = (token) => {
   return jwt.verify(token, JWT_SECRET);
 };
@@ -17,4 +16,4 @@ export const verifyToken = (token) => {
 export const decodeUserId = (token) => {
   const decoded = jwt.verify(token, JWT_SECRET);
   return decoded.userId;
-}
+};

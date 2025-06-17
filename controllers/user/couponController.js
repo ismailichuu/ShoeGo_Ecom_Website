@@ -1,7 +1,6 @@
-
-import Coupon from "../../models/couponSchema.js";
-import Order from "../../models/orderSchema.js";
-import { logger } from "../../util/logger.js";
+import Coupon from '../../models/couponSchema.js';
+import Order from '../../models/orderSchema.js';
+import { logger } from '../../util/logger.js';
 
 //@route POST /payment/apply-coupon
 export const handleApplyCoupon = async (req, res) => {
@@ -10,25 +9,35 @@ export const handleApplyCoupon = async (req, res) => {
 
     const coupon = await Coupon.findById(couponId);
     if (!coupon) {
-      return res.status(404).json({ success: false, message: 'Coupon not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Coupon not found' });
     }
 
     if (coupon.used >= coupon.limit) {
-      return res.status(400).json({ success: false, message: 'Coupon usage limit exceeded' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'Coupon usage limit exceeded' });
     }
 
     const now = new Date();
     if (now < new Date(coupon.activeFrom) || now > new Date(coupon.activeTo)) {
-      return res.status(400).json({ success: false, message: 'Coupon is not active' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'Coupon is not active' });
     }
 
     if (!coupon.isActive) {
-      return res.status(400).json({ success: false, message: 'Coupon is currently inactive' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'Coupon is currently inactive' });
     }
 
     const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Order not found' });
     }
 
     if (order.totalPrice < coupon.minAmount) {
@@ -41,7 +50,7 @@ export const handleApplyCoupon = async (req, res) => {
     const discount = coupon.discount;
     const totalAmount = order.totalPrice;
 
-    order.products = order.products.map(product => {
+    order.products = order.products.map((product) => {
       const itemTotal = product.priceAtPurchase * product.quantity;
       const share = itemTotal / totalAmount;
       const itemDiscount = Math.round(discount * share);
@@ -71,13 +80,11 @@ export const handleApplyCoupon = async (req, res) => {
       discount,
       grandTotal: order.grandTotal,
     });
-
   } catch (error) {
     logger.error('Error in handleApplyCoupon:', error);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
 
 //@route PATCH /coupon/remove
 export const handleRemoveCoupon = async (req, res) => {
@@ -86,16 +93,22 @@ export const handleRemoveCoupon = async (req, res) => {
 
     const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Order not found' });
     }
 
     if (!order.couponApplied || !order.couponId || !order.discount) {
-      return res.status(400).json({ success: false, message: 'No coupon to remove' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'No coupon to remove' });
     }
 
     const coupon = await Coupon.findById(order.couponId);
     if (!coupon) {
-      return res.status(404).json({ success: false, message: 'Coupon not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Coupon not found' });
     }
 
     const totalAfterDiscount = order.totalPrice;
@@ -103,7 +116,7 @@ export const handleRemoveCoupon = async (req, res) => {
 
     const adjustedTotal = totalAfterDiscount + discount;
 
-    order.products = order.products.map(product => {
+    order.products = order.products.map((product) => {
       const itemTotal = product.priceAtPurchase * product.quantity;
       const share = itemTotal / totalAfterDiscount;
       const itemRefund = Math.round(discount * share);
@@ -126,13 +139,12 @@ export const handleRemoveCoupon = async (req, res) => {
     order.couponId = undefined;
 
     await order.save();
-    
+
     return res.status(200).json({
       success: true,
       message: 'Coupon removed and order updated successfully',
-      grandTotal: order.grandTotal
+      grandTotal: order.grandTotal,
     });
-
   } catch (error) {
     logger.error('Error in handleRemoveCoupon:', error);
     return res.status(500).json({ success: false, message: 'Server error' });

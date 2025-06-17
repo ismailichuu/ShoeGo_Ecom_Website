@@ -3,27 +3,29 @@
   <h1 class="text-2xl font-bold mb-4">Sales Report</h1>
 
   <!-- Filter Form -->
-  <form class="flex flex-wrap gap-4 mb-6" method="GET" action="/admin/sales-report">
-    <div>
-      <label class="block text-sm">Start Date</label>
-      <input type="date" name="startDate" value="<%= startDate || '' %>" class="border px-3 py-1 rounded" />
-      <input type="hidden" name="req" value="new" />
-    </div>
-    <div>
-      <label class="block text-sm">End Date</label>
-      <input type="date" name="endDate" value="<%= endDate || '' %>" class="border px-3 py-1 rounded" />
-    </div>
-    <div>
-      <label class="block text-sm">Quick Filter</label>
-      <select name="filterType" class="border px-3 py-1 rounded">
-        <option value="">Custom</option>
-        <option value="day" <%= filterType === 'day' ? 'selected' : '' %>>Last 1 Day</option>
-        <option value="week" <%= filterType === 'week' ? 'selected' : '' %>>Last 7 Days</option>
-        <option value="month" <%= filterType === 'month' ? 'selected' : '' %>>Last 30 Days</option>
-      </select>
-    </div>
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded self-end">Apply</button>
-  </form>
+<form id="salesReportForm" class="flex flex-wrap gap-4 mb-6" method="GET" action="/admin/sales-report">
+  <div>
+    <label class="block text-sm">Start Date</label>
+    <input type="date" name="startDate" max="<%= new Date().toISOString().split('T')[0] %>"  value="<%= startDate ? new Date(startDate).toISOString().split('T')[0] : '' %>" class="border px-3 py-1 rounded" id="startDate" />
+    <input type="hidden" name="req" value="new" />
+    <p id="startDateError" class="text-red-600 text-sm mt-1"></p>
+  </div>
+  <div>
+    <label class="block text-sm">End Date</label>
+    <input type="date" name="endDate" max="<%= new Date().toISOString().split('T')[0] %>" value="<%= endDate ? new Date(endDate).toISOString().split('T')[0] : '' %>" class="border px-3 py-1 rounded" id="endDate" />
+    <p id="endDateError" class="text-red-600 text-sm mt-1"></p>
+  </div>
+  <div>
+    <label class="block text-sm">Quick Filter</label>
+    <select name="filterType" class="border px-3 py-1 rounded" id="filterType">
+      <option value="">Custom</option>
+      <option value="day" <%= filterType === 'day' ? 'selected' : '' %>>Last 1 Day</option>
+      <option value="week" <%= filterType === 'week' ? 'selected' : '' %>>Last 7 Days</option>
+      <option value="month" <%= filterType === 'month' ? 'selected' : '' %>>Last 30 Days</option>
+    </select>
+  </div>
+  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded self-end">Apply</button>
+</form>
 
   <!-- Summary Boxes -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -100,3 +102,12 @@
   </div>
 
 </div>
+
+
+
+
+
+
+
+
+

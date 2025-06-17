@@ -1,7 +1,8 @@
-import Order from "../../models/orderSchema.js";
+import Order from '../../models/orderSchema.js';
 import PDFDocument from 'pdfkit';
-import { buildSalesData } from "../../util/saleUtil.js";
+import { buildSalesData } from '../../util/saleUtil.js';
 import ExcelJS from 'exceljs';
+import { logger } from '../../util/logger.js';
 
 //@route GET /sales-report
 export const getSalesReport = async (req, res) => {
@@ -11,7 +12,7 @@ export const getSalesReport = async (req, res) => {
     const pageSize = 10;
     const currentPage = parseInt(page);
 
-    let matchQuery = { orderStatus: "delivered" };
+    let matchQuery = { orderStatus: 'delivered' };
 
     if (startDate && endDate) {
       matchQuery.createdAt = {
@@ -21,9 +22,11 @@ export const getSalesReport = async (req, res) => {
     } else {
       const now = new Date();
       let from;
-      if (filterType === "day") from = new Date(now.setDate(now.getDate() - 1));
-      else if (filterType === "week") from = new Date(now.setDate(now.getDate() - 7));
-      else if (filterType === "month") from = new Date(now.setMonth(now.getMonth() - 1));
+      if (filterType === 'day') from = new Date(now.setDate(now.getDate() - 1));
+      else if (filterType === 'week')
+        from = new Date(now.setDate(now.getDate() - 7));
+      else if (filterType === 'month')
+        from = new Date(now.setMonth(now.getMonth() - 1));
 
       if (from) matchQuery.createdAt = { $gte: from };
     }
@@ -35,7 +38,7 @@ export const getSalesReport = async (req, res) => {
       .skip(pageSize * (currentPage - 1))
       .limit(pageSize)
       .populate('userId')
-      .populate('couponId')
+      .populate('couponId');
 
     const allOrders = await Order.find(matchQuery).populate('couponId');
     let totalSales = 0;
@@ -50,7 +53,7 @@ export const getSalesReport = async (req, res) => {
 
     const totalPages = Math.ceil(totalOrders / pageSize);
 
-    res.render("admin/salesReport", {
+    res.render('admin/salesReport', {
       orders,
       totalOrders,
       totalSales,
@@ -64,8 +67,8 @@ export const getSalesReport = async (req, res) => {
       layout: layout,
     });
   } catch (err) {
-    console.error("Sales Report Error:", err);
-    res.status(500).send("Failed to generate report.");
+    logger.error('Sales Report Error:', err);
+    res.status(500).send('Failed to generate report.');
   }
 };
 
@@ -78,7 +81,10 @@ export const generateSalesPDF = async (req, res) => {
     const doc = new PDFDocument({ margin: 30, size: 'A4' });
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=sales-report.pdf');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=sales-report.pdf'
+    );
 
     doc.pipe(res);
 
@@ -91,34 +97,41 @@ export const generateSalesPDF = async (req, res) => {
     let y = tableTop;
 
     const columns = [
-      { label: 'Order ID', x: 30 },       
-      { label: 'Date', x: 120 },         
-      { label: 'Customer', x: 200 },      
-      { label: 'Status', x: 300 },        
-      { label: 'Amount (₹)', x: 370 }, 
-      { label: 'Discount (₹)', x: 450 }, 
-      { label: 'Coupon (₹)', x: 530 },    
+      { label: 'Order ID', x: 30 },
+      { label: 'Date', x: 120 },
+      { label: 'Customer', x: 200 },
+      { label: 'Status', x: 300 },
+      { label: 'Amount(₹)', x: 370 },
+      { label: 'Discount(₹)', x: 450 },
+      { label: 'Coupon(₹)', x: 530 },
     ];
 
-
     doc.fontSize(12).font('Helvetica-Bold');
-    columns.forEach(col => {
+    columns.forEach((col) => {
       doc.text(col.label, col.x, y);
     });
 
     y += 20;
     doc.font('Helvetica');
 
-    salesData.forEach(order => {
+    salesData.forEach((order) => {
       if (y > 750) {
         doc.addPage();
         y = tableTop;
       }
 
-      doc.text(order.orderId.slice(-6), columns[0].x, y, { width: 80, ellipsis: true }); 
-      doc.text(new Date(order.date).toLocaleDateString(), columns[1].x, y, { width: 70 });
-      doc.text(order.customer.split(' ')[0], columns[2].x, y, { width: 90, ellipsis: true });
-      doc.text(order.status, columns[3].x, y, { width: 60 });
+      doc.text(order.orderId.slice(-6), columns[0].x, y, {
+        width: 80,
+        ellipsis: true,
+      });
+      doc.text(new Date(order.date).toLocaleDateString(), columns[1].x, y, {
+        width: 70,
+      });
+      doc.text(order.customer.split(' ')[0], columns[2].x, y, {
+        width: 90,
+        ellipsis: true,
+      });
+      doc.text('delivered', columns[3].x, y, { width: 60 });
       doc.text(`₹${order.totalAmount}`, columns[4].x, y, { width: 60 });
       doc.text(`₹${order.discount}`, columns[5].x, y, { width: 60 });
       doc.text(`₹${order.coupon}`, columns[6].x, y, { width: 60 });
@@ -126,14 +139,12 @@ export const generateSalesPDF = async (req, res) => {
       y += itemSpacing;
     });
 
-
     doc.end();
   } catch (error) {
-    console.error('PDF generation failed:', error);
+    logger.error('PDF generation failed:', error);
     res.status(500).send('PDF generation failed');
   }
 };
-
 
 //@route GET /sales-report/download/excel
 export const generateSalesExcel = async (req, res) => {
@@ -148,21 +159,26 @@ export const generateSalesExcel = async (req, res) => {
       { header: 'Order ID', key: 'orderId', width: 30 },
       { header: 'Date', key: 'date', width: 15 },
       { header: 'Customer', key: 'customer', width: 25 },
-      { header: 'Status', key: 'status', width: 20 },
       { header: 'Total Amount', key: 'totalAmount', width: 15 },
       { header: 'Discount', key: 'discount', width: 15 },
       { header: 'Coupon', key: 'coupon', width: 15 },
     ];
 
-    salesData.forEach(order => sheet.addRow(order));
+    salesData.forEach((order) => sheet.addRow(order));
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=sales-report.xlsx');
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=sales-report.xlsx'
+    );
 
     await workbook.xlsx.write(res);
     res.end();
   } catch (error) {
-    console.error('Excel generation failed:', error);
+    logger.error('Excel generation failed:', error);
     res.status(500).send('Excel generation failed');
   }
 };

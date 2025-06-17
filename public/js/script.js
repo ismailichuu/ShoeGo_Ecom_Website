@@ -12,66 +12,67 @@ inputs.forEach((input, index) => {
 
 //toggle button of admin
 document.addEventListener('DOMContentLoaded', () => {
-    const toggleButton = document.getElementById('sidebarToggle');
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('mainContent');
+  const toggleButton = document.getElementById('sidebarToggle');
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.getElementById('mainContent');
 
-    toggleButton.addEventListener('click', () => {
-      const isHidden = sidebar.classList.contains('-translate-x-full');
+  toggleButton.addEventListener('click', () => {
+    const isHidden = sidebar.classList.contains('-translate-x-full');
 
-      // Toggle sidebar
-      sidebar.classList.toggle('-translate-x-full');
+    // Toggle sidebar
+    sidebar.classList.toggle('-translate-x-full');
 
-      // Adjust main content margin
-      if (isHidden) {
-        mainContent.classList.remove('ml-0');
-        mainContent.classList.add('ml-64');
-      } else {
-        mainContent.classList.remove('ml-64');
-        mainContent.classList.add('ml-0');
-      }
-    });
+    // Adjust main content margin
+    if (isHidden) {
+      mainContent.classList.remove('ml-0');
+      mainContent.classList.add('ml-64');
+    } else {
+      mainContent.classList.remove('ml-64');
+      mainContent.classList.add('ml-0');
+    }
   });
+});
 
 // size selection logic
-document.querySelectorAll('.size-btn').forEach(button => {
+document.querySelectorAll('.size-btn').forEach((button) => {
   button.addEventListener('click', () => {
     button.classList.toggle('bg-gray-800');
     button.classList.toggle('text-white');
     button.classList.toggle('bg-gray-300');
     button.classList.toggle('text-black');
 
-    const selected = Array.from(document.querySelectorAll('.size-btn.bg-gray-800'))
-      .map(btn => btn.dataset.size);
+    const selected = Array.from(
+      document.querySelectorAll('.size-btn.bg-gray-800')
+    ).map((btn) => btn.dataset.size);
 
     document.getElementById('selectedSizes').value = selected.join(',');
   });
 });
 
 //image of Product details page
-document.addEventListener("DOMContentLoaded", function () {
-  const mainImage = document.getElementById("mainImage");
-  const thumbnails = document.querySelectorAll(".thumbnail-image");
-  const wrappers = document.querySelectorAll(".thumbnail-wrapper");
+document.addEventListener('DOMContentLoaded', function () {
+  const mainImage = document.getElementById('mainImage');
+  const thumbnails = document.querySelectorAll('.thumbnail-image');
+  const wrappers = document.querySelectorAll('.thumbnail-wrapper');
 
   if (!mainImage || thumbnails.length === 0) return;
 
   thumbnails.forEach((thumb, index) => {
-    thumb.addEventListener("click", () => {
-      const newSrc = thumb.getAttribute("data-src");
-      mainImage.setAttribute("src", newSrc);
+    thumb.addEventListener('click', () => {
+      const newSrc = thumb.getAttribute('data-src');
+      mainImage.setAttribute('src', newSrc);
 
-      wrappers.forEach(wrapper => {
-        wrapper.classList.remove("border-primary");
-        wrapper.classList.add("border-transparent");
+      wrappers.forEach((wrapper) => {
+        wrapper.classList.remove('border-primary');
+        wrapper.classList.add('border-transparent');
       });
-      wrappers[index].classList.add("border-primary");
-      wrappers[index].classList.remove("border-transparent");
+      wrappers[index].classList.add('border-primary');
+      wrappers[index].classList.remove('border-transparent');
     });
   });
 });
 
-//image zoom 
+//image zoom
 const thumbnails = document.querySelectorAll('.thumbnail-image');
 const mainImage = document.getElementById('mainImage');
 const zoomModal = document.getElementById('zoomModal');
@@ -84,7 +85,7 @@ const resetZoomBtn = document.getElementById('resetZoomBtn');
 let scale = 1;
 
 // Thumbnail click updates main image
-thumbnails.forEach(thumbnail => {
+thumbnails.forEach((thumbnail) => {
   thumbnail.addEventListener('click', () => {
     const newSrc = thumbnail.getAttribute('data-src');
     mainImage.src = newSrc;
@@ -101,27 +102,24 @@ function openZoomModal(src) {
 
 // Close modal
 if (closeModal) {
-
   closeModal.addEventListener('click', () => {
     zoomModal.classList.add('hidden');
-    zoomedImage.src = "";
+    zoomedImage.src = '';
   });
 }
 
 // Close modal on background click
 if (zoomModal) {
-
   zoomModal.addEventListener('click', (e) => {
     if (e.target === zoomModal) {
       zoomModal.classList.add('hidden');
-      zoomedImage.src = "";
+      zoomedImage.src = '';
     }
   });
 }
 
 // Zoom in
 if (zoomInBtn) {
-
   zoomInBtn.addEventListener('click', () => {
     scale += 0.2;
     zoomedImage.style.transform = `scale(${scale})`;
@@ -135,7 +133,6 @@ if (zoomInBtn) {
   });
 }
 
-
 // Reset zoom
 if (resetZoomBtn) {
   resetZoomBtn.addEventListener('click', () => {
@@ -146,19 +143,16 @@ if (resetZoomBtn) {
 // Expose function to global scope
 window.openZoomModal = openZoomModal;
 
-
 document.addEventListener('DOMContentLoaded', () => {
-
   const resendBtn = document.getElementById('resend-btn');
   const timerDisplay = document.getElementById('timer');
   const resendMessage = document.getElementById('resend-message');
   const emailElement = document.getElementById('email');
-  const email = emailElement ? emailElement.textContent.trim() : null
+  const email = emailElement ? emailElement.textContent.trim() : null;
 
   let countdown = 10; // 2 minutes in seconds
   function startTimer() {
-    if(resendBtn && resendMessage){
-
+    if (resendBtn && resendMessage) {
       resendBtn.classList.add('hidden');
       resendMessage.classList.add('hidden');
     }
@@ -166,15 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const interval = setInterval(() => {
       const minutes = Math.floor(countdown / 60);
       const seconds = countdown % 60;
-      if(timerDisplay){
-
+      if (timerDisplay) {
         timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} left`;
       }
 
       if (countdown <= 0) {
         clearInterval(interval);
-        if(timerDisplay && resendBtn){
-
+        if (timerDisplay && resendBtn) {
           timerDisplay.textContent = "Didn't receive the code?";
           resendBtn.classList.remove('hidden');
         }
@@ -184,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
   if (resendBtn) {
-
     resendBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       resendBtn.classList.add('hidden');
@@ -197,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ email }),
           headers: {
             'Content-Type': 'application/json',
-          }
+          },
         });
 
         const data = await response.json();
@@ -210,7 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
             countdown = 120;
             startTimer();
           }, 3000);
-
         } else {
           alert(data.message || 'Something went wrong');
         }
@@ -219,13 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Server error. Try again later.');
       }
     });
-
   }
-
 
   // Start timer when page loads
   window.onload = startTimer;
-})
-
-
-
+});

@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/userSchema.js';
 import process from 'process';
+import { logger } from '../util/logger.js';
 
-export const logger = (req, res, next) => {
+export const authUser = (req, res, next) => {
   try {
     const token = req.cookies?.token;
 
@@ -13,7 +14,7 @@ export const logger = (req, res, next) => {
     next();
   } catch (error) {
     res.clearCookie('token');
-    console.log(error);
+    logger.error('Middlware:', error);
     return res.redirect('/login');
   }
 };
@@ -41,18 +42,15 @@ export const verifyUser = async (req, res, next) => {
 
 //not back to login
 export const loginCheck = (req, res, next) => {
-  try{
+  try {
     const token = req.cookies?.token;
     if (token) {
-      console.log('from middlware');
-      
       return res.redirect('/');
     }
 
     next();
-  }catch(err){
+  } catch (err) {
     logger.error('from logincheck Middlware', err.toString());
     res.redirect('/login');
   }
-
 };

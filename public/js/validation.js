@@ -1,7 +1,5 @@
-
 //Strong Password Validation for Signup
 document.addEventListener('DOMContentLoaded', () => {
-
   const form = document.querySelector('form');
   const password1 = document.getElementById('password1');
   const password2 = document.getElementById('password2');
@@ -9,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const password2Error = document.getElementById('password2-error');
 
   if (form) {
-
     form.addEventListener('submit', function (e) {
       let isValid = true;
       const password = password1.value;
@@ -22,10 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
       password2Error.classList.add('hidden');
 
       // Strong password regex
-      const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+      const strongPasswordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
       if (!strongPasswordRegex.test(password)) {
-        password1Error.textContent = 'Password must be at least 8 characters long and include uppercase, lowercase, number, and symbol.';
+        password1Error.textContent =
+          'Password must be at least 8 characters long and include uppercase, lowercase, number, and symbol.';
         password1Error.classList.remove('hidden');
         isValid = false;
       }
@@ -42,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isValid) e.preventDefault();
     });
   }
-})
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('add-coupon');
@@ -51,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorMsg = document.getElementById('dateError');
 
   if (form) {
-
     form.addEventListener('submit', function (e) {
       const fromDate = new Date(fromInput.value);
       const toDate = new Date(toInput.value);
@@ -66,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   if (fromInput) {
-
     fromInput.addEventListener('input', () => errorMsg.classList.add('hidden'));
   }
   if (toInput) {

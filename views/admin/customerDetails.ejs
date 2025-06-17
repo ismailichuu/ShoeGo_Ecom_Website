@@ -106,7 +106,7 @@
         <% if (totalPages > 1) { %>
           <div class="flex justify-end p-4 space-x-1 text-sm">
             <% for (let i = 1; i <= totalPages; i++) { %>
-              <a href="?page=<%= i %>"
+              <a href="?id=<%= userId %>&page=<%= i %>&req=new"
                 class="px-3 py-1 rounded-md border 
                   <%= i === currentPage ? 'bg-blue-500 text-white' : 'bg-white text-blue-600 hover:bg-blue-100' %>">
                 <%= i %>

@@ -19,15 +19,13 @@ export const logger = {
 
     // Also optionally log to console in development
     if (process.env.NODE_ENV !== 'production') {
-       
       console.error(...args);
     }
   },
 
   info: (...args) => {
     if (process.env.NODE_ENV !== 'production') {
-       
       console.log('[INFO]', ...args);
     }
-  }
+  },
 };

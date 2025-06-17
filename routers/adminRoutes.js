@@ -1,13 +1,63 @@
 import express from 'express';
-import { checkAdmin, logger, validateAddProductImages, validateEditProductImages } from '../middlewares/adminMiddelware.js';
-import { getLogin, handleLogin, handleSignout } from '../controllers/admin/authController.js';
-import { getDashboard, getTopBrands, getTopCategories, getTopProducts, getTopSellingProducts } from '../controllers/admin/dashboardController.js';
-import { deleteProduct, getAddProduct, getEditProduct, getProducts, handleAddProduct, handleEditProduct } from '../controllers/admin/productController.js';
-import { getCustomerDetails, getCustomers, getOrders, handleBlockUser } from '../controllers/admin/userController.js';
-import { deleteCategory, getAddCategory, getCategory, getEditCategory, handleAddCategory, handleEditCategory } from '../controllers/admin/categoryController.js';
-import { getOrderDetails, handleRefundRequest, handleReturnRequest, updateProductStatus } from '../controllers/admin/orderController.js';
-import { deleteCoupon, getAddCoupons, getCoupons, getEditCoupon, handleAddCoupons, handleEditCoupon } from '../controllers/admin/couponController.js';
-import { generateSalesExcel, generateSalesPDF, getSalesReport } from '../controllers/admin/salesController.js';
+import {
+  checkAdmin,
+  authAdmin,
+  validateAddProductImages,
+  validateEditProductImages,
+} from '../middlewares/adminMiddelware.js';
+import {
+  getLogin,
+  handleLogin,
+  handleSignout,
+} from '../controllers/admin/authController.js';
+import {
+  getDashboard,
+  getTopBrands,
+  getTopCategories,
+  getTopProducts,
+  getTopSellingProducts,
+} from '../controllers/admin/dashboardController.js';
+import {
+  deleteProduct,
+  getAddProduct,
+  getEditProduct,
+  getProducts,
+  handleAddProduct,
+  handleEditProduct,
+} from '../controllers/admin/productController.js';
+import {
+  getCustomerDetails,
+  getCustomers,
+  getOrders,
+  handleBlockUser,
+} from '../controllers/admin/userController.js';
+import {
+  deleteCategory,
+  getAddCategory,
+  getCategory,
+  getEditCategory,
+  handleAddCategory,
+  handleEditCategory,
+} from '../controllers/admin/categoryController.js';
+import {
+  getOrderDetails,
+  handleRefundRequest,
+  handleReturnRequest,
+  updateProductStatus,
+} from '../controllers/admin/orderController.js';
+import {
+  deleteCoupon,
+  getAddCoupons,
+  getCoupons,
+  getEditCoupon,
+  handleAddCoupons,
+  handleEditCoupon,
+} from '../controllers/admin/couponController.js';
+import {
+  generateSalesExcel,
+  generateSalesPDF,
+  getSalesReport,
+} from '../controllers/admin/salesController.js';
 
 const router = express.Router();
 
@@ -15,73 +65,83 @@ router.get('/login', checkAdmin, getLogin);
 
 router.post('/login', handleLogin);
 
-router.get('/dashboard', logger, getDashboard);
+router.get('/dashboard', authAdmin, getDashboard);
 
-router.get('/dashboard/top-products', logger, getTopProducts);
+router.get('/dashboard/top-products', authAdmin, getTopProducts);
 
-router.get('/dashboard/top-categories', logger, getTopCategories);
+router.get('/dashboard/top-categories', authAdmin, getTopCategories);
 
-router.get('/dashboard/top-brands', logger, getTopBrands);
+router.get('/dashboard/top-brands', authAdmin, getTopBrands);
 
-router.get('/dashboard/top-selling-products', logger, getTopSellingProducts);
+router.get('/dashboard/top-selling-products', authAdmin, getTopSellingProducts);
 
-router.get('/products',logger, getProducts);
+router.get('/products', authAdmin, getProducts);
 
-router.get('/addProduct', logger, getAddProduct);
+router.get('/addProduct', authAdmin, getAddProduct);
 
-router.post('/addProduct',logger, validateAddProductImages, handleAddProduct);
+router.post(
+  '/addProduct',
+  authAdmin,
+  validateAddProductImages,
+  handleAddProduct
+);
 
-router.delete('/product', logger, deleteProduct);
+router.delete('/product', authAdmin, deleteProduct);
 
-router.get('/editProduct', logger, getEditProduct);
+router.get('/editProduct', authAdmin, getEditProduct);
 
-router.post('/editProduct', logger, validateEditProductImages, handleEditProduct);
+router.post(
+  '/editProduct',
+  authAdmin,
+  validateEditProductImages,
+  handleEditProduct
+);
 
-router.get('/customers', logger, getCustomers);
+router.get('/customers', authAdmin, getCustomers);
 
-router.get('/customerDetails', logger, getCustomerDetails);
+router.get('/customerDetails', authAdmin, getCustomerDetails);
 
-router.patch('/blockUser', logger, handleBlockUser);
+router.patch('/blockUser', authAdmin, handleBlockUser);
 
-router.get('/categories', logger, getCategory);
+router.get('/categories', authAdmin, getCategory);
 
-router.get('/addCategory', logger, getAddCategory);
+router.get('/addCategory', authAdmin, getAddCategory);
 
-router.post('/addCategory', logger, handleAddCategory);
+router.post('/addCategory', authAdmin, handleAddCategory);
 
-router.delete('/category', logger, deleteCategory);
+router.delete('/category', authAdmin, deleteCategory);
 
-router.get('/editCategory',logger, getEditCategory);
+router.get('/editCategory', authAdmin, getEditCategory);
 
-router.post('/editCategory', logger, handleEditCategory);
+router.post('/editCategory', authAdmin, handleEditCategory);
 
-router.get('/all-orders', logger, getOrders);
+router.get('/all-orders', authAdmin, getOrders);
 
-router.get('/order-details/:id', logger, getOrderDetails);
+router.get('/order-details/:id', authAdmin, getOrderDetails);
 
-router.post('/updateProductStatus', logger, updateProductStatus);
+router.post('/updateProductStatus', authAdmin, updateProductStatus);
 
-router.post('/orders/handle-request', logger, handleReturnRequest);
+router.post('/orders/handle-request', authAdmin, handleReturnRequest);
 
-router.post('/orders/refund-request', logger, handleRefundRequest);
+router.post('/orders/refund-request', authAdmin, handleRefundRequest);
 
-router.get('/coupons', logger, getCoupons);
+router.get('/coupons', authAdmin, getCoupons);
 
-router.get('/coupons/add', logger, getAddCoupons);
+router.get('/coupons/add', authAdmin, getAddCoupons);
 
-router.post('/coupons/add', logger, handleAddCoupons);
+router.post('/coupons/add', authAdmin, handleAddCoupons);
 
-router.get('/coupons/edit/:id', logger, getEditCoupon);
+router.get('/coupons/edit/:id', authAdmin, getEditCoupon);
 
-router.post('/coupons/edit/:id', logger, handleEditCoupon);
+router.post('/coupons/edit/:id', authAdmin, handleEditCoupon);
 
-router.delete('/coupons', logger, deleteCoupon);
+router.delete('/coupons', authAdmin, deleteCoupon);
 
-router.get('/sales-report', logger, getSalesReport);
+router.get('/sales-report', authAdmin, getSalesReport);
 
-router.get('/sales-report/download/pdf', logger, generateSalesPDF);
+router.get('/sales-report/download/pdf', authAdmin, generateSalesPDF);
 
-router.get('/sales-report/download/excel', logger, generateSalesExcel);
+router.get('/sales-report/download/excel', authAdmin, generateSalesExcel);
 
 router.get('/signout', handleSignout);
 

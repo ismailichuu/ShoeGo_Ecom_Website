@@ -1,4 +1,4 @@
-import Razorpay from "razorpay";
+import Razorpay from 'razorpay';
 import process from 'process';
 
 const razorpayInstance = new Razorpay({

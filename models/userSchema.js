@@ -1,104 +1,105 @@
-
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 //Mongo Schema
-const signUpSchema = new mongoose.Schema({
+const signUpSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true,
-        trim: true,
+      type: String,
+      required: true,
+      trim: true,
     },
 
     provider: {
-        type: String,
-        required: false
+      type: String,
+      required: false,
     },
 
     email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
     },
 
     password: {
-        type: String,
-        required: false,
+      type: String,
+      required: false,
     },
 
     isVerified: {
-        type: Boolean,
-        required: true,
-        default: false,
+      type: Boolean,
+      required: true,
+      default: false,
     },
 
     isBlocked: {
-        type: Boolean,
-        required: true,
-        default: false,
+      type: Boolean,
+      required: true,
+      default: false,
     },
 
     otp: {
-        type: String,
-        required: false,
+      type: String,
+      required: false,
     },
 
     otpExpiry: {
-        type: Date,
-        required: false,
+      type: Date,
+      required: false,
     },
 
     admin: {
-        type: Boolean,
-        required: false,
+      type: Boolean,
+      required: false,
     },
 
     profile: {
-        type: String,
-        required: false,
+      type: String,
+      required: false,
     },
 
     newsLetter: {
-        type: Boolean,
-        required: true,
-        default: false,
+      type: Boolean,
+      required: true,
+      default: false,
     },
 
     mobileNumber: {
-        type: String,
-        maxlength: 10,
-        required: false,
+      type: String,
+      maxlength: 10,
+      required: false,
     },
 
     gender: {
-        type: String,
-        required: false,
+      type: String,
+      required: false,
     },
 
     referralCode: {
-        type: String, 
-        unique: true 
+      type: String,
+      unique: true,
     },
 
-    referrerId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'user', 
-        default: null 
+    referrerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'user',
+      default: null,
     },
 
     referralsCount: {
-        type: Number,
-        default: 0,
+      type: Number,
+      default: 0,
     },
 
-    successfulReferrals: { 
-        type: Number, 
-        default: 0 
+    successfulReferrals: {
+      type: Number,
+      default: 0,
     },
-
-}, {
+  },
+  {
     timestamps: true,
-});
+  }
+);
 
 //create model
 const User = mongoose.model('users', signUpSchema);

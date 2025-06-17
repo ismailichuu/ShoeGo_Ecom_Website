@@ -12,11 +12,12 @@ const getDateRange = (filter, startDate, endDate) => {
       start = new Date(now.getFullYear(), now.getMonth(), 1);
       end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
       break;
-    case 'weekly':
+    case 'weekly': {
       const first = now.getDate() - now.getDay();
       start = new Date(now.setDate(first));
       end = new Date(now.setDate(first + 6));
       break;
+    }
     case 'custom':
       start = new Date(startDate);
       end = new Date(endDate);

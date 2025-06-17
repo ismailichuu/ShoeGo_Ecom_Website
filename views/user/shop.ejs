@@ -131,6 +131,13 @@
           <form method="GET" action="/allProducts" class="space-y-6 sm:space-y-8">
             <!-- Preserve search -->
             <input type="hidden" name="search" value="<%= search || '' %>" />
+            <div class="space-y-3 text-center">
+              <a href="/allProducts">
+              <button type="button" class="w-full text-center bg-gradient-to-r from-red-500 to-red-600 text-white py-1 sm:py-2 rounded-xl font-medium transition-all duration-300 hover:from-red-600 hover:to-red-700 hover:shadow-lg transform hover:scale-105 text-sm sm:text-base">
+                <i class="fas fa-times-circle mr-2"></i>Clear Filters
+              </button></a>
+
+            </div>
 
             <!-- Category -->
             <div class="space-y-3">
@@ -159,6 +166,9 @@
               <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2 sm:py-3 rounded-xl font-medium transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 hover:shadow-lg transform hover:scale-105 text-sm sm:text-base">
                 Apply Filters
               </button>
+
+
+
             </div>
 
             <!-- Sort -->

@@ -2,12 +2,12 @@ import nodemailer from 'nodemailer';
 import process from 'process';
 
 var transporter = nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
+  host: 'sandbox.smtp.mailtrap.io',
   port: 2525,
   auth: {
     user: process.env.MAIL_TRAP_USER,
-    pass: process.env.MAIL_TRAP_SECRET
-  }
+    pass: process.env.MAIL_TRAP_SECRET,
+  },
 });
 
 const sendOTPEmail = async (email, otp, message, time) => {
@@ -32,6 +32,5 @@ const sendOTPEmail = async (email, otp, message, time) => {
     `,
   });
 };
-
 
 export default sendOTPEmail;
