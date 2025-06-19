@@ -4,7 +4,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "node app",
+    "start": "node --env-file=.env app",
     "dev": "node --watch --env-file=.env app",
     "build:css": "npx @tailwindcss/cli -i ./src/css/input.css -o ./public/css/output.css --watch",
     "lint": "eslint .",
