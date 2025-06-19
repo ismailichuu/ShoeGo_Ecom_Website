@@ -1,7 +1,10 @@
 import jwt from 'jsonwebtoken';
 import upload from '../config/multer.js';
 import process from 'process';
+import dotenv from 'dotenv';
 import { logger } from '../util/logger.js';
+
+dotenv.config();
 
 //multer
 export const validateAddProductImages = (req, res, next) => {

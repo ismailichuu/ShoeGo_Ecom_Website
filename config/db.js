@@ -1,5 +1,8 @@
 import mongoose from 'mongoose';
 import process from 'process';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const mongoString = process.env.MONGOSTRING;
 

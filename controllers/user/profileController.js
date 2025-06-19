@@ -6,7 +6,10 @@ import sendOTPEmail from '../../config/nodemailer.transporter.js';
 import { generateToken, verifyToken } from '../../util/jwt.js';
 import Address from '../../models/addressSchema.js';
 import process from 'process';
+import dotenv from 'dotenv';
 import { logger } from '../../util/logger.js';
+
+dotenv.config();
 
 //@route GET /changePassword
 export const getChangePassword = (req, res) => {

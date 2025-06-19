@@ -1,6 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const logDir = path.join(process.cwd(), 'logs');
 const logFile = path.join(logDir, 'error.log');

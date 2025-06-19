@@ -1,5 +1,8 @@
 import nodemailer from 'nodemailer';
 import process from 'process';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 var transporter = nodemailer.createTransport({
   host: 'sandbox.smtp.mailtrap.io',

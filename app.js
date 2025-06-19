@@ -9,8 +9,10 @@ import expressLayout from 'express-ejs-layouts';
 import cookieParser from 'cookie-parser';
 import process from 'process';
 import { rateLimit } from 'express-rate-limit';
+import dotenv from 'dotenv';
 import cors from 'cors';
 
+dotenv.config();
 const app = express();
 const port = process.env.PORT || 8080;
 
