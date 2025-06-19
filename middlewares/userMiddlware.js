@@ -1,7 +1,10 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/userSchema.js';
 import process from 'process';
+import dotenv from 'dotenv';
 import { logger } from '../util/logger.js';
+
+dotenv.config();
 
 export const authUser = (req, res, next) => {
   try {
