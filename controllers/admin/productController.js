@@ -9,7 +9,7 @@ import { logger } from '../../util/logger.js';
 export const getProducts = async (req, res) => {
   try {
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-    const limit = Math.max(1, parseInt(req.query.limit, 10) || 10);
+    const limit = Math.max(1, parseInt(req.query.limit, 10) || 5);
     const searchTerm = req.query.search || '';
 
     const searchFilter = searchTerm

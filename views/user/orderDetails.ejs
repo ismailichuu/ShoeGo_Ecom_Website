@@ -314,7 +314,10 @@
             <% if(order.couponApplied) {%>
             <div class="flex justify-between items-center py-2">
               <span class="text-gray-600">Coupon Applied </span>
-              <span class="text-green-500"><%= order.couponId.code %></span>
+              <div class="flex flex-col text-center">
+              <span class="text-green-500"><%= order.couponId.code %> </span>
+              <span class="text-green-500">₹<%= order.couponId.discount %></span>
+              </div>
             </div>
             <% } %>
 
@@ -342,8 +345,7 @@
                 </p>
               </div>
               <div class="text-center">
-                <button class="px-2 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-light rounded-xl hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
-                onclick="retryPayment('<%= order._id %>')">
+                <button class="px-2 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-light rounded-xl hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl" onclick="retryPayment('<%= order._id %>')">
                   <i class="fa-solid fa-rotate-right" style="color: #ffffff;"></i> Retry Payment
                 </button>
               </div>
