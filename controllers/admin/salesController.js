@@ -120,7 +120,7 @@ export const generateSalesPDF = async (req, res) => {
         y = tableTop;
       }
 
-      doc.text(order.orderId.slice(-6), columns[0].x, y, {
+      doc.text(order.orderId.slice(-5), columns[0].x, y, {
         width: 80,
         ellipsis: true,
       });

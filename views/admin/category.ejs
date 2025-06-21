@@ -104,48 +104,47 @@
 </div>
 
 <!-- Pagination -->
-<% if (pagination.totalPages> 1) { %>
-  <div class="flex justify-between items-center mt-6">
+
+<% if (pagination.totalPages > 1) { %>
+  <div class="flex flex-col sm:flex-row justify-between items-center mt-6 space-y-4 sm:space-y-0">
+    
     <!-- Show N per page -->
     <form method="get" class="flex items-center space-x-2">
-      <% if (from) { %><input type="hidden" name="from" value="<%= from %>">
-        <% } %>
-          <% if (query.page) { %>
-            <input type="hidden" name="page" value="<%= pagination.page %>">
-            <% } %>
-              <% if (query.req==='new' ) { %>
-                <input type="hidden" name="req" value="new">
-                <% } %>
-
-                  <label>Show:</label>
-                  <select name="limit" onchange="this.form.submit()" class="border rounded px-2 py-1">
-                    <% [5,10,20,50].forEach(n=> { %>
-                      <option value="<%= n %>" <%=n===pagination.limit ? 'selected' : '' %>><%= n %>
-                      </option>
-                      <% }) %>
-                  </select>
-
+      <% if (from) { %>
+        <input type="hidden" name="from" value="<%= from %>">
+      <% } %>
+      <% if (query.page) { %>
+        <input type="hidden" name="page" value="<%= pagination.page %>">
+      <% } %>
+      <% if (query.req === 'new') { %>
+        <input type="hidden" name="req" value="new">
+      <% } %>
+      <label for="limit">Show:</label>
+      <select name="limit" onchange="this.form.submit()" class="border rounded px-2 py-1" id="limit">
+        <% [5, 10, 20, 50].forEach(n => { %>
+          <option value="<%= n %>" <%= n === pagination.limit ? 'selected' : '' %>><%= n %></option>
+        <% }) %>
+      </select>
     </form>
-    <% } %>
 
+    <!-- Page numbers -->
+    <div class="flex flex-wrap justify-center items-center space-x-2">
+      <% if (pagination.hasPrev) { %>
+        <a href="/admin/categories?page=<%= pagination.page - 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %><%= search ? '&search=' + search : '' %>&req=new"
+          class="px-3 py-1 bg-gray-200 rounded">Prev</a>
+      <% } %>
 
-      <!-- Page numbers -->
-      <!-- Page numbers -->
-      <div class="flex items-center space-x-2">
-        <% if (pagination.hasPrev) { %>
-          <a href="/admin/categories?page=<%= pagination.page - 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %><%= search ? '&search=' + search : '' %>&req=new%>"
-            class="px-3 py-1 bg-gray-200 rounded">Prev</a>
-          <% } %>
+      <% for (let p = 1; p <= pagination.totalPages; p++) { %>
+        <a href="/admin/categories?page=<%= p %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %><%= search ? '&search=' + search : '' %>&req=new"
+          class="px-2 py-1 rounded <%= p === pagination.page ? 'bg-purple-600 text-white' : 'bg-white border' %>">
+          <%= p %>
+        </a>
+      <% } %>
 
-            <% for (let p=1; p <=pagination.totalPages; p++) { %>
-              <a href="/admin/categories?page=<%= p %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %><%= search ? '&search=' + search : '' %>&req=new%>"
-                class="px-2 py-1 rounded <%= p === pagination.page ? 'bg-purple-600 text-white' : 'bg-white border' %>">
-                <%= p %>
-              </a>
-              <% } %>
-
-                <% if (pagination.hasNext) { %>
-                  <a href="/admin/categories?page=<%= pagination.page + 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %><%= search ? '&search=' + search : '' %>&req=new%>"
-                    class="px-3 py-1 bg-gray-200 rounded">Next</a>
-                  <% } %>
-      </div>
+      <% if (pagination.hasNext) { %>
+        <a href="/admin/categories?page=<%= pagination.page + 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %><%= search ? '&search=' + search : '' %>&req=new"
+          class="px-3 py-1 bg-gray-200 rounded">Next</a>
+      <% } %>
+    </div>
+  </div>
+<% } %>

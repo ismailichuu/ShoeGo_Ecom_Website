@@ -33,7 +33,7 @@ export const buildSalesData = async (startDate, endDate, filterType) => {
     const statuses = order.products.map((p) => p.productStatus).join(', ');
 
     return {
-      orderId: order._id.toString(),
+      orderId: order.orderId,
       date: order.createdAt.toISOString().split('T')[0],
       customer,
       status: statuses,

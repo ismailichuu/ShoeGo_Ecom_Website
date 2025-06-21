@@ -144,8 +144,7 @@ export const handleAddToCart = async (req, res) => {
       });
     } else {
       const existingItem = cart.cartItems.find(
-        (item) =>
-          item.productId.toString() === productId && item.size === selectedSize
+        (item) => item.productId.toString() === productId
       );
 
       if (existingItem) {

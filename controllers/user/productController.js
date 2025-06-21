@@ -125,6 +125,12 @@ export const getProductDetails = async (req, res) => {
       };
     });
 
+    const date = new Date();
+    date.setDate(date.getDate() + 7);
+
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = date.toLocaleDateString('en-US', options);
+
     res.render('user/productDetails', {
       product: {
         ...product._doc,
@@ -132,6 +138,7 @@ export const getProductDetails = async (req, res) => {
         discountLabel,
       },
       related: updatedRelated,
+      deliveryDate: formattedDate,
     });
   } catch (error) {
     logger.error('getProductDetails:', error);
