@@ -8,6 +8,7 @@ import Address from '../../models/addressSchema.js';
 import process from 'process';
 import dotenv from 'dotenv';
 import { logger } from '../../util/logger.js';
+import Wallet from '../../models/walletSchema.js';
 
 dotenv.config();
 
@@ -70,6 +71,9 @@ export const getProfile = async (req, res) => {
       day: 'numeric',
     });
 
+    const wallet = await Wallet.findOne({ userId });
+    const walletBalance = wallet && wallet.balance ? wallet.balance : 0;
+
     const address = await Address.findOne({ userId, isDefault: true });
 
     const referralPayload = {
@@ -87,6 +91,7 @@ export const getProfile = async (req, res) => {
       joinedDate,
       address,
       referralLink,
+      walletBalance,
     });
   } catch (error) {
     logger.error('getProfile:', error);

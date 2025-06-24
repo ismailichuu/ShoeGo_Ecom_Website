@@ -20,7 +20,7 @@ export const getAllProducts = async (req, res) => {
     const minPrice = parseInt(req.query.minPrice || '0', 10);
     const maxPrice = parseInt(req.query.maxPrice || '0', 10);
 
-    const limit = 3;
+    const limit = 6;
     const skip = (page - 1) * limit;
 
     let query = { isActive: true };
