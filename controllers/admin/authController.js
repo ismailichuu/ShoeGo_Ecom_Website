@@ -4,8 +4,9 @@ import { generateToken } from '../../util/jwt.js';
 import process from 'process';
 import dotenv from 'dotenv';
 import { logger } from '../../util/logger.js';
+import path from 'path';
 
-dotenv.config();
+dotenv.config({ path: path.resolve('.env.local') });
 
 //@route GET /admin/login
 export const getLogin = (req, res) => {

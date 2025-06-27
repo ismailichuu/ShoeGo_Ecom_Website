@@ -78,6 +78,18 @@ export const getAllProducts = async (req, res) => {
 
     const categories = await Category.find();
 
+    if (req.xhr) {
+      return res.render('partials/productGrid', {
+        products: paginated,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(filteredByPrice.length / limit),
+        },
+        layout: false,
+      });
+    }
+
+
     res.render('user/shop', {
       products: paginated,
       search,

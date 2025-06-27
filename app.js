@@ -33,7 +33,7 @@ app.use(cookieParser());
 //session
 app.use(
   session({
-    secret: 'superman',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
   })

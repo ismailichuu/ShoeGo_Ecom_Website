@@ -8,9 +8,11 @@ export const getCoupons = async (req, res) => {
 
     const search = req.query.search || '';
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = 3;
 
-    const query = search ? { name: { $regex: search, $options: 'i' } } : {};
+    const query = search
+      ? { name: { $regex: search, $options: 'i' } }
+      : {};
 
     const totalCoupons = await Coupon.countDocuments(query);
     const totalPages = Math.ceil(totalCoupons / limit);
@@ -19,6 +21,13 @@ export const getCoupons = async (req, res) => {
       .skip((page - 1) * limit)
       .limit(limit)
       .sort({ createdAt: -1 });
+
+    if (req.xhr) {
+      return res.render('partials/couponRows', { coupons }, (err, html) => {
+        if (err) return res.status(500).send('Render failed');
+        res.send({ html, totalPages, currentPage: page });
+      });
+    }
 
     res.render('admin/coupon-table', {
       coupons,
@@ -32,6 +41,7 @@ export const getCoupons = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
+
 
 //@route GET /coupons/add
 export const getAddCoupons = async (req, res) => {

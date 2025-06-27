@@ -391,32 +391,6 @@ const editImageCropping = () => {
   }
 };
 
-//categoryManagment
-document.addEventListener('DOMContentLoaded', () => {
-  const contentArea = document.getElementById('mainContent');
-  const sidebarLinks = document.querySelectorAll('aside a');
-  const loadBtn = document.querySelectorAll('.loadCategories');
-
-  loadBtn.forEach((btn) =>
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      sidebarLinks.forEach((link) => link.classList.remove('bg-purple-200'));
-      btn.classList.add('bg-purple-200');
-
-      fetch('/admin/categories')
-        .then((response) => response.text())
-        .then((html) => {
-          contentArea.innerHTML = html;
-        })
-        .catch((error) => {
-          console.error('Failed to load categories:', error);
-          contentArea.innerHTML =
-            "<p class='text-red-500'>Failed to load categories.</p>";
-        });
-    })
-  );
-});
-
 //deleteCategory
 function deleteCategory(id) {
   if (!confirm('Are you sure you want to delete this category?')) return;
@@ -481,36 +455,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-//customers
-document.addEventListener('DOMContentLoaded', () => {
-  const contentArea = document.getElementById('mainContent');
-  const sidebarLinks = document.querySelectorAll('aside a');
-  const loadBtn = document.getElementById('loadCustomers');
-
-  loadBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    sidebarLinks.forEach((link) => link.classList.remove('bg-purple-200'));
-    loadBtn.classList.add('bg-purple-200');
-
-    fetch('/admin/customers')
-      .then((response) => response.text())
-      .then((html) => {
-        contentArea.innerHTML = html;
-      })
-      .catch((error) => {
-        console.error('Failed to load customers:', error);
-        contentArea.innerHTML =
-          "<p class='text-red-500'>Failed to load customers.</p>";
-      });
-  });
-});
-
 //customer Block & unblock
 document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', function (e) {
-    // If the clicked element has the class 'userBlock'
     if (e.target.classList.contains('userBlock')) {
-      const userId = e.target.getAttribute('data-id');
+      const button = e.target;
+      const userId = button.getAttribute('data-id');
       if (!userId) return console.error('User ID not found');
 
       fetch('/admin/blockUser', {
@@ -521,7 +471,22 @@ document.addEventListener('DOMContentLoaded', () => {
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
-            location.href = `/admin/customerDetails?req=new&id=${data.id}`;
+            button.textContent = data.isBlocked ? 'Unblock' : 'Block';
+
+            button.classList.remove('bg-red-500', 'bg-green-500');
+            if (data.isBlocked) {
+              button.classList.add('bg-green-500'); 
+            } else {
+              button.classList.add('bg-red-500');
+            }
+
+            const statusSpan = document.getElementById('user-status');
+            if (statusSpan) {
+              statusSpan.textContent = data.isBlocked ? 'Blocked' : 'Active';
+              statusSpan.className = data.isBlocked
+                ? 'bg-red-300 text-red-500 text-sm px-3 py-1 rounded-full mt-1'
+                : 'bg-green-100 text-green-700 text-sm px-3 py-1 rounded-full mt-1';
+            }
           } else {
             console.error('Server error:', data.message);
           }
@@ -550,31 +515,7 @@ function getUserDetails(id) {
       contentArea.innerHTML =
         "<p class='text-red-500'>Failed to load Customer.</p>";
     });
-}
-
-//loadOrders
-document.addEventListener('DOMContentLoaded', () => {
-  const contentArea = document.getElementById('mainContent');
-  const sidebarLinks = document.querySelectorAll('aside a');
-  const loadBtn = document.getElementById('loadOrders');
-
-  loadBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    sidebarLinks.forEach((link) => link.classList.remove('bg-purple-200'));
-    loadBtn.classList.add('bg-purple-200');
-
-    fetch('/admin/all-orders')
-      .then((response) => response.text())
-      .then((html) => {
-        contentArea.innerHTML = html;
-      })
-      .catch((error) => {
-        console.error('Failed to load orders:', error);
-        contentArea.innerHTML =
-          "<p class='text-red-500'>Failed to load orders.</p>";
-      });
-  });
-});
+};
 
 function getOrderDetails(id) {
   const contentArea = document.getElementById('mainContent');
@@ -714,30 +655,6 @@ function handleRefundRequest(orderId, productId, size, action) {
       messageDiv.classList.add('text-red-600');
     });
 }
-
-//load Coupons
-document.addEventListener('DOMContentLoaded', () => {
-  const contentArea = document.getElementById('mainContent');
-  const sidebarLinks = document.querySelectorAll('aside a');
-  const loadBtn = document.getElementById('loadCoupons');
-
-  loadBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    sidebarLinks.forEach((link) => link.classList.remove('bg-purple-200'));
-    loadBtn.classList.add('bg-purple-200');
-
-    fetch('/admin/coupons')
-      .then((response) => response.text())
-      .then((html) => {
-        contentArea.innerHTML = html;
-      })
-      .catch((error) => {
-        console.error('Failed to load coupons:', error);
-        contentArea.innerHTML =
-          "<p class='text-red-500'>Failed to load coupons.</p>";
-      });
-  });
-});
 
 //deleteCoupon
 function deleteCoupon(id) {

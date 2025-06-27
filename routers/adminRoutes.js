@@ -28,7 +28,6 @@ import {
 import {
   getCustomerDetails,
   getCustomers,
-  getOrders,
   handleBlockUser,
 } from '../controllers/admin/userController.js';
 import {
@@ -41,6 +40,7 @@ import {
 } from '../controllers/admin/categoryController.js';
 import {
   getOrderDetails,
+  getOrders,
   handleRefundRequest,
   handleReturnRequest,
   updateProductStatus,

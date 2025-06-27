@@ -2,6 +2,64 @@ import mongoose from 'mongoose';
 import Order from '../../models/orderSchema.js';
 import Wallet from '../../models/walletSchema.js';
 import { logger } from '../../util/logger.js';
+import User from '../../models/userSchema.js';
+
+//@router GET /orders
+export const getOrders = async (req, res) => {
+  try {
+    const layout = req.query.req ? 'layout' : false;
+    const search = req.query.search || '';
+    const page = parseInt(req.query.page) || 1;
+    const limit = 9;
+    const skip = (page - 1) * limit;
+
+    let query = {};
+
+    if (search) {
+      const users = await User.find({
+        name: { $regex: search, $options: 'i' },
+      }).select('_id');
+
+      const userIds = users.map((user) => user._id);
+
+      query = {
+        $or: [
+          { userId: { $in: userIds } },
+          { orderId: { $regex: search, $options: 'i' } },
+        ],
+      };
+    }
+
+    const totalOrders = await Order.countDocuments(query);
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    const orders = await Order.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('userId')
+      .populate('products.productId')
+      .lean();
+
+    if (req.xhr) {
+      return res.render('partials/orderRows', { orders }, (err, html) => {
+        if (err) return res.status(500).send('Render failed');
+        res.send({ html, totalPages, currentPage: page });
+      });
+    }
+
+    res.render('admin/ordersTable', {
+      orders,
+      layout: layout,
+      currentPage: page,
+      totalPages,
+      search,
+    });
+  } catch (error) {
+    logger.error('Error loading orders:', error);
+    res.status(500).render('admin/error', { message: 'Failed to load orders' });
+  }
+};
 
 //@route GET /order-details/:id
 export const getOrderDetails = async (req, res) => {

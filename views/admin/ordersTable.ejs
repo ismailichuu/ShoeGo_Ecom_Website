@@ -3,41 +3,10 @@
     <h2 class="text-2xl font-semibold">All Orders</h2>
     <div class="flex gap-3">
       <div class="relative">
-        <!-- Search Input Form -->
-        <form method="get" action="/admin/all-orders" class="relative flex items-center space-x-2">
-          <% if (from) { %>
-          <input type="hidden" name="from" value="<%= from %>">
-          <% } %>
-          <% if (req.query.page) { %>
-          <input type="hidden" name="page" value="<%= pagination.page %>">
-          <% } %>
-          <input type="hidden" name="req" value="new">
-
-          <div class="relative">
-            <input type="text" name="search" placeholder="Search here" value="<%= search %>" class="pl-10 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none" id="search-input-order" />
-            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
-            </svg>
-          </div>
-
-          <button type="submit" class="text-gray-500 hover:text-gray-700 focus:outline-none">
-            Search
-          </button>
-
-
-          <!-- Cancel Button -->
-          <% if (search) { %>
-          <a href="/admin/all-orders?page=<%= pagination.page %>&limit=<%= pagination.limit %>&req=new" class="text-gray-500 hover:text-gray-700 focus:outline-none ml-2">
-            × Cancel
-          </a>
-          <% } %>
-        </form>
+       <input type="text" id="searchInputOrder" name="search" placeholder="Search here...." class=" px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-indigo-400" value="<%= typeof search !== 'undefined' ? search : '' %>" />
       </div>
     </div>
   </div>
-
-  <!-- <button class="bg-blue-600 text-white px-4 py-2 rounded-md">Export</button>
-          <button class="bg-gray-200 px-4 py-2 rounded-md">Filters</button> -->
 </div>
 
 <!-- Table -->
@@ -54,7 +23,7 @@
         <th class="py-3 px-4">Price</th>
       </tr>
     </thead>
-    <tbody class="text-sm">
+    <tbody class="text-sm" id="orderTableBody">
       <% if(orders && orders.length> 0) { %>
       <% orders.forEach(order=> { %>
       <tr class="border-b hover:bg-gray-100 transition transition-transform duration-300 transform hover:-translate-y-0.5 cursor-pointer" onclick="getOrderDetails('<%= order._id %>')">
@@ -131,18 +100,10 @@
 </div>
 
 <!-- Footer: Pagination & Results per page -->
-<div class="flex items-center space-x-2 mt-4 justify-center">
-  <% if (pagination.hasPrev) { %>
-  <a href="/admin/all-orders?page=<%= pagination.page - 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new" class="px-3 py-1 bg-gray-200 rounded">Prev</a>
-  <% } %>
-
-  <% for (let p=1; p <=pagination.totalPages; p++) { %>
-  <a href="/admin/all-orders?page=<%= p %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new" class="px-2 py-1 rounded <%= p === pagination.page ? 'bg-purple-600 text-white' : 'bg-white border' %>">
-    <%= p %>
-  </a>
-  <% } %>
-
-  <% if (pagination.hasNext) { %>
-  <a href="/admin/all-orders?page=<%= pagination.page + 1 %>&limit=<%= pagination.limit %><%= from ? '&from=' + from : '' %>&req=new" class="px-3 py-1 bg-gray-200 rounded">Next</a>
+<div id="paginationContainerOrder" class="flex space-x-1 pt-1 justify-center">
+  <% for (let i = 1; i <= totalPages; i++) { %>
+  <button class="px-3 py-1 <%= i === currentPage ? 'bg-indigo-600 text-white' : 'bg-gray-200 hover:bg-gray-300' %> rounded pagination-btn" data-page="<%= i %>">
+    <%= i %>
+  </button>
   <% } %>
 </div>

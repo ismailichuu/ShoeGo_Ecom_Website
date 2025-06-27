@@ -163,6 +163,7 @@ const updateDashboard = async (filter) => {
     hideLoader();
   }
 };
+
 const fileSelect = document.getElementById('filterSelect');
 if (fileSelect) {
   fileSelect.addEventListener('change', (e) => {
@@ -172,3 +173,4 @@ if (fileSelect) {
 
   updateDashboard('monthly');
 }
+

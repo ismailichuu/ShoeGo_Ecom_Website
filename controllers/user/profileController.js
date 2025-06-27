@@ -7,10 +7,12 @@ import { generateToken, verifyToken } from '../../util/jwt.js';
 import Address from '../../models/addressSchema.js';
 import process from 'process';
 import dotenv from 'dotenv';
+import path from 'path';
 import { logger } from '../../util/logger.js';
 import Wallet from '../../models/walletSchema.js';
 
-dotenv.config();
+dotenv.config({ path: path.resolve('.env.global') });
+dotenv.config({ path: path.resolve('.env.local') });
 
 //@route GET /changePassword
 export const getChangePassword = (req, res) => {
