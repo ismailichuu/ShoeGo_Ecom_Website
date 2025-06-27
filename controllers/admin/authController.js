@@ -31,8 +31,8 @@ export const handleLogin = async (req, res) => {
     if (!checkPassword) throw new Error('Invalid credentials');
     //password strong check
 
-    const token = generateToken(admin._id, '1d');
-    res.cookie('token', token, {
+    const token = generateToken(admin._id, '1d', true);
+    res.cookie('tokenA', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

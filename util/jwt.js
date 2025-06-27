@@ -7,8 +7,9 @@ dotenv.config({ path: path.resolve('.env.global') });
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-export const generateToken = (userId, expiry = null) => {
-  const payload = { userId };
+//generate user token
+export const generateToken = (userId, expiry = null, admin = false) => {
+  const payload = { userId, admin};
   const options = expiry ? { expiresIn: expiry } : {};
   return jwt.sign(payload, JWT_SECRET, options);
 };
