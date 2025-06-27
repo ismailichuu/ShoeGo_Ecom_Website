@@ -1,0 +1,29 @@
+      <% if(categories && categories.length> 0) {%>
+        <% categories.forEach(category=> { %>
+        <!-- Row Example -->
+        <tr class="border-t">
+          <td class="py-3 px-4">
+            <%= category.name %>
+          </td>
+          <td class="py-3 px-4">
+            <%= category.description %>
+          </td>
+          <td class="py-3 px-4">
+            <%= category.discount %>
+          </td>
+          <td class="py-3 px-4">
+            <%= category.visibility ? 'Active' : 'Inactive' %>
+          </td>
+          <td class="py-3 px-4 flex gap-2">
+            <button class="text-gray-600 hover:text-blue-600" onclick="editCategory('<%= category._id %>')"><i
+                class="fas fa-edit"></i></button>
+            <button class="text-gray-600 hover:text-red-600" onclick="deleteCategory('<%= category._id %>')"><i
+                class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+          <% }) %>
+           <% } else { %>
+        <tr>
+          <td colspan="7" class="text-center py-4 text-gray-500">No coupons</td>
+        </tr>
+        <% } %>
