@@ -3,8 +3,9 @@ import upload from '../config/multer.js';
 import process from 'process';
 import dotenv from 'dotenv';
 import { logger } from '../util/logger.js';
+import path from 'path';
 
-dotenv.config();
+dotenv.config({ path: path.resolve('.env.global') });
 
 //multer
 export const validateAddProductImages = (req, res, next) => {

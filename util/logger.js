@@ -3,7 +3,7 @@ import path from 'path';
 import process from 'process';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ path: path.resolve('.env.local') });
 
 const logDir = path.join(process.cwd(), 'logs');
 const logFile = path.join(logDir, 'error.log');
@@ -20,7 +20,6 @@ export const logger = {
     // Write to file
     fs.appendFileSync(logFile, message, 'utf8');
 
-    // Also optionally log to console in development
     if (process.env.NODE_ENV !== 'production') {
       console.error(...args);
     }

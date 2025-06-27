@@ -12,7 +12,7 @@ import { rateLimit } from 'express-rate-limit';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
-dotenv.config();
+dotenv.config({ path: path.resolve('.env.global') });
 const app = express();
 const port = process.env.PORT || 8080;
 
