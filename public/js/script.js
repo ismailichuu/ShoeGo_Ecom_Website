@@ -214,3 +214,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // Start timer when page loads
   window.onload = startTimer;
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  let confirmAction = null;
+
+  function showModal(action, message = 'Are sure want to delete ?') {
+    confirmAction = action;
+    document.getElementById('modalMessage').textContent = message;
+    document.getElementById('confirmModal').classList.remove('hidden');
+  }
+
+  function hideModal() {
+    confirmAction = null;
+    document.getElementById('confirmModal').classList.add('hidden');
+  }
+
+  document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+    if (typeof confirmAction === 'function') {
+      confirmAction();
+    }
+
+    hideModal();
+  });
+});

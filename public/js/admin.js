@@ -213,22 +213,21 @@ const initializeImageCropping = () => {
 
 //deleteProduct
 function deleteProduct(id) {
-  if (!confirm('Are you sure you want to delete this product?')) return;
-
-  fetch('/admin/product', {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ productId: id }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) {
-        alert('Product deleted');
-        location.href = '/admin/products?req=new';
-      } else {
-        alert('Failed to delete');
-      }
-    });
+  showModal(() => {
+    fetch('/admin/product', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId: id }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Failed to delete');
+        }
+      });
+  }, 'Are you sure want to delete this Product?');
 }
 
 //editProduct
@@ -393,22 +392,21 @@ const editImageCropping = () => {
 
 //deleteCategory
 function deleteCategory(id) {
-  if (!confirm('Are you sure you want to delete this category?')) return;
-
-  fetch('/admin/category', {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ categoryId: id }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) {
-        alert('Category deleted');
-        location.href = '/admin/categories?req=new';
-      } else {
-        alert('Failed to delete');
-      }
-    });
+  showModal(() => {
+    fetch('/admin/category', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ categoryId: id }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Failed to delete');
+        }
+      });
+  }, 'Are you sure want to delete this Category ?');
 }
 
 //edit category
@@ -475,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             button.classList.remove('bg-red-500', 'bg-green-500');
             if (data.isBlocked) {
-              button.classList.add('bg-green-500'); 
+              button.classList.add('bg-green-500');
             } else {
               button.classList.add('bg-red-500');
             }
@@ -658,22 +656,21 @@ function handleRefundRequest(orderId, productId, size, action) {
 
 //deleteCoupon
 function deleteCoupon(id) {
-  if (!confirm('Are you sure you want to delete this Coupon?')) return;
-
-  fetch('/admin/coupons', {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ couponId: id }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) {
-        alert('Coupon deleted');
-        location.href = '/admin/coupons?req=new';
-      } else {
-        alert('Failed to delete');
-      }
-    });
+  showModal(() => {
+    fetch('/admin/coupons', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ couponId: id }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Failed to delete');
+        }
+      });
+  }, 'Are sure want to delete this Coupon ?');
 }
 
 //laodSalesReport
