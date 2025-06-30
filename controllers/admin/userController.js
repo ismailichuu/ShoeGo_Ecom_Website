@@ -7,9 +7,10 @@ import { logger } from '../../util/logger.js';
 //@route GET /customers
 export const getCustomers = async (req, res) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-    const limit = Math.max(1, parseInt(req.query.limit, 10) || 10);
+    const layout = req.query.req ? 'layout' : false;
     const searchTerm = req.query.search || '';
+    const page = parseInt(req.query.page) || 1;
+    const limit = 7;
 
     const searchFilter = searchTerm
       ? { name: { $regex: searchTerm, $options: 'i' } }
@@ -22,23 +23,19 @@ export const getCustomers = async (req, res) => {
       .sort({ createdAt: -1 });
 
     const totalPages = Math.ceil(totalDocs / limit);
-    const layout = req.query.req ? 'layout' : false;
+    if (req.xhr) {
+      return res.render('partials/customerRows', { customers }, (err, html) => {
+        if (err) return res.status(500).send('Render failed');
+        res.send({ html, totalPages, currentPage: page });
+      });
+    }
 
     res.render('admin/customer', {
       layout,
       customers,
-      pagination: {
-        page,
-        limit,
-        totalDocs,
-        totalPages,
-        hasPrev: page > 1,
-        hasNext: page < totalPages,
-      },
+      currentPage: page,
+      totalPages,
       search: searchTerm,
-      req: req,
-      from: req.query.from || null,
-      query: req.query,
     });
   } catch (error) {
     logger.error('getCustomers', error.toString());
@@ -58,7 +55,7 @@ export const handleBlockUser = async (req, res) => {
     user.isBlocked = !user.isBlocked;
     await user.save();
 
-    res.json({ success: true, id: userId });
+    res.json({ success: true, isBlocked: user.isBlocked });
   } catch (error) {
     logger.error('handleBlockUser:', error.toString());
   }
@@ -134,62 +131,5 @@ export const getCustomerDetails = async (req, res) => {
   } catch (error) {
     logger.error('getCustomerDetails:', error.toString());
     res.status(500).send('Server error');
-  }
-};
-
-//@router GET /orders
-export const getOrders = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const search = req.query.search || '';
-    const skip = (page - 1) * limit;
-    const layout = req.query.req ? 'layout' : false;
-
-    let query = {};
-
-    if (search) {
-      const users = await User.find({
-        name: { $regex: search, $options: 'i' },
-      }).select('_id');
-
-      const userIds = users.map((user) => user._id);
-
-      query = {
-        $or: [
-          { userId: { $in: userIds } },
-          { orderId: { $regex: search, $options: 'i' } },
-        ],
-      };
-    }
-
-    const totalOrders = await Order.countDocuments(query);
-    const totalPages = Math.ceil(totalOrders / limit);
-
-    const orders = await Order.find(query)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate('userId')
-      .populate('products.productId')
-      .lean();
-
-    res.render('admin/ordersTable', {
-      orders,
-      layout: layout,
-      pagination: {
-        page,
-        limit,
-        totalPages,
-        hasPrev: page > 1,
-        hasNext: page < totalPages,
-      },
-      search,
-      from: req.query.from || null,
-      req,
-    });
-  } catch (error) {
-    logger.error('Error loading orders:', error);
-    res.status(500).render('admin/error', { message: 'Failed to load orders' });
   }
 };

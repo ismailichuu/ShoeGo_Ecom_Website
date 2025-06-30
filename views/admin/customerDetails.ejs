@@ -3,9 +3,9 @@
   <div class="flex justify-between items-center mb-6">
     <h2 class="text-2xl font-bold">Customer Details</h2>
     <% if(customer.isBlocked) { %>
-      <button class="userBlock bg-green-500 text-white px-4 py-2 rounded-md" data-id="<%= customer._id %>">Unblock</button>
+    <button class="userBlock bg-green-500 text-white px-4 py-2 rounded-md" data-id="<%= customer._id %>">Unblock</button>
     <% } else { %>
-      <button class="userBlock bg-red-500 text-white px-4 py-2 rounded-md" data-id="<%= customer._id %>">Block</button>
+    <button class="userBlock bg-red-500 text-white px-4 py-2 rounded-md" data-id="<%= customer._id %>">Block</button>
     <% } %>
   </div>
 
@@ -15,21 +15,23 @@
       <div class="flex flex-col items-center mb-4">
         <img src="<%= customer.profile || '/images/user-profile.png' %>" class="rounded-full border-4 border-white shadow-md w-2/3" />
         <h3 class="text-xl font-semibold mt-2"><%= customer.name %></h3>
-        <% if(customer.isBlocked) { %>
-          <span class="bg-red-300 text-red-500 text-sm px-3 py-1 rounded-full mt-1">Blocked</span>
-        <% } else { %>
-          <span class="bg-green-100 text-green-700 text-sm px-3 py-1 rounded-full mt-1">Active</span>
-        <% } %>
+        <span id="user-status"
+  class="<%= customer.isBlocked 
+    ? 'bg-red-300 text-red-500' 
+    : 'bg-green-100 text-green-700' %> text-sm px-3 py-1 rounded-full mt-1">
+  <%= customer.isBlocked ? 'Blocked' : 'Active' %>
+</span>
+
       </div>
       <ul class="text-sm space-y-2">
         <li><strong>Email:</strong> <a href="mailto:<%= customer.email %>" class="text-blue-600"><%= customer.email %></a></li>
         <% if (address) { %>
-          <li><strong>Address:</strong>
-            <%= address.houseNo %>, <%= address.locality %>, <%= address.city %>, <%= address.state %> - <%= address.pincode %>
-            <% if (address.landmark) { %>, Landmark: <%= address.landmark %><% } %>
-          </li>
+        <li><strong>Address:</strong>
+          <%= address.houseNo %>, <%= address.locality %>, <%= address.city %>, <%= address.state %> - <%= address.pincode %>
+          <% if (address.landmark) { %>, Landmark: <%= address.landmark %><% } %>
+        </li>
         <% } else { %>
-          <li><strong>Address:</strong> Not available</li>
+        <li><strong>Address:</strong> Not available</li>
         <% } %>
         <li><strong>Phone:</strong> <%= customer.mobileNumber %></li>
         <li><strong>Joined:</strong> <%= joinedDate %></li>
@@ -69,50 +71,49 @@
           </thead>
           <tbody class="text-gray-700">
             <% if (orders.length > 0) { %>
-              <% orders.forEach(order => { %>
-                <% order.products.forEach(product => { %>
-                  <tr class="border-b">
-                    <td class="px-4 py-2"><%= order._id.toString().slice(-6).toUpperCase() %></td>
-                    <td class="px-4 py-2 flex items-center gap-2">
-                      <img src="<%= product.image %>" class="w-6 h-6 rounded" />
-                      <%= product.productId.name %>
-                    </td>
-                    <td class="px-4 py-2">₹<%= product.priceAtPurchase %></td>
-                    <td class="px-4 py-2">
-                      <span class="px-2 py-1 rounded-full
+            <% orders.forEach(order => { %>
+            <% order.products.forEach(product => { %>
+            <tr class="border-b">
+              <td class="px-4 py-2"><%= order._id.toString().slice(-6).toUpperCase() %></td>
+              <td class="px-4 py-2 flex items-center gap-2">
+                <img src="<%= product.image %>" class="w-6 h-6 rounded" />
+                <%= product.productId.name %>
+              </td>
+              <td class="px-4 py-2">₹<%= product.priceAtPurchase %></td>
+              <td class="px-4 py-2">
+                <span class="px-2 py-1 rounded-full
                         <%= product.productStatus === 'delivered' ? 'bg-green-100 text-green-700' :
                             product.productStatus === 'shipped' ? 'bg-blue-100 text-blue-700' :
                             product.productStatus === 'cancelled' ? 'bg-red-100 text-red-700' :
                             product.productStatus === 'returned' ? 'bg-orange-100 text-orange-700' :
                             'bg-orange-100 text-orange-700' %>">
-                        <%= product.productStatus %>
-                      </span>
-                    </td>
-                    <td class="px-4 py-2"><%= new Date(order.createdAt).toLocaleDateString('en-IN', {
+                  <%= product.productStatus %>
+                </span>
+              </td>
+              <td class="px-4 py-2"><%= new Date(order.createdAt).toLocaleDateString('en-IN', {
                       day: '2-digit', month: 'short', year: 'numeric'
                     }) %></td>
-                  </tr>
-                <% }) %>
-              <% }) %>
+            </tr>
+            <% }) %>
+            <% }) %>
             <% } else { %>
-              <tr>
-                <td class="px-4 py-6 text-center text-gray-500" colspan="5">No orders found.</td>
-              </tr>
+            <tr>
+              <td class="px-4 py-6 text-center text-gray-500" colspan="5">No orders found.</td>
+            </tr>
             <% } %>
           </tbody>
         </table>
 
         <!-- Pagination -->
         <% if (totalPages > 1) { %>
-          <div class="flex justify-end p-4 space-x-1 text-sm">
-            <% for (let i = 1; i <= totalPages; i++) { %>
-              <a href="?id=<%= userId %>&page=<%= i %>&req=new"
-                class="px-3 py-1 rounded-md border 
+        <div class="flex justify-end p-4 space-x-1 text-sm">
+          <% for (let i = 1; i <= totalPages; i++) { %>
+          <a href="?id=<%= userId %>&page=<%= i %>&req=new" class="px-3 py-1 rounded-md border 
                   <%= i === currentPage ? 'bg-blue-500 text-white' : 'bg-white text-blue-600 hover:bg-blue-100' %>">
-                <%= i %>
-              </a>
-            <% } %>
-          </div>
+            <%= i %>
+          </a>
+          <% } %>
+        </div>
         <% } %>
       </div>
     </div>

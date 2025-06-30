@@ -5,6 +5,7 @@ import Order from '../../models/orderSchema.js';
 import razorpayInstance from '../../util/razorpayInstance.js';
 import process from 'process';
 import dotenv from 'dotenv';
+import path from 'path';
 import Product from '../../models/productSchema.js';
 import Transaction from '../../models/transactionSchema.js';
 import crypto from 'crypto';
@@ -12,7 +13,7 @@ import Coupon from '../../models/couponSchema.js';
 import Wallet from '../../models/walletSchema.js';
 import { logger } from '../../util/logger.js';
 
-dotenv.config();
+dotenv.config({ path: path.resolve('.env.global') });
 
 //@route GET /payment/:id
 export const getPayment = async (req, res) => {

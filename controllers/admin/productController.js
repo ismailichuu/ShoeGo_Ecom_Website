@@ -8,9 +8,11 @@ import { logger } from '../../util/logger.js';
 //@route GET /products
 export const getProducts = async (req, res) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-    const limit = Math.max(1, parseInt(req.query.limit, 10) || 5);
+    const layout = req.query.req ? 'layout' : false;
+
     const searchTerm = req.query.search || '';
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
 
     const searchFilter = searchTerm
       ? { name: { $regex: searchTerm, $options: 'i' } }
@@ -24,23 +26,20 @@ export const getProducts = async (req, res) => {
       .populate('categoryId');
 
     const totalPages = Math.ceil(totalDocs / limit);
-    const layout = req.query.req ? 'layout' : false;
+
+    if (req.xhr) {
+      return res.render('partials/productRows', { products }, (err, html) => {
+        if (err) return res.status(500).send('Render failed');
+        res.send({ html, totalPages, currentPage: page });
+      });
+    }
 
     res.render('admin/products-table', {
       layout,
       products,
-      pagination: {
-        page,
-        limit,
-        totalDocs,
-        totalPages,
-        hasPrev: page > 1,
-        hasNext: page < totalPages,
-      },
+      currentPage: page,
+      totalPages,
       search: searchTerm,
-      req: req,
-      from: req.query.from || null,
-      query: req.query,
     });
   } catch (error) {
     logger.error('getProducts:', error.toString());

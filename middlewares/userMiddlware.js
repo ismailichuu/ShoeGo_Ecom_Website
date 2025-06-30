@@ -2,9 +2,10 @@ import jwt from 'jsonwebtoken';
 import User from '../models/userSchema.js';
 import process from 'process';
 import dotenv from 'dotenv';
+import path from 'path';
 import { logger } from '../util/logger.js';
 
-dotenv.config();
+dotenv.config({ path: path.resolve('.env.global') });
 
 export const authUser = (req, res, next) => {
   try {

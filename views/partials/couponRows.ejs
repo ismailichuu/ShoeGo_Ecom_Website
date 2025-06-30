@@ -1,0 +1,26 @@
+<% if (coupons.length > 0) { %>
+  <% coupons.forEach((coupon) => { %>
+    <tr class="border-t">
+      <td class="px-6 py-3"><%= coupon.name %></td>
+      <td class="px-6 py-3">
+        <span class="bg-teal-200 text-teal-800 px-2 py-1 rounded font-semibold text-xs">
+          <%= coupon.code %>
+        </span>
+      </td>
+      <td class="px-6 py-3">₹ <%= coupon.discount %></td>
+      <td class="px-6 py-3"><%= coupon.activeFrom %></td>
+      <td class="px-6 py-3"><%= coupon.activeTo %></td>
+      <td class="px-6 py-3"><%= coupon.limit %></td>
+      <td class="px-6 py-3"><%= coupon.used %></td>
+      <td class="px-6 py-3 <%= !coupon.isActive ? 'text-red-500' : '' %>">
+        <%= coupon.isActive ? 'Active' : 'Inactive' %>
+      </td>
+      <td class="px-6 py-3 flex space-x-2 mt-5">
+        <a href="/admin/coupons/edit/<%= coupon._id %>" class="text-blue-500 hover:text-blue-700">✏️</a>
+        <button type="button" class="text-red-500 hover:text-red-700" onclick="deleteCoupon('<%= coupon._id %>')">🗑️</button>
+      </td>
+    </tr>
+  <% }) %>
+<% } else { %>
+  <tr><td colspan="9" class="text-center py-4 text-gray-500">No coupons</td></tr>
+<% } %>

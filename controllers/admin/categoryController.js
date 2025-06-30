@@ -4,9 +4,11 @@ import { logger } from '../../util/logger.js';
 //@route GET /categories
 export const getCategory = async (req, res) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-    const limit = Math.max(1, parseInt(req.query.limit, 10) || 10);
+    const layout = req.query.req ? 'layout' : false;
+
     const searchTerm = req.query.search || '';
+    const page = parseInt(req.query.page) || 1;
+    const limit = 7;
 
     const searchFilter = searchTerm
       ? { name: { $regex: searchTerm, $options: 'i' } }
@@ -19,23 +21,20 @@ export const getCategory = async (req, res) => {
       .sort({ updatedAt: -1 });
 
     const totalPages = Math.ceil(totalDocs / limit);
-    const layout = req.query.req ? 'layout' : false;
+
+    if (req.xhr) {
+      return res.render('partials/categoryRows', { categories }, (err, html) => {
+        if (err) return res.status(500).send('Render failed');
+        res.send({ html, totalPages, currentPage: page });
+      });
+    }
 
     res.render('admin/category', {
       layout,
       categories,
-      pagination: {
-        page,
-        limit,
-        totalDocs,
-        totalPages,
-        hasPrev: page > 1,
-        hasNext: page < totalPages,
-      },
+      currentPage: page,
+      totalPages,
       search: searchTerm,
-      req: req,
-      from: req.query.from || null,
-      query: req.query,
     });
   } catch (error) {
     logger.error('get Category:', error.toString());

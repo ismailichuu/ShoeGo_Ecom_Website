@@ -2,6 +2,64 @@ import mongoose from 'mongoose';
 import Order from '../../models/orderSchema.js';
 import Wallet from '../../models/walletSchema.js';
 import { logger } from '../../util/logger.js';
+import User from '../../models/userSchema.js';
+
+//@router GET /orders
+export const getOrders = async (req, res) => {
+  try {
+    const layout = req.query.req ? 'layout' : false;
+    const search = req.query.search || '';
+    const page = parseInt(req.query.page) || 1;
+    const limit = 9;
+    const skip = (page - 1) * limit;
+
+    let query = {};
+
+    if (search) {
+      const users = await User.find({
+        name: { $regex: search, $options: 'i' },
+      }).select('_id');
+
+      const userIds = users.map((user) => user._id);
+
+      query = {
+        $or: [
+          { userId: { $in: userIds } },
+          { orderId: { $regex: search, $options: 'i' } },
+        ],
+      };
+    }
+
+    const totalOrders = await Order.countDocuments(query);
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    const orders = await Order.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('userId')
+      .populate('products.productId')
+      .lean();
+
+    if (req.xhr) {
+      return res.render('partials/orderRows', { orders }, (err, html) => {
+        if (err) return res.status(500).send('Render failed');
+        res.send({ html, totalPages, currentPage: page });
+      });
+    }
+
+    res.render('admin/ordersTable', {
+      orders,
+      layout: layout,
+      currentPage: page,
+      totalPages,
+      search,
+    });
+  } catch (error) {
+    logger.error('Error loading orders:', error);
+    res.status(500).render('admin/error', { message: 'Failed to load orders' });
+  }
+};
 
 //@route GET /order-details/:id
 export const getOrderDetails = async (req, res) => {
@@ -123,6 +181,9 @@ export const handleReturnRequest = async (req, res) => {
       return res.json({ success: false, message: 'Product not found' });
 
     if (action === 'approve') {
+      if (product.productStatus === 'returned') {
+        return res.json({ success: false, message: 'Already Approved' });
+      }
       product.productStatus = 'returned';
       product.returnRequest = null;
       product.refundRequest = true;
@@ -130,6 +191,9 @@ export const handleReturnRequest = async (req, res) => {
       product.returnRequest = null;
       product.productStatus = 'return-rejected';
     }
+
+    const status = order.products.every(product => product.productStatus === 'returned');
+    status ? order.orderStatus = 'returned' : '';
 
     await order.save();
     res.json({ success: true });
@@ -168,6 +232,11 @@ export async function handleRefundRequest(req, res) {
     }
 
     if (action === 'approve') {
+      if (!productItem.refundRequest) {
+        return res
+          .status(400)
+          .json({ success: false, message: 'Already Approved or not found' });
+      }
       productItem.refundRequest = false;
       productItem.productStatus = 'refunded';
 
@@ -195,6 +264,9 @@ export async function handleRefundRequest(req, res) {
         orderId: order._id,
         timestamp: new Date(),
       });
+
+      const status = order.products.every(product => product.productStatus === 'refunded');
+      status ? order.orderStatus = 'refunded' : '';
 
       await wallet.save();
       await order.save();

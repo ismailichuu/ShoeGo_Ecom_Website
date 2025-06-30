@@ -7,12 +7,14 @@ import { generateOtp, hashingPassword } from '../../util/functions.js';
 import sendOTPEmail from '../../config/nodemailer.transporter.js';
 import { generateToken } from '../../util/jwt.js';
 import process from 'process';
+import path from 'path';
 import dotenv from 'dotenv';
 import { logger } from '../../util/logger.js';
 import { generateReferralCode } from '../../util/generateReferralCode.js';
 import Coupon from '../../models/couponSchema.js';
 
-dotenv.config();
+dotenv.config({ path: path.resolve('.env.local') });
+dotenv.config({ path: path.resolve('.env.global') });
 
 //@route GET /login
 export const getLogin = (req, res) => {

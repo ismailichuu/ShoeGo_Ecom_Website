@@ -1,0 +1,58 @@
+<!-- Product Grid -->
+<div id="productGrid">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          <% products.forEach((product, index) => { %>
+          <div class="bg-white/90 backdrop-blur-lg rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-white/30 h-80 sm:h-96 flex flex-col transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 sm:hover:-translate-y-3 hover:bg-white animate-slide-up" style="animation-delay: <%= index * 0.1 %>s">
+
+            <!-- Wishlist Button -->
+            <button class="absolute top-3 sm:top-4 right-3 sm:right-4 z-10 p-1.5 sm:p-2 rounded-full bg-white/80 backdrop-blur-sm border border-white/30 transition-all duration-300 hover:bg-white hover:scale-110 group-hover:shadow-lg" onclick="event.stopPropagation(); addToWishlist('<%= product._id %>')">
+              <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors text-sm sm:text-base"></i>
+            </button>
+
+
+            <!-- Product Image -->
+            <a href="/product/<%= product._id %>" class="group">
+              <div class="relative overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
+                <img src="<%= product.images[0] %>" alt="<%= product.name %>" class="w-full h-40 sm:h-52 object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+
+              <!-- Product Info -->
+              <div class="p-4 sm:p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 class="text-base sm:text-lg font-semibold text-gray-800 truncate group-hover:text-indigo-600 transition-colors" title="<%= product.name %>">
+                    <%= product.name %>
+                  </h3>
+                  <p class="text-xs sm:text-sm text-gray-500 mt-1 font-medium">
+                    <%= product.categoryId[0].name %>
+                  </p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <span class="text-sm line-through text-gray-400">₹<%= product.basePrice %></span>
+                  <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                    ₹<%= product.finalPrice %>
+                  </span>
+                  <span class="text-sm text-green-600 font-semibold">
+                    (<%= product.discountLabel %>)
+                  </span>
+                </div>
+              </div>
+            </a>
+          </div>
+          <% }) %>
+        </div>
+
+  <% if (pagination.totalPages > 1) { %>
+  <!-- Pagination -->
+  <div class="flex justify-center mt-8 sm:mt-12">
+    <nav class="flex flex-wrap space-x-1 sm:space-x-2 bg-white/90 backdrop-blur-lg rounded-full p-2 shadow-xl border border-white/30">
+      <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+        <a href="#" data-page="<%= i %>" class="page-link px-3 sm:px-4 py-2 rounded-full font-medium transition-all duration-300 <%= pagination.currentPage === i ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100 hover:scale-105' %> text-sm sm:text-base">
+          <%= i %>
+        </a>
+      <% } %>
+    </nav>
+  </div>
+  <% } %>
+</div>

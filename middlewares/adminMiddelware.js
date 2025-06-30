@@ -3,8 +3,9 @@ import upload from '../config/multer.js';
 import process from 'process';
 import dotenv from 'dotenv';
 import { logger } from '../util/logger.js';
+import path from 'path';
 
-dotenv.config();
+dotenv.config({ path: path.resolve('.env.global') });
 
 //multer
 export const validateAddProductImages = (req, res, next) => {
@@ -26,6 +27,7 @@ export const validateAddProductImages = (req, res, next) => {
   });
 };
 
+//validate edit product images
 export const validateEditProductImages = (req, res, next) => {
   upload.array('images', 5)(req, res, function (err) {
     if (err) {
@@ -39,15 +41,17 @@ export const validateEditProductImages = (req, res, next) => {
   });
 };
 
-//logger check
+//Auth check
 export const authAdmin = (req, res, next) => {
   try {
-    const token = req.cookies?.token;
+    const token = req.cookies?.tokenA;
 
     if (!token) throw new Error('token Expired');
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    if (!decoded.admin) {
+      return res.redirect('/admin/login');
+    }
     next();
   } catch (error) {
     res.clearCookie('token');
@@ -58,7 +62,16 @@ export const authAdmin = (req, res, next) => {
 
 //preventing login
 export const checkAdmin = (req, res, next) => {
-  const token = req.cookies?.token;
-  if (token) return res.redirect(`/admin/dashboard`);
-  next();
+  try {
+    const token = req.cookies?.tokenA;
+    if (!token) return next();
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded)return res.redirect(`/admin/dashboard`);
+    next()
+  } catch (error) {
+    logger.error('Middlware:', error);
+    next();
+  }
+
 };
