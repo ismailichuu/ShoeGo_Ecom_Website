@@ -646,6 +646,7 @@ function handleRefundRequest(orderId, productId, size, action) {
       } else {
         messageDiv.textContent = data.message || 'Something went wrong';
         messageDiv.classList.add('text-red-600');
+        setTimeout(() => location.reload(), 4000);
       }
     })
     .catch((err) => {

@@ -181,6 +181,9 @@ export const handleReturnRequest = async (req, res) => {
       return res.json({ success: false, message: 'Product not found' });
 
     if (action === 'approve') {
+      if (product.productStatus === 'returned') {
+        return res.json({ success: false, message: 'Already Approved' });
+      }
       product.productStatus = 'returned';
       product.returnRequest = null;
       product.refundRequest = true;
@@ -188,6 +191,9 @@ export const handleReturnRequest = async (req, res) => {
       product.returnRequest = null;
       product.productStatus = 'return-rejected';
     }
+
+    const status = order.products.every(product => product.productStatus === 'returned');
+    status ? order.orderStatus = 'returned' : '';
 
     await order.save();
     res.json({ success: true });
@@ -226,6 +232,11 @@ export async function handleRefundRequest(req, res) {
     }
 
     if (action === 'approve') {
+      if (!productItem.refundRequest) {
+        return res
+          .status(400)
+          .json({ success: false, message: 'Already Approved or not found' });
+      }
       productItem.refundRequest = false;
       productItem.productStatus = 'refunded';
 
@@ -253,6 +264,9 @@ export async function handleRefundRequest(req, res) {
         orderId: order._id,
         timestamp: new Date(),
       });
+
+      const status = order.products.every(product => product.productStatus === 'refunded');
+      status ? order.orderStatus = 'refunded' : '';
 
       await wallet.save();
       await order.save();

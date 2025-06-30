@@ -254,9 +254,8 @@ export const downloadInvoice = async (req, res) => {
       .populate('userId');
 
     if (!order || order.orderStatus !== 'delivered') {
-      return res
-        .status(400)
-        .send('Invoice only available for delivered orders');
+      req.session.err = 'Invoice only available for delivered orders';
+      return res.redirect(`/order-details/${orderId}`);
     }
 
     const deliveredProducts = order.products.filter(
@@ -276,6 +275,7 @@ export const downloadInvoice = async (req, res) => {
       res.setHeader(
         'Content-Disposition',
         `attachment; filename=invoice-${order._id}.pdf`
+        
       );
       res.send(pdfData);
     });

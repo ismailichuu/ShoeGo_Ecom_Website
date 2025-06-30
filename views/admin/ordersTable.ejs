@@ -38,7 +38,7 @@
               </span>
               <% if(product.productStatus==='return-requested' ) {%>
               <p class="text-red-600">Return Requested</p>
-              <% }else if(product.productStatus==='returned' ) {%>
+              <% }else if(product.productStatus==='returned') {%>
               <p class="text-purple-600">Refund Requested</p>
               <% } %>
             </div>
@@ -70,6 +70,8 @@
           <span class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Cancelled</span>
           <% } else if (order.orderStatus==='failed' ) { %>
           <span class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Failed</span>
+          <% } else if (order.orderStatus==='returned' || order.orderStatus==='refunded') { %>
+          <span class="text-red-600 bg-red-100 px-2 py-1 rounded-full text-xs font-semibold">Returned</span>
           <% } else if (order.orderStatus==='placed' ) { %>
           <span class="text-orange-600 bg-orange-100 px-2 py-1 rounded-full text-xs font-semibold">On
             Delivery</span>
