@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 //generate user token
 export const generateToken = (userId, expiry = null, admin = false) => {
-  const payload = { userId, admin};
+  const payload = { userId, admin };
   const options = expiry ? { expiresIn: expiry } : {};
   return jwt.sign(payload, JWT_SECRET, options);
 };

@@ -173,4 +173,3 @@ if (fileSelect) {
 
   updateDashboard('monthly');
 }
-

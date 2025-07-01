@@ -51,6 +51,11 @@ const productSchema = mongoose.Schema(
       required: true,
     },
 
+    reservedCount: {
+      type: Number,
+      default: 0,
+    },
+
     isActive: {
       type: Boolean,
       required: true,

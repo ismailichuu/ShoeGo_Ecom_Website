@@ -72,5 +72,7 @@ app.use('/', userRouter);
 app.use('/admin', adminRouter);
 
 mongoConnect().then(() =>
-  app.listen(port, '0.0.0.0', () => console.log('✅ Server is running at PORT ' + port))
+  app.listen(port, '0.0.0.0', () =>
+    console.log('✅ Server is running at PORT ' + port)
+  )
 );

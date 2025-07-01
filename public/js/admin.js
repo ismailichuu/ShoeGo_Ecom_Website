@@ -1,27 +1,16 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 
-//products page
 document.addEventListener('DOMContentLoaded', () => {
-  const contentArea = document.getElementById('mainContent');
-  const sidebarLinks = document.querySelectorAll('aside a');
-  const loadBtn = document.getElementById('loadProducts');
+  const loadBtns = document.querySelectorAll('.loadButtons');
+  const currentPath = window.location.pathname;
 
-  loadBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    sidebarLinks.forEach((link) => link.classList.remove('bg-purple-200'));
-    loadBtn.classList.add('bg-purple-200');
-
-    fetch('/admin/products')
-      .then((response) => response.text())
-      .then((html) => {
-        contentArea.innerHTML = html;
-      })
-      .catch((error) => {
-        console.error('Failed to load products:', error);
-        contentArea.innerHTML =
-          "<p class='text-red-500'>Failed to load products.</p>";
-      });
+  loadBtns.forEach((btn) => {
+    if (btn.getAttribute('href').startsWith(currentPath)) {
+      btn.classList.add('bg-purple-200');
+    } else {
+      btn.classList.remove('bg-purple-200');
+    }
   });
 });
 
@@ -513,7 +502,7 @@ function getUserDetails(id) {
       contentArea.innerHTML =
         "<p class='text-red-500'>Failed to load Customer.</p>";
     });
-};
+}
 
 function getOrderDetails(id) {
   const contentArea = document.getElementById('mainContent');
@@ -673,27 +662,3 @@ function deleteCoupon(id) {
       });
   }, 'Are sure want to delete this Coupon ?');
 }
-
-//laodSalesReport
-document.addEventListener('DOMContentLoaded', () => {
-  const contentArea = document.getElementById('mainContent');
-  const sidebarLinks = document.querySelectorAll('aside a');
-  const loadBtn = document.getElementById('loadSalesReport');
-
-  loadBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    sidebarLinks.forEach((link) => link.classList.remove('bg-purple-200'));
-    loadBtn.classList.add('bg-purple-200');
-
-    fetch('/admin/sales-report')
-      .then((response) => response.text())
-      .then((html) => {
-        contentArea.innerHTML = html;
-      })
-      .catch((error) => {
-        console.error('Failed to load sale report:', error);
-        contentArea.innerHTML =
-          "<p class='text-red-500'>Failed to load sales report.</p>";
-      });
-  });
-});
