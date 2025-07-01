@@ -12,44 +12,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
         integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'inter': ['Inter', 'sans-serif'],
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.6s ease-out',
-                        'slide-up': 'slideUp 0.8s ease-out',
-                        'bounce-subtle': 'bounceSubtle 2s infinite',
-                        'heart-beat': 'heartBeat 1.5s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(30px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(50px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        bounceSubtle: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-3px)' }
-                        },
-                        heartBeat: {
-                            '0%': { transform: 'scale(1)' },
-                            '14%': { transform: 'scale(1.1)' },
-                            '28%': { transform: 'scale(1)' },
-                            '42%': { transform: 'scale(1.1)' },
-                            '70%': { transform: 'scale(1)' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
 </head>
 
 <body class="font-inter bg-gradient-to-br from-rose-100 via-purple-50 to-indigo-100 min-h-screen">
