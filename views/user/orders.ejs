@@ -3,10 +3,10 @@
 
   <% orders.forEach(order=> { %>
     <!-- Order Container -->
-    <div class="bg-white border rounded-lg shadow-sm p-6 mb-6">
+    <div class="bg-gray-100 rounded-lg shadow-sm p-6 mb-6">
 
       <!-- Order Header -->
-      <div class="flex justify-between items-start mb-4 pb-3 border-b">
+      <div class="flex justify-between items-start mb-4 pb-3">
         <div>
           <h3 class="text-lg font-semibold text-gray-700">Order ID: <%= order.orderId %>
           </h3>
@@ -31,7 +31,7 @@
             <!-- Product Image & Info -->
             <div class="flex items-center gap-4 flex-1">
               <a href="/product/<%= product.productId._id %>">
-                <img src="<%= product.image %>" alt="Product" class="w-16 h-16 object-cover rounded-lg border">
+                <img src="<%= product.image %>" alt="Product" class="w-16 h-16 object-cover rounded-lg">
               </a>
               <div>
                 <h4 class="font-medium text-gray-900">
