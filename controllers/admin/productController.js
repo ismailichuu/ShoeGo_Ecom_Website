@@ -184,9 +184,9 @@ export const handleEditProduct = async (req, res) => {
 
     const availableSizes = req.body.sizes
       ? req.body.sizes
-        .split(',')
-        .map((s) => parseInt(s))
-        .filter((n) => !isNaN(n))
+          .split(',')
+          .map((s) => parseInt(s))
+          .filter((n) => !isNaN(n))
       : product.availableSizes;
 
     const categoryId = category
@@ -233,7 +233,7 @@ export const handleEditProduct = async (req, res) => {
       categoryId.toString() !== product.categoryId.toString() ||
       isActive !== product.isActive ||
       JSON.stringify(availableSizes) !==
-      JSON.stringify(product.availableSizes) ||
+        JSON.stringify(product.availableSizes) ||
       JSON.stringify(finalImages) !== JSON.stringify(product.images);
 
     if (!isChanged) {
@@ -259,4 +259,3 @@ export const handleEditProduct = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
-

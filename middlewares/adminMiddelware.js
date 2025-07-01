@@ -67,11 +67,10 @@ export const checkAdmin = (req, res, next) => {
     if (!token) return next();
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded)return res.redirect(`/admin/dashboard`);
-    next()
+    if (decoded) return res.redirect(`/admin/dashboard`);
+    next();
   } catch (error) {
     logger.error('Middlware:', error);
     next();
   }
-
 };

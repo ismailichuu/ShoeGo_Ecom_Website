@@ -89,7 +89,6 @@ export const getAllProducts = async (req, res) => {
       });
     }
 
-
     res.render('user/shop', {
       products: paginated,
       search,

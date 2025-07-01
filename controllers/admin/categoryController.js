@@ -23,10 +23,14 @@ export const getCategory = async (req, res) => {
     const totalPages = Math.ceil(totalDocs / limit);
 
     if (req.xhr) {
-      return res.render('partials/categoryRows', { categories }, (err, html) => {
-        if (err) return res.status(500).send('Render failed');
-        res.send({ html, totalPages, currentPage: page });
-      });
+      return res.render(
+        'partials/categoryRows',
+        { categories },
+        (err, html) => {
+          if (err) return res.status(500).send('Render failed');
+          res.send({ html, totalPages, currentPage: page });
+        }
+      );
     }
 
     res.render('admin/category', {

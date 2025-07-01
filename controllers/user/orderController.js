@@ -275,7 +275,6 @@ export const downloadInvoice = async (req, res) => {
       res.setHeader(
         'Content-Disposition',
         `attachment; filename=invoice-${order._id}.pdf`
-        
       );
       res.send(pdfData);
     });

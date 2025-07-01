@@ -222,12 +222,12 @@ document.addEventListener('DOMContentLoaded', () => {
     confirmAction = action;
     document.getElementById('modalMessage').textContent = message;
     document.getElementById('confirmModal').classList.remove('hidden');
-  }
+  };
 
   window.hideModal = function () {
     confirmAction = null;
     document.getElementById('confirmModal').classList.add('hidden');
-  }
+  };
 
   document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
     if (typeof confirmAction === 'function') {

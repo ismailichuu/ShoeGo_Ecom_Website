@@ -192,8 +192,10 @@ export const handleReturnRequest = async (req, res) => {
       product.productStatus = 'return-rejected';
     }
 
-    const status = order.products.every(product => product.productStatus === 'returned');
-    status ? order.orderStatus = 'returned' : '';
+    const status = order.products.every(
+      (product) => product.productStatus === 'returned'
+    );
+    status ? (order.orderStatus = 'returned') : '';
 
     await order.save();
     res.json({ success: true });
@@ -265,8 +267,10 @@ export async function handleRefundRequest(req, res) {
         timestamp: new Date(),
       });
 
-      const status = order.products.every(product => product.productStatus === 'refunded');
-      status ? order.orderStatus = 'refunded' : '';
+      const status = order.products.every(
+        (product) => product.productStatus === 'refunded'
+      );
+      status ? (order.orderStatus = 'refunded') : '';
 
       await wallet.save();
       await order.save();

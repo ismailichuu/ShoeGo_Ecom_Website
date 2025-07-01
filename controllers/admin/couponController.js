@@ -10,9 +10,7 @@ export const getCoupons = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 3;
 
-    const query = search
-      ? { name: { $regex: search, $options: 'i' } }
-      : {};
+    const query = search ? { name: { $regex: search, $options: 'i' } } : {};
 
     const totalCoupons = await Coupon.countDocuments(query);
     const totalPages = Math.ceil(totalCoupons / limit);
@@ -41,7 +39,6 @@ export const getCoupons = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
-
 
 //@route GET /coupons/add
 export const getAddCoupons = async (req, res) => {
@@ -79,7 +76,8 @@ export const handleAddCoupons = async (req, res) => {
       !numericDiscount ||
       !numericMinAmount ||
       !formattedActiveFrom ||
-      !formattedActiveTo) {
+      !formattedActiveTo
+    ) {
       req.session.err = 'fill the required fields!';
       return res.redirect(`/admin/coupons/add`);
     }
@@ -162,7 +160,8 @@ export const handleEditCoupon = async (req, res) => {
       !numericDiscount ||
       !numericMinAmount ||
       !formattedActiveFrom ||
-      !formattedActiveTo) {
+      !formattedActiveTo
+    ) {
       req.session.err = 'fill the required fields!';
       return res.redirect(`/admin/coupons/edit/${couponId}`);
     }
@@ -180,7 +179,6 @@ export const handleEditCoupon = async (req, res) => {
     coupon.limit = numericLimit;
     coupon.minAmount = numericMinAmount;
     coupon.isActive = isActive;
-
 
     coupon.name = name;
     coupon.code = code.toUpperCase();

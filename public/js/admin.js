@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-
 // AddProduct Page
 document.addEventListener('DOMContentLoaded', () => {
   const contentArea = document.getElementById('mainContent');
@@ -503,7 +502,7 @@ function getUserDetails(id) {
       contentArea.innerHTML =
         "<p class='text-red-500'>Failed to load Customer.</p>";
     });
-};
+}
 
 function getOrderDetails(id) {
   const contentArea = document.getElementById('mainContent');
