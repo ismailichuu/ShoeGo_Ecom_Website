@@ -48,7 +48,7 @@ export const handleLogin = async (req, res) => {
 //@route POST /signout
 export const handleSignout = (req, res) => {
   try {
-    res.clearCookie('token');
+    res.clearCookie('tokenA');
     res.redirect('/admin/login');
   } catch (error) {
     logger.error('logout', error);

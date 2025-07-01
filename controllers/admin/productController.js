@@ -51,8 +51,10 @@ export const getProducts = async (req, res) => {
 export const getAddProduct = async (req, res) => {
   try {
     const layout = req.query.req ? 'layout' : false;
+    const msg = req.session.err || null;
+    req.session.err = null;
     const categories = await Category.find();
-    res.render('admin/addProduct', { categories, layout: layout, msg: null });
+    res.render('admin/addProduct', { categories, layout: layout, msg });
   } catch (error) {
     logger.error('getAddProducts:', error.toString());
   }
@@ -65,7 +67,20 @@ export const handleAddProduct = async (req, res) => {
       req.body;
 
     if (!req.files || req.files.length === 0) {
-      return res.render('admin/addProduct', { msg: 'Image is required' });
+      req.session.err = 'Image is required';
+      return res.redirect('/admin/addProduct?req=new');
+    }
+
+    if (
+      !name.trim() ||
+      !description.trim() ||
+      !basePrice.trim() ||
+      !discount.trim() ||
+      !brand.trim() ||
+      !stock.trim()
+    ) {
+      req.session.err = 'Some fields are empty';
+      return res.redirect('/admin/addProduct?req=new');
     }
 
     const availableSizes = req.body.sizes
@@ -132,6 +147,7 @@ export const deleteProduct = async (req, res) => {
 export const getEditProduct = async (req, res) => {
   try {
     const msg = req.session.err || null;
+    delete req.session.err;
     const layout = req.query.req ? 'layout' : false;
     const productId = req.query.id;
     const product = await Product.findById(productId);
@@ -166,46 +182,75 @@ export const handleEditProduct = async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) return res.status(404).send('Product not found');
 
-    // Parse sizes
     const availableSizes = req.body.sizes
       ? req.body.sizes
-          .split(',')
-          .map((s) => parseInt(s))
-          .filter((n) => !isNaN(n))
-      : [];
+        .split(',')
+        .map((s) => parseInt(s))
+        .filter((n) => !isNaN(n))
+      : product.availableSizes;
 
-    // Parse category
-    const categoryId = category ? [new mongoose.Types.ObjectId(category)] : [];
+    const categoryId = category
+      ? new mongoose.Types.ObjectId(category)
+      : product.categoryId;
 
     const uploadedFiles = req.files || [];
     let existingImages = req.body.existingImages || [];
+    if (!Array.isArray(existingImages)) existingImages = [existingImages];
 
-    // Make sure existingImages is an array
-    if (!Array.isArray(existingImages)) {
-      existingImages = [existingImages];
-    }
-
-    // Initialize finalImages with existingImages (max 3)
     let finalImages = [...existingImages];
-
     uploadedFiles.forEach((file, index) => {
       finalImages[index] = file.path;
     });
-
     finalImages = finalImages.slice(0, 3);
 
+    const trimmedName = name.trim();
+    const trimmedDesc = description.trim();
+    const trimmedBrand = brand.trim();
+    const trimmedDiscount = discount.trim();
     const isActive = status === 'Active';
+    const numericBasePrice = Number(basePrice);
+    const numericStock = Number(stock);
 
-    product.name = name;
-    product.description = description;
+    if (
+      !trimmedName ||
+      !trimmedDesc ||
+      !trimmedBrand ||
+      !trimmedDiscount ||
+      !numericBasePrice ||
+      !numericStock
+    ) {
+      req.session.err = 'fill all the fields';
+      return res.redirect(`/admin/editProduct?id=${productId}&req=new`);
+    }
+
+    const isChanged =
+      trimmedName !== product.name ||
+      trimmedDesc !== product.description ||
+      trimmedBrand !== product.brand ||
+      trimmedDiscount !== product.discount ||
+      numericBasePrice !== product.basePrice ||
+      numericStock !== product.stock ||
+      categoryId.toString() !== product.categoryId.toString() ||
+      isActive !== product.isActive ||
+      JSON.stringify(availableSizes) !==
+      JSON.stringify(product.availableSizes) ||
+      JSON.stringify(finalImages) !== JSON.stringify(product.images);
+
+    if (!isChanged) {
+      req.session.err = 'No changes were made to the product.';
+      return res.redirect(`/admin/editProduct?id=${productId}&req=new`);
+    }
+
+    product.name = trimmedName;
+    product.description = trimmedDesc;
     product.availableSizes = availableSizes;
     product.images = finalImages;
     product.isActive = isActive;
-    product.basePrice = basePrice;
-    product.discount = discount;
-    product.brand = brand;
+    product.basePrice = numericBasePrice;
+    product.discount = trimmedDiscount;
+    product.brand = trimmedBrand;
     product.categoryId = categoryId;
-    product.stock = stock;
+    product.stock = numericStock;
 
     await product.save();
     res.redirect('/admin/products?req=new');
@@ -214,3 +259,4 @@ export const handleEditProduct = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+

@@ -20,6 +20,7 @@ export const getAddresses = async (req, res) => {
 export const getAddAddress = (req, res) => {
   try {
     const msg = req.session.err || null;
+    delete req.session.err;
     res.render('user/addAddress', { layout: 'profile-layout', msg });
   } catch (error) {
     logger.error('getAddAddress:', error.toString());
@@ -44,12 +45,12 @@ export const handleAddAddress = async (req, res) => {
       name,
     } = req.body;
     if (
-      !phone ||
-      !pincode ||
-      !locality ||
-      !houseNo ||
-      !city ||
-      !state ||
+      !phone.trim() ||
+      !pincode.trim() ||
+      !locality.trim() ||
+      !houseNo.trim() ||
+      !city.trim() ||
+      !state.trim() ||
       !type
     ) {
       req.session.err = 'Please fill all required fields.';
@@ -90,6 +91,7 @@ export const handleAddAddress = async (req, res) => {
 export const getEditAddress = async (req, res) => {
   try {
     const msg = req.session.err || null;
+    delete req.session.err;
     const addressId = req.params.id;
     const address = await Address.findById(addressId);
     res.render('user/editAddress', { layout: 'profile-layout', msg, address });
@@ -116,12 +118,12 @@ export const handleEditAddress = async (req, res) => {
       name,
     } = req.body;
     if (
-      !phone ||
-      !pincode ||
-      !locality ||
-      !houseNo ||
-      !city ||
-      !state ||
+      !phone.trim() ||
+      !pincode.trim() ||
+      !locality.trim() ||
+      !houseNo.trim() ||
+      !city.trim() ||
+      !state.trim() ||
       !type
     ) {
       req.session.err = 'Please fill all required fields.';
@@ -236,6 +238,7 @@ export const getAddNewAddress = (req, res) => {
   try {
     const cartId = req.params.id;
     const msg = req.session.err || null;
+    delete req.session.err;
     res.render('user/addAddressPage', {
       layout: 'checkOutLayout',
       msg,
@@ -263,12 +266,12 @@ export const handleAddNewAddress = async (req, res) => {
       name,
     } = req.body;
     if (
-      !phone ||
-      !pincode ||
-      !locality ||
-      !houseNo ||
-      !city ||
-      !state ||
+      !phone.trim() ||
+      !pincode.trim() ||
+      !locality.trim() ||
+      !houseNo.trim() ||
+      !city.trim() ||
+      !state.trim() ||
       !type
     ) {
       req.session.err = 'Please fill all required fields.';
@@ -345,12 +348,12 @@ export const handleEditAddressCheckout = async (req, res) => {
       name,
     } = req.body;
     if (
-      !phone ||
-      !pincode ||
-      !locality ||
-      !houseNo ||
-      !city ||
-      !state ||
+      !phone.trim() ||
+      !pincode.trim() ||
+      !locality.trim() ||
+      !houseNo.trim() ||
+      !city.trim() ||
+      !state.trim() ||
       !type
     ) {
       req.session.err = 'Please fill all required fields.';

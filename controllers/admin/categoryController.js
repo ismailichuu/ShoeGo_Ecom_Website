@@ -45,7 +45,10 @@ export const getCategory = async (req, res) => {
 //@route GET /Category
 export const getAddCategory = async (req, res) => {
   try {
-    res.render('admin/addCategory', { admin: false, msg: null });
+    const layout = req.query.req ? 'layout' : false;
+    const msg = req.session.err || null;
+    delete req.session.err;
+    res.render('admin/addCategory', { admin: false, msg, layout });
   } catch (error) {
     logger.error('getAddCAtegory:', error.toString());
   }
@@ -57,6 +60,12 @@ export const handleAddCategory = async (req, res) => {
     const { name, description, visibility, discount } = req.body;
 
     const trimmedName = name.trim();
+    const trimmedDiscount = discount.trim();
+    const trimmedDescription = description.trim();
+
+    if (!trimmedName || !trimmedDescription || !trimmedDiscount) {
+      throw new Error('fill all the fields!');
+    }
 
     // Check if category with same name exists (case-insensitive)
     const category = await Category.findOne({
@@ -66,7 +75,7 @@ export const handleAddCategory = async (req, res) => {
 
     const newCategory = new Category({
       name: trimmedName,
-      description: description?.trim() || '',
+      description: trimmedDescription || '',
       visibility: visibility === 'Active',
       discount: parseFloat(discount) || 0,
     });
@@ -76,10 +85,8 @@ export const handleAddCategory = async (req, res) => {
     res.redirect('/admin/categories?req=new');
   } catch (error) {
     logger.error('handleAddCategory:', error.toString());
-    res.render('admin/addCategory', {
-      layout: 'layout',
-      msg: error.message || 'Something went wrong',
-    });
+    req.session.err = error.toString();
+    res.redirect('/admin/addCategory?req=new');
   }
 };
 
@@ -119,10 +126,30 @@ export const handleEditCategory = async (req, res) => {
       const category = await Category.findOne({ name });
       if (category) throw new Error('Category name already exist');
     }
-    category.name = name;
-    category.description = description;
-    category.visibility = visibility === 'true';
-    category.discount = discount;
+    const status = visibility === 'true';
+
+    const trimmedName = name.trim();
+    const trimmedDescription = description.trim();
+    const trimmedDiscount = discount.trim();
+
+    if (!trimmedName || !trimmedDescription || !trimmedDiscount) {
+      throw new Error('fill all fields!');
+    }
+
+    const isChanged =
+      trimmedName !== category.name ||
+      trimmedDiscount !== category.discount ||
+      trimmedDescription !== category.description ||
+      status !== category.visibility;
+
+    if (!isChanged) {
+      throw new Error('There is no changes in the Category');
+    }
+
+    category.name = trimmedName;
+    category.description = trimmedDescription;
+    category.visibility = status;
+    category.discount = trimmedDiscount;
     await category.save();
     res.redirect('/admin/categories?req=new');
   } catch (error) {

@@ -218,13 +218,13 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
   let confirmAction = null;
 
-  function showModal(action, message = 'Are sure want to delete ?') {
+  window.showModal = function (action, message = 'Are sure want to delete ?') {
     confirmAction = action;
     document.getElementById('modalMessage').textContent = message;
     document.getElementById('confirmModal').classList.remove('hidden');
   }
 
-  function hideModal() {
+  window.hideModal = function () {
     confirmAction = null;
     document.getElementById('confirmModal').classList.add('hidden');
   }

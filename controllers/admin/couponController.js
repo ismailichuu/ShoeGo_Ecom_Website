@@ -64,14 +64,34 @@ export const handleAddCoupons = async (req, res) => {
       req.session.err = 'Coupon Already Exist';
       return res.redirect('/admin/coupons/add');
     }
+    const trimmedName = name.trim();
+    const trimmedCode = code.trim().toUpperCase();
+    const numericLimit = Number(limit);
+    const numericMinAmount = Number(minAmount);
+    const numericDiscount = Number(discount);
+    const formattedActiveFrom = new Date(activeFrom).toISOString();
+    const formattedActiveTo = new Date(activeTo).toISOString();
+
+    if (
+      !trimmedCode ||
+      !trimmedName ||
+      !numericLimit ||
+      !numericDiscount ||
+      !numericMinAmount ||
+      !formattedActiveFrom ||
+      !formattedActiveTo) {
+      req.session.err = 'fill the required fields!';
+      return res.redirect(`/admin/coupons/add`);
+    }
+
     await Coupon.create({
       name,
-      code: code.toUpperCase(),
-      discount,
-      activeFrom,
-      activeTo,
-      limit,
-      minAmount,
+      code: trimmedCode,
+      discount: numericDiscount,
+      activeFrom: formattedActiveFrom,
+      activeTo: formattedActiveTo,
+      limit: numericLimit,
+      minAmount: numericMinAmount,
     });
 
     res.redirect('/admin/coupons?req=new');
@@ -117,6 +137,50 @@ export const handleEditCoupon = async (req, res) => {
       }
     }
     const isActive = status === 'Active';
+
+    const trimmedName = name.trim();
+    const trimmedCode = code.trim().toUpperCase();
+    const numericLimit = Number(limit);
+    const numericMinAmount = Number(minAmount);
+    const numericDiscount = Number(discount);
+    const formattedActiveFrom = new Date(activeFrom).toISOString();
+    const formattedActiveTo = new Date(activeTo).toISOString();
+
+    const isChanged =
+      trimmedCode !== coupon.code ||
+      trimmedName !== coupon.name ||
+      numericLimit !== coupon.limit ||
+      numericMinAmount !== coupon.minAmount ||
+      numericDiscount !== coupon.discount ||
+      formattedActiveFrom !== new Date(coupon.activeFrom).toISOString() ||
+      formattedActiveTo !== new Date(coupon.activeTo).toISOString() ||
+      isActive !== coupon.isActive;
+    if (
+      !trimmedCode ||
+      !trimmedName ||
+      !numericLimit ||
+      !numericDiscount ||
+      !numericMinAmount ||
+      !formattedActiveFrom ||
+      !formattedActiveTo) {
+      req.session.err = 'fill the required fields!';
+      return res.redirect(`/admin/coupons/edit/${couponId}`);
+    }
+
+    if (!isChanged) {
+      req.session.err = 'No changes in the coupon';
+      return res.redirect(`/admin/coupons/edit/${couponId}`);
+    }
+
+    coupon.name = trimmedName;
+    coupon.code = trimmedCode;
+    coupon.discount = numericDiscount;
+    coupon.activeFrom = new Date(activeFrom);
+    coupon.activeTo = new Date(activeTo);
+    coupon.limit = numericLimit;
+    coupon.minAmount = numericMinAmount;
+    coupon.isActive = isActive;
+
 
     coupon.name = name;
     coupon.code = code.toUpperCase();
