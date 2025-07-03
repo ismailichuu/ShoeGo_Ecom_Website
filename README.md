@@ -47,8 +47,8 @@ Welcome to **ShoeGo**, a modern and responsive web app for buying shoes online.
 - **File Uploads:** Multer + Cloudinary  
 - **Search:** Debounced input using JavaScript  
 - **PDF/Excel Reports:** PDFKit, ExcelJS  
-- **Payments:** Razorpay  
-- **Tools:** PM2, Morgan, Dotenv
+- **Payments:** Razorpay, wallet 
+- **Tools:** PM2, logger, Dotenv
 
 ## 💻 Local Setup
 
