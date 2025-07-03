@@ -4,63 +4,51 @@ Welcome to **ShoeGo**, a modern and responsive web app for buying shoes online.
 
 > 🚧 **NOTE**: The live site&nbsp;— <https://shoego.shop> — is **temporarily offline** while we refactor the codebase and polish the UI. Follow this repo for updates!
 
----
-
-## 📑 Table&nbsp;of&nbsp;Contents
-1. [Key Features](#-key-features)
-2. [Planned Improvements](#-planned-improvements)
-3. [Tech Stack](#-tech-stack)
-4. [Local Setup](#-local-setup)
-5. [Screenshots](#-screenshots)
-6. [Contributing](#-contributing)
-7. [License](#-license)
-8. [Contact](#-contact)
-
----
-
 ## 🔑 Key Features
 
-### 👤 User Side
-- Secure **signup / login** with token‑based auth  
-- **Browse** products by 20 shoe categories  
-- **Product detail** page with multiple images & size selector  
-- **Cart** + **wishlist** with real‑time price updates  
-- **Address management** & streamlined checkout (Razorpay)  
-- **Order tracking** + cancel / return flow (reason required)  
-- **Download invoice** as PDF  
+### 👤 User Side
+- JWT-based **signup / login**, **googleAuth Available**
+- **Browse products** by category  
+- **Product detail** page with multiple images (stored in Cloudinary)  
+- **Cart and wishlist** functionality  
+- **Debounced search** for fast product lookup  
+- **Address management**
+- **Wallet with wallet purchase**
+- Razorpay-integrated **checkout**  
+- **Order tracking** with cancel/return flow  
+- **Invoice download** in PDF format  
 
-### 🛠️ Admin Panel
-- Admin login & dashboard overview  
-- CRUD for **users, products, categories**  
-- Toggle product **visibility / status**  
-- Pagination, search & sort everywhere  
-- **Sales reports** (day / week / month / custom) exportable to **PDF** & **Excel**  
+### 🛠️ Admin Panel
+- Admin login with dashboard overview  
+- **Product, user, category management**  
+- Toggle product **status (Active/Inactive)**  
+- **Search, filter, and pagination** with debounce  
+- **Sales reports** by day/week/month/custom – export to PDF or Excel  
 
 ---
 
 ## 🗓️ Planned Improvements
 
-| Area | Task |
-| ---- | ---- |
-| **Error Handling** | Catch & surface all bad‑param / invalid‑ID cases with friendly messages |
-| **404 Page** | Branded “Page Not Found” component with quick links |
-| **UI Polish** | Tighter spacing & alignment (esp. *Order Details* & admin tables) |
-| **Frontend Validation** | Client‑side rules for every form (signup, checkout, product editor, etc.) |
+| Area             | Task                                                                 |
+|------------------|----------------------------------------------------------------------|
+| Error Handling    | Improve responses for invalid parameters and non-existent resources |
+| 404 Page          | Custom “Page Not Found” component                                   |
+| UI Polish         | Improve spacing and layout (especially Order Details page)         |
+| Frontend Validation | Add client-side form validation using JavaScript                 |
 
 ---
 
-## 🧰 Tech Stack
+## 🧰 Tech Stack
 
-- **Frontend:** HTML • Tailwind CSS • Vanilla JS • EJS templates  
-- **Backend:** Node.js • Express  
+- **Frontend:** HTML • Tailwind CSS • JavaScript • EJS templates  
+- **Backend:** Node.js • Express.js  
 - **Database:** MongoDB + Mongoose  
-- **Auth:** JWT + cookies  
-- **File Uploads:** Multer  
-- **Reports:** PDFKit, ExcelJS  
+- **Auth:** JWT + Cookies  
+- **File Uploads:** Multer + Cloudinary  
+- **Search:** Debounced input using JavaScript  
+- **PDF/Excel Reports:** PDFKit, ExcelJS  
 - **Payments:** Razorpay  
-- **Misc:** PM2, Morgan, dotenv, ESLint / Prettier
-
----
+- **Tools:** PM2, Morgan, Dotenv
 
 ## 💻 Local Setup
 
@@ -73,7 +61,8 @@ cd shoego
 npm install
 
 # 3. Configure environment
-cp .env.example .env       # edit DB_URI, JWT_SECRET, RAZORPAY keys, etc.
+cp .env.global      #JWT_SECRET, RAZORPAY keys, etc.
+cp .env.local       # edit DB_URI, callback_url  etc.
 
 # 4. Run dev server
 npm run dev
